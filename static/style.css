@@ -1,0 +1,8 @@
+body {
+  background-image: url('space_background.jpg');
+  background-size: cover;
+}
+
+div {
+  text-align: center;
+}
