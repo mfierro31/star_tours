@@ -34,7 +34,7 @@ class Itinerary(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     depart_datetime = db.Column(db.DateTime, nullable=False)
     arrive_datetime = db.Column(db.DateTime, nullable=False)
-    user = db.Column(db.Text, db.ForeignKey('users.email'))
+    user_email = db.Column(db.Text, db.ForeignKey('users.email'))
 
     # Should I add any ON DELETE CASCADEs to any of these relationships?  I feel like if I delete any planets, flights, or tours
     # this model won't be affected by that, because these aren't technically columns of data, they're just relationships
