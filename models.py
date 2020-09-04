@@ -147,5 +147,5 @@ class TourImage(db.Model):
     __tablename__ = 'tour_images'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    image = db.Column(db.Text, nullable=False)
+    image_name = db.Column(db.Text, nullable=False)
     tour_id = db.Column(db.Integer, db.ForeignKey('tours.id'))

@@ -253,3 +253,171 @@ t37 = Tour(name="Snorkeling Tour", description="What trip to a tropical paradise
 
 db.session.add_all([t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37])
 db.session.commit()
+
+# Adding images to tours
+
+ti1 = TourImage(image_name="Tatooine_anakins_home.jpg", tour_id=1)
+ti2 = TourImage(image_name="Tatooine_Luke.jpg", tour_id=1)
+ti3 = TourImage(image_name="Tatooine_Mos_Eisley_spaceport.png", tour_id=2)
+ti4 = TourImage(image_name="Tatooine_mos_eisley.png", tour_id=2)
+ti5 = TourImage(image_name="Tatooine_Mos_Eisley_cantina.jpg", tour_id=2)
+ti6 = TourImage(image_name="Tatooine_cantina_band.jpeg", tour_id=2)
+ti7 = TourImage(image_name="Tatooine_Jabbas_palace.jpg", tour_id=3)
+ti8 = TourImage(image_name="Tatooine_jawa_sandcrawler.jpeg", tour_id=4)
+ti9 = TourImage(image_name="Yavin4_Great_Temple.png", tour_id=5)
+ti10 = TourImage(image_name="Yavin4_forest.jpeg", tour_id=6)
+ti11 = TourImage(image_name="Hoth_atats.jpg", tour_id=7)
+ti12 = TourImage(image_name="Hoth_Echo_Base.png", tour_id=7)
+ti13 = TourImage(image_name="Hoth_echo_base_hangar.jpg", tour_id=7)
+ti14 = TourImage(image_name="Hoth_tauntaun.jpeg", tour_id=8)
+ti15 = TourImage(image_name="Dagobah_yodas_hut.jpg", tour_id=9)
+ti16 = TourImage(image_name="Dagobah_yodas_hut_interior.jpg", tour_id=9)
+ti17 = TourImage(image_name="Dagobah_swamp.jpg", tour_id=10)
+ti18 = TourImage(image_name="Bespin_carbon_freezing_chamber.jpeg", tour_id=11)
+ti19 = TourImage(image_name="Bespin_luke_vs_vader.jpg", tour_id=11)
+ti20 = TourImage(image_name="Bespin_i_am_your_father.jpg", tour_id=11)
+ti21 = TourImage(image_name="Endor_bunker.png", tour_id=12)
+ti22 = TourImage(image_name="Endor_shield_generator_explosion.jpeg", tour_id=12)
+ti23 = TourImage(image_name="Endor_empire_base.jpg", tour_id=12)
+ti24 = TourImage(image_name="Endor_speeder_bike.jpg", tour_id=13)
+ti25 = TourImage(image_name="Naboo_palace.jpg", tour_id=14)
+ti26 = TourImage(image_name="Naboo_palace_interior.jpg", tour_id=14)
+ti27 = TourImage(image_name="Naboo_palace_interior2.jpg", tour_id=14)
+ti28 = TourImage(image_name="Naboo_theed_hangar.png", tour_id=14)
+ti29 = TourImage(image_name="Naboo_Theed_hangar_interior.jpg", tour_id=14)
+ti30 = TourImage(image_name="Naboo_Theed_Generator_Complex.png", tour_id=14)
+ti31 = TourImage(image_name="Naboo_Laser_gates.png", tour_id=14)
+ti32 = TourImage(image_name="Naboo_tribubble_bongo.jpeg", tour_id=15)
+ti33 = TourImage(image_name="Naboo_gungan_city.jpg", tour_id=15)
+ti34 = TourImage(image_name="Naboo_gungan_city_interior.png", tour_id=15)
+ti35 = TourImage(image_name="Naboo_waterfalls.jpg", tour_id=16)
+ti36 = TourImage(image_name="Naboo_house_on_lake.png", tour_id=16)
+ti37 = TourImage(image_name="Coruscant_jedi_temple.png", tour_id=17)
+ti38 = TourImage(image_name="Coruscant_jedi_temple_interior.jpg", tour_id=17)
+ti39 = TourImage(image_name="Coruscant_jedi_council.jpg", tour_id=17)
+ti40 = TourImage(image_name="Coruscant_senate_building.jpg", tour_id=18)
+ti41 = TourImage(image_name="Coruscant_senate_building_interior.jpeg", tour_id=18)
+ti42 = TourImage(image_name="Kamino_cloning_facility.jpg", tour_id=19)
+ti43 = TourImage(image_name="Kamino_clone_soldiers.jpg", tour_id=19)
+ti44 = TourImage(image_name="Kaminoan_aiwha_rider.png", tour_id=20)
+ti45 = TourImage(image_name="Kamino_buildings.png", tour_id=20)
+ti46 = TourImage(image_name="Geonosis_petranaki_arena.jpg", tour_id=21)
+ti47 = TourImage(image_name="Geonosis_geonosians_in_arena.jpg", tour_id=21)
+ti48 = TourImage(image_name="Geonosis_arena_balcony.png", tour_id=21)
+ti49 = TourImage(image_name="Geonosis_separatist_council.jpg", tour_id=22)
+ti50 = TourImage(image_name="Geonosis_separatist_war_room.jpg", tour_id=22)
+ti51 = TourImage(image_name="Geonosis_trade_federation_ships.jpg", tour_id=22)
+ti52 = TourImage(image_name="Geonosis_dookus_hangar.jpg", tour_id=22)
+ti53 = TourImage(image_name="Geonosis_dookus_speeder.png", tour_id=23)
+ti54 = TourImage(image_name="Geonosis_landscape.jpeg", tour_id=23)
+ti55 = TourImage(image_name="Utapau_varactyl.jpeg", tour_id=24)
+ti56 = TourImage(image_name="Utapau_tsmeu-6_wheel_bike.jpg", tour_id=25)
+ti57 = TourImage(image_name="Mustafar_Klegger_Corp_Mining_Facility.png", tour_id=26)
+ti58 = TourImage(image_name="Mustafar_separatist_hideout.png", tour_id=26)
+ti59 = TourImage(image_name="Mustafar_separatist-council-conference-room.png", tour_id=26)
+ti60 = TourImage(image_name="Mustafar_vaders_castle.jpg", tour_id=27)
+ti61 = TourImage(image_name="Mustafar_vaders_castle_interior.jpg", tour_id=27)
+ti62 = TourImage(image_name="Mustafar_vaders_healing_chamber.jpeg", tour_id=27)
+ti63 = TourImage(image_name="Mustafar_landscape.jpeg", tour_id=28)
+ti64 = TourImage(image_name="Mustafar_floating_barge.jpg", tour_id=28)
+ti65 = TourImage(image_name="Kashyyyk_flyover.jpg", tour_id=29)
+ti66 = TourImage(image_name="Kashyyyk_wookie_rally.jpg", tour_id=30)
+ti67 = TourImage(image_name="Kashyyyk_battle.png", tour_id=30)
+ti68 = TourImage(image_name="Kashyyyk_droids_ocean.png", tour_id=30)
+ti69 = TourImage(image_name="Polis_Massa_delivery_room.jpg", tour_id=31)
+ti70 = TourImage(image_name="Mygeeto_bridge_battle.png", tour_id=32)
+ti71 = TourImage(image_name="Mygeeto_city.jpg", tour_id=32)
+ti72 = TourImage(image_name="Felucia_plant_life.png", tour_id=33)
+ti73 = TourImage(image_name="Felucia_landscape.jpeg", tour_id=33)
+ti74 = TourImage(image_name="Cato_Neimoidia_cockpit_view.jpg", tour_id=34)
+ti75 = TourImage(image_name="Cato_Neimoidia_arch.jpg", tour_id=34)
+ti76 = TourImage(image_name="Cato_Neimoidia_green.jpg", tour_id=35)
+ti77 = TourImage(image_name="Cato_Neimoidia_arch2.jpeg", tour_id=35)
+ti78 = TourImage(image_name="Scarif_imperial_vault.jpeg", tour_id=36)
+ti79 = TourImage(image_name="Scarif_atat.jpg", tour_id=36)
+ti80 = TourImage(image_name="Scarif_beach_charge.jpg", tour_id=36)
+ti81 = TourImage(image_name="Scarif_water.jpg", tour_id=37)
+
+db.session.add_all([ti1,
+ti2,
+ti3,
+ti4,
+ti5,
+ti6,
+ti7,
+ti8,
+ti9,
+ti10,
+ti11,
+ti12,
+ti13,
+ti14,
+ti15,
+ti16,
+ti17,
+ti18,
+ti19,
+ti20,
+ti21,
+ti22,
+ti23,
+ti24,
+ti25,
+ti26,
+ti27,
+ti28,
+ti29,
+ti30,
+ti31,
+ti32,
+ti33,
+ti34,
+ti35,
+ti36,
+ti37,
+ti38,
+ti39,
+ti40,
+ti41,
+ti42,
+ti43,
+ti44,
+ti45,
+ti46,
+ti47,
+ti48,
+ti49,
+ti50,
+ti51,
+ti52,
+ti53,
+ti54,
+ti55,
+ti56,
+ti57,
+ti58,
+ti59,
+ti60,
+ti61,
+ti62,
+ti63,
+ti64,
+ti65,
+ti66,
+ti67,
+ti68,
+ti69,
+ti70,
+ti71,
+ti72,
+ti73,
+ti74,
+ti75,
+ti76,
+ti77,
+ti78,
+ti79,
+ti80,
+ti81])
+
+db.session.commit()
