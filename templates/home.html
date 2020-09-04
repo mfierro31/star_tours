@@ -1,14 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <title>Home</title>
-</head>
-<body>
-  <div>
-    <img src="Star_Tours_logo.png" alt="Star Tours logo">
-  </div>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div id="logo">  
+  <img id="startours" class="img-fluid" src="/static/images/Star_Tours_logo.png" alt="Star Tours logo">
+</div>
+<h4 class="display-4 text-center text-light">Light speed to your favorite destinations across the galaxy!</h3>
+{% endblock %}

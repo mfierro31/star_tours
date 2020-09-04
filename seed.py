@@ -1,11 +1,15 @@
 from app import app
-from models import db, connect_db, get_gravity, num_with_commas, add_km_mi_to_diameter, add_hours_to_rotation, add_days_to_orbit, add_percent_to_water, User, Flight, Itinerary, ItineraryFlight, ItineraryPlanet, ItineraryTour, Planet, PlanetImage, Tour, TourImage
+from models import *
 import requests
 
 db.drop_all()
 db.create_all()
 
-planet_ids = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]                                                                                                                              
+# Adding planets
+
+# Planet IDs taken from the SWAPI
+
+planet_ids = [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]                                                                                                                              
 
 base_url = "https://swapi.dev/api/planets/"                                                                                                                                                        
 
@@ -28,9 +32,12 @@ resp_dicts[9]['description'] = "Move over, Mars!  There's a new red planet in to
 resp_dicts[10]['description'] = "A unique planet where all sentient life lives in enormous sinkholes below the surface of the planet, Utapau has to be seen to be believed!  A remarkable feat of Utapauan engineering and ingenuity, Utapauans transformed these sinkholes into vibrant cities.  You can visit the most famous of these sinkhole cities, Pau City, and explore what it has to offer!  This is where General Grievous was killed by Master Jedi Obi-Wan Kenobi near the end of the Clone Wars.  Explore the city on the back of a Varactyl or in a TSMEU-6 Wheel Bike!"
 resp_dicts[11]['description'] = "Make sure to bring a portable fan to this planet, because it is hot, hot, hot!  Explore the abandoned Klegger Corp. Mining Facility, where Obi-Wan Kenobi and Darth Vader battled each other with lightsabers until Obi-Wan came out victorious.  Ironically, this is also the planet where Vader healed himself from those wounds in his castle, which you can also visit!  You can also take a tour of the many lava rivers that flow through the planet.  Steamy adventures await on Mustafar!"
 resp_dicts[12]['description'] = "Home of the gentle giants, the Wookies, Kashyyyk is a beautiful and welcoming planet.  Spend a few nights in a Wookie village and tour the land in a Wookie flying catamaran!  For you history buffs, you can visit the site of the Battle of Kashyyyk, where the Republic and Wookie forces drove out the invading Separatist droid army in the Clone Wars."
+resp_dicts[13]['diameter'] = "8"
 resp_dicts[13]['description'] = "An asteroid colonized by the Kallidahin, Polis Massa offers spectacular views of the surrounding asteroid belt and advanced facilities that will take your breath away!  One of the facilities that you can visit is the medical facility where Rebel heroes Luke Skywalker and Leia Organa were born and where their mother, Padme Amidala passed away giving birth.  Sights and history - what more do you want??  Visit Polis Massa today!"
 resp_dicts[14]['description'] = "A war-torn planet for most of its recent history, Mygeeto is finally at peace now.  You can tour its war-torn cities and contribute to its revitalized economy.  The native Lurmen species have reclaimed their planet and welcome visitors to their new, thriving, and vibrant home!"
 resp_dicts[15]['description'] = "A planet covered in the most beautiful plant life the galaxy has ever known!  It's a treasure you have to see for yourself.  Visit Felucia today!"
+resp_dicts[16]['diameter'] = "13500"
+resp_dicts[16]['description'] = "Neimoidians have shown off their incredible engineering skills on this planet.  A colony planet of the Neimoidians, Cato Neimoidia is populated with two major cities - Zarra, the capital city, and Tarko-se.  Each are nestled in between gigantic rock formations springing out of their acidic oceans.  The cities are built upon arches and bridges connected to these rock formations and are truly a sight to behold.  The former base of operations for the Trade Federation, Cato Neimoidia has enjoyed wealth and prosperity over the years and still attracts visitors to this day.  Take advantage of the fine dining, nightlife, and hotels.  Watch a beautiful Cato Neimoidian sunset or sunrise from atop one of these arch cities, take an aerial tour of the city, or backpack through the grasslands atop the giant rock structures.  Adventure and beauty awaits at Cato Neimoidia!"
 
 for resp_dict in resp_dicts:
     new_gravity = get_gravity(resp_dict['diameter'])
@@ -46,4 +53,203 @@ for resp_dict in resp_dicts:
 
 scarif = Planet(name='Scarif', description="Can you imagine the most battle-hardened stormtroopers of the Empire stripping down to their boxers every day after 'work' and going swimming in the ocean?  Well, I bet that really happened here on Scarif!  How could you not take a dip in these perfect waters?  Even if you are a stormtrooper!  The entire planet is like the Imperial Security Complex.  Nothing but a bunch of small, tropical islands with perfect sandy beaches and crystal clear blue waters.  This planet is an absolute paradise.  Book now!", diameter="12,000 km / 7,456.44 mi", rotation_period="30 Earth hours", orbital_period="289 Earth days", gravity="0.94 Standard Earth Gs", population="150,000,000", climate="tropical", terrain="islands, ocean", surface_water="85%")
 db.session.add(scarif)
+db.session.commit()
+
+# Adding images to planets
+
+pi1 = PlanetImage(image_name="Tatooine_planet.png", planet_name="Tatooine")
+pi2 = PlanetImage(image_name="Tatooine_twin_sunset.jpg", planet_name="Tatooine")
+pi3 = PlanetImage(image_name="Tatooine_Mos_Eisley_cantina.jpg", planet_name="Tatooine")
+pi4 = PlanetImage(image_name="Tatooine_Luke.jpg", planet_name="Tatooine")
+pi5 = PlanetImage(image_name="Tatooine_anakins_home.jpg", planet_name="Tatooine")
+pi6 = PlanetImage(image_name="Yavin4.png", planet_name="Yavin IV")
+pi7 = PlanetImage(image_name="Yavin4_Great_Temple.png", planet_name="Yavin IV")
+pi8 = PlanetImage(image_name="Yavin4_forest.jpeg", planet_name="Yavin IV")
+pi9 = PlanetImage(image_name="Hoth.jpeg", planet_name="Hoth")
+pi10 = PlanetImage(image_name="Hoth_Echo_Base.png", planet_name="Hoth")
+pi11 = PlanetImage(image_name="Hoth_tauntaun.jpeg", planet_name="Hoth")
+pi12 = PlanetImage(image_name="Dagobah.jpg", planet_name="Dagobah")
+pi13 = PlanetImage(image_name="Dagobah_yodas_hut.jpg", planet_name="Dagobah")
+pi14 = PlanetImage(image_name="Dagobah_yodas_hut_interior.jpg", planet_name="Dagobah")
+pi15 = PlanetImage(image_name="Bespin.png", planet_name="Bespin")
+pi16 = PlanetImage(image_name="Bespin_cloud_city.jpg", planet_name="Bespin")
+pi17 = PlanetImage(image_name="Bespin_cloud_city_room.jpg", planet_name="Bespin")
+pi18 = PlanetImage(image_name="Bespin_carbon_freezing_chamber.jpeg", planet_name="Bespin")
+pi19 = PlanetImage(image_name="Bespin_i_am_your_father.jpg", planet_name="Bespin")
+pi20 = PlanetImage(image_name="Endor.png", planet_name="Endor")
+pi21 = PlanetImage(image_name="Endor_death_star_explosion.png", planet_name="Endor")
+pi22 = PlanetImage(image_name="Endor_bunker.png", planet_name="Endor")
+pi23 = PlanetImage(image_name="Endor_empire_base.jpg", planet_name="Endor")
+pi24 = PlanetImage(image_name="Endor_Ewok_village.jpg", planet_name="Endor")
+pi25 = PlanetImage(image_name="Naboo.png", planet_name="Naboo")
+pi26 = PlanetImage(image_name="Naboo_palace.jpg", planet_name="Naboo")
+pi27 = PlanetImage(image_name="Naboo_theed_hangar.png", planet_name="Naboo")
+pi28 = PlanetImage(image_name="Naboo_Theed_Generator_Complex.png", planet_name="Naboo")
+pi29 = PlanetImage(image_name="Naboo_gungan_city.jpg", planet_name="Naboo")
+pi30 = PlanetImage(image_name="Naboo_house_on_lake.png", planet_name="Naboo")
+pi31 = PlanetImage(image_name="Courscant.jpg", planet_name="Coruscant")
+pi32 = PlanetImage(image_name="Coruscant_cityscape_sundown.jpg", planet_name="Coruscant")
+pi33 = PlanetImage(image_name="Coruscant_Outlander_Club_bar.png", planet_name="Coruscant")
+pi34 = PlanetImage(image_name="Coruscant_jedi_temple.png", planet_name="Coruscant")
+pi35 = PlanetImage(image_name="Coruscant_senate_building.jpg", planet_name="Coruscant")
+pi36 = PlanetImage(image_name="Coruscant_opera_house_suite.jpg", planet_name="Coruscant")
+pi37 = PlanetImage(image_name="Kamino.jpg", planet_name="Kamino")
+pi38 = PlanetImage(image_name="Kamino_city.jpeg", planet_name="Kamino")
+pi39 = PlanetImage(image_name="Kamino_cloning_facility.jpg", planet_name="Kamino")
+pi40 = PlanetImage(image_name="Kaminoan_aiwha_rider.png", planet_name="Kamino")
+pi41 = PlanetImage(image_name="Geonosis.png", planet_name="Geonosis")
+pi42 = PlanetImage(image_name="Geonosis_petranaki_arena.jpg", planet_name="Geonosis")
+pi43 = PlanetImage(image_name="Geonosis_trade_federation_ships.jpg", planet_name="Geonosis")
+pi44 = PlanetImage(image_name="Geonosis_landscape.jpeg", planet_name="Geonosis")
+pi45 = PlanetImage(image_name="Utapau.png", planet_name="Utapau")
+pi46 = PlanetImage(image_name="Utapau_landscape.jpeg", planet_name="Utapau")
+pi47 = PlanetImage(image_name="Utapau_hole.jpeg", planet_name="Utapau")
+pi48 = PlanetImage(image_name="Utapau_varactyl.jpeg", planet_name="Utapau")
+pi49 = PlanetImage(image_name="Utapau_tsmeu-6_wheel_bike.jpg", planet_name="Utapau")
+pi50 = PlanetImage(image_name="Mustafar.png", planet_name="Mustafar")
+pi51 = PlanetImage(image_name="Mustafar_Klegger_Corp_Mining_Facility.png", planet_name="Mustafar")
+pi52 = PlanetImage(image_name="Mustafar_vaders_castle.jpg", planet_name="Mustafar")
+pi53 = PlanetImage(image_name="Mustafar_landscape.jpeg", planet_name="Mustafar")
+pi54 = PlanetImage(image_name="Kashyyyk.png", planet_name="Kashyyyk")
+pi55 = PlanetImage(image_name="Kashyyyk_landscape.jpeg", planet_name="Kashyyyk")
+pi56 = PlanetImage(image_name="Kashyyyk_flyover.jpg", planet_name="Kashyyyk")
+pi57 = PlanetImage(image_name="Kashyyyk_battle.png", planet_name="Kashyyyk")
+pi58 = PlanetImage(image_name="Polis_Massa.png", planet_name="Polis Massa")
+pi59 = PlanetImage(image_name="Polis_Massa_base.jpeg", planet_name="Polis Massa")
+pi60 = PlanetImage(image_name="Polis_Massa_interior.jpg", planet_name="Polis Massa")
+pi61 = PlanetImage(image_name="Polis_Massa_delivery_room.jpg", planet_name="Polis Massa")
+pi62 = PlanetImage(image_name="Mygeeto.jpg", planet_name="Mygeeto")
+pi63 = PlanetImage(image_name="Mygeeto_bridge_battle.png", planet_name="Mygeeto")
+pi64 = PlanetImage(image_name="Mygeeto_city.jpg", planet_name="Mygeeto")
+pi65 = PlanetImage(image_name="Felucia.png", planet_name="Felucia")
+pi66 = PlanetImage(image_name="Felucia_plant_life.png", planet_name="Felucia")
+pi67 = PlanetImage(image_name="Felucia_landscape.jpeg", planet_name="Felucia")
+pi68 = PlanetImage(image_name="Cato_Neimoidia.jpg", planet_name="Cato Neimoidia")
+pi69 = PlanetImage(image_name="Cato_Neimoidia_arch2.jpeg", planet_name="Cato Neimoidia")
+pi70 = PlanetImage(image_name="Cato_Neimoidia_city.jpeg", planet_name="Cato Neimoidia")
+pi71 = PlanetImage(image_name="Cato_Neimoidia_cockpit_view.jpg", planet_name="Cato Neimoidia")
+pi72 = PlanetImage(image_name="Cato_Neimoidia_green.jpg", planet_name="Cato Neimoidia")
+pi73 = PlanetImage(image_name="Scarif.png", planet_name="Scarif")
+pi74 = PlanetImage(image_name="Scarif_beach.jpg", planet_name="Scarif")
+pi75 = PlanetImage(image_name="Scarif_water.jpg", planet_name="Scarif")
+
+db.session.add_all([pi1, 
+pi2, 
+pi3, 
+pi4, 
+pi5, 
+pi6, 
+pi7, 
+pi8, 
+pi9, 
+pi10, 
+pi11, 
+pi12, 
+pi13, 
+pi14, 
+pi15, 
+pi16, 
+pi17, 
+pi18, 
+pi19, 
+pi20, 
+pi21, 
+pi22, 
+pi23,
+pi24,
+pi25,
+pi26,
+pi27,
+pi28,
+pi29,
+pi30,
+pi31,
+pi32,
+pi33,
+pi34,
+pi35,
+pi36,
+pi37,
+pi38,
+pi39,
+pi40,
+pi41,
+pi42,
+pi43,
+pi44,
+pi45,
+pi46,
+pi47,
+pi48,
+pi49,
+pi50,
+pi51,
+pi52,
+pi53,
+pi54,
+pi55,
+pi56,
+pi57,
+pi58,
+pi59,
+pi60,
+pi61,
+pi62,
+pi63,
+pi64,
+pi65,
+pi66,
+pi67,
+pi68,
+pi69,
+pi70,
+pi71,
+pi72,
+pi73,
+pi74,
+pi75])
+
+db.session.commit()
+
+# Adding Tours
+
+t1 = Tour(name="Luke and Anakin Skywalker House Tour", description="Ever wanted to peer into the early lives of the most famous Force-wielders in history?  Now's your chance!  Preserved over the years, both Luke and his father's childhood houses are open to the public.  Come see what early life was like on Tatooine for them.  The Force is strong with these houses.  Who knows... maybe a little bit of the Force will rub off on you!  Book now!", planet_name="Tatooine")
+t2 = Tour(name="Mos Eisley City Tour", description="The Mos Eisley spaceport on Tatooine has been home to a lot of historic moments.  Come see where these moments took place!  Take a tour and a drink at Chalmun's Spaceport Cantina, where Luke Skywalker met Han Solo and Chewbacca, and where infamous bounty hunter Greedo was shot and killed by Han Solo.  Who shot first?  The galaxy may never know...  Explore the hangar where the Rebel heroes narrowly escaped a shootout with stormtroopers aboard the Millennium Falcon.  Come see all that Mos Eisley has to offer!", planet_name="Tatooine")
+t3 = Tour(name="Jabba's Palace Tour", description="The Hutts were a notoriously violent and sadistic gang, but luckily, their influence over the planet of Tatooine has vanished.  The last Hutt that had any real power, was famous crime lord Jabba.  He had an extravagant palace built for himself and his inner circle that is still standing today.  Located in the vast, isolated Dune Sea, the palace is an oasis.  Known for its opulent parties and lawlessness, it was a great place for criminals to rub shoulders with other criminals.  Now, it's been converted into a grand museum!  Visit Jabba's Palace today!", planet_name="Tatooine")
+t4 = Tour(name="Jawa Sandcrawler Tour", description="Ever wanted to go inside a sandcrawler?  Well, now's your chance!  In an exclusive agreement with Star Tours, Jawas on Tatooine have decided to rent out one of their sandcrawlers for tours!  You can tour the inside of a gigantic sandcrawler and take a ride in one too!  Don't pass on this opportunity!  It may only be here for a limited time!", planet_name="Tatooine")
+t5 = Tour(name="Great Temple Tour", description="The Great Temple on Yavin IV was home to one of the most successful Rebel Alliance attacks in history.  From this temple, the Rebels launched a space fleet to attack the first Death Star that was orbiting the planet of Yavin.  Some say they destroyed the Death Star with only seconds remaining before the Death Star would have destroyed their base.  It was a tremendous victory and was heard across the galaxy.  Come tour this historic temple today!", planet_name="Yavin IV")
+t6 = Tour(name="Rainforest Tour", description="You may have seen rainforests on Earth, but nothing compares to the rainforests on Yavin IV!  Teeming with alien wildlife and plant life, the rainforests of Yavin IV have to be seen to be believed.  Take a hiking tour with a tour guide who knows these rainforests and knows the best parts to see.  Book today!", planet_name="Yavin IV")
+t7 = Tour(name="Echo Base Tour", description="Tour the remnants of the famous Echo Base on Hoth, where the Empire nearly destroyed the Rebellion.  Tour the hangars, trenches, turrets, and bunkers that have survived throughout the years.  It's truly a sight to behold.  It's like stepping back in time!  Book today!", planet_name="Hoth")
+t8 = Tour(name="Tauntaun Tour", description="Known for their speed and invincibility to the cold, tauntauns are the preferred way to get around on the ground on Hoth.  If you can brave the cold, come take a ride on one and view the breathtaking mountains and snow dunes that surround Echo Base.  Don't worry about wampas, your tour guide is armed and always on the lookout.  Safety first!", planet_name="Hoth")
+t9 = Tour(name="Yoda's House Tour", description="The most powerful and famous Jedi of all time called this planet home the last few years of his long life.  Come see the modest hut Jedi Master Yoda lived in and where he trained Luke Skywalker.  Some say his Force spirit still lives on here.  Many have reported seeing his apparition and hearing his unmistakable voice.  Who knows?  Maybe you'll be the first to commune with him!", planet_name="Dagobah")
+t10 = Tour(name="Swamp Tour", description="The swamps of Dagobah are home to some exotic creatures and plant life.  Take a tour of them on a swamp boat with an expert guide!", planet_name="Dagobah")
+t11 = Tour(name="Carbon Freezing Facility Tour", description="The carbon freezing facility on Cloud City is enormous and is packed with so much history.  First, take a tour of the actual carbon freezing room where Rebel hero Han Solo was frozen in carbonite.  This same room is also where Darth Vader and Luke Skywalker had their first lightsaber battle.  As they continued through the facility, they eventually made their way out onto a catwalk.  It was there that Lord Vader cut off Skywalker's hand and proclaimed to him that he was his father.  Take a tour of this historic place and reenact this famous moment on the exact same catwalk!", planet_name="Bespin")
+t12 = Tour(name="Remnants of the Empire Tour", description="Even though the Empire was defeated on Endor, signs of their occupation still remain.  Tour a recreation of the shield generator bunker that the Rebels destroyed during the Battle of Endor, see the original landing pad Lord Vader once landed on and where he took his son from to meet Emperor Palpatine.  History comes alive here on Endor!", planet_name="Endor")
+t13 = Tour(name="Forest Speeder Tour", description="Ever wanted to hop on a speeder bike and whizz through the forests of Endor like Luke and Leia did?  Well, now's your chance!  Your tour guide will give you a few quick safety lessons, then you're off!  Zoom past the enormous trees of Endor and create a memory that will last forever!", planet_name="Endor")
+t14 = Tour(name="Theed Royal Palace Tour", description="The Royal Palace of Theed is a beautiful example of Naboo architecture.  Decorated with elegant paintings on its enormous ceilings, filled with grand pillars, grand arches, and grand staircases, the Royal Palace is a feast for the eyes.  The most famous royalty to rule from here was Queen Padme Amidala, wife of Anakin Skywalker (later, Lord Vader).  Sit on the same throne she once ruled from!  But wait, there's more!  Tour the rest of the complex, like the hangar where a young Anakin Skywalker and fleet of other Naboo fighters, took off and destroyed the Trade Federation ship that was occupying the planet.  Then tour the generator complex where Jedis Qui-Gon-Jinn and Obi-Wan Kenobi fought evil Sith apprentice Darth Maul.  Qui-Gon-Jinn made the ultimate sacrifice for the Republic, but his apprentice Obi-Wan avenged his death and killed Maul.  Walk in the actual steps of these Force-wielders!", planet_name="Naboo")
+t15 = Tour(name="Tribubble Bongo Otoh Gunga Tour", description="You've seen The Little Mermaid and sung along to 'Under The Sea', but how would you REALLY like to live under the sea?  Well, now you can!  The Gungans have loosened their restrictions on outsiders and now welcome them!  Tour their great underwater city Otoh Gunga in a Tribubble Bongo, a Gungan underwater transport vehicle!  Your Gungan tour guide knows all the best sights under the sea and after you're done, you'll have a great Gungan meal in an opulent dining hall looking out into the depths of the Naboo ocean.  Book now!", planet_name="Naboo")
+t16 = Tour(name="Waterfall Hike Tour", description="Known for its natural beauty, no visit to Naboo would be complete without a waterfall hike in Naboo Lake Country!  Made famous as the location Anakin Skywalker and Padme Amidala got married and possibly conceived their famous children, Luke and Leia, Naboo Lake Country is absolutely stunning.  Your tour guide will take you on a hike through the beautiful grasslands, waterfalls, and lakes of Lake Country, and you'll end your day having a picnic in a beautiful field overlooking a waterfall, just like Anakin and Padme did so long ago.  Definitely a couples favorite!", planet_name="Naboo")
+t17 = Tour(name="Jedi Temple Tour", description="The Jedi Temple on Coruscant has survived for thousands of years.  It has been destroyed and rebuilt more than a few times and although it is not as glorious as its earlier days, it still stands.  Built atop a Force nexus, or Force strong point, the temple was home to the Jedi for thousands of years, until Emperor Palpatine's Jedi purge.  Although badly damaged during this time, it still survived.  Since then, it has undergone more damage and reconstruction than any other structure in the galaxy.  But now that there's finally peace, it has become a tourist destination.  Your tour guide will take you through the great Jedi archives, the Jedi council room, and the great halls where Anakin Skywalker turned to the dark side and became Darth Vader in his purging of Jedi younglings.  Come tour this sacred site today!", planet_name="Coruscant")
+t18 = Tour(name="Galactic Senate Tour", description="The center of Galactic power for thousands of years, the Galactic Senate of the Republic met in this building constantly.  It was made famous as the site where Chancellor Palpatine declared himself Emperor and declared the Republic as his Galactic Empire.  Liberty died here, as Padme Amidala famously proclaimed.  But all is back to peace now.  Palpatine's Empire is no more.  And now you get to visit this famous seat of power!  Tour the exterior first to appreciate the beautiful architecture and engineering and then go inside to view the beauty of the Senate chambers.  History comes alive here at the Galactic Senate!", planet_name="Coruscant")
+t19 = Tour(name="Cloning Facility Tour", description="During the days of the Republic just before the Clone Wars, a mysterious request was sent to the Kaminoans to create a massive clone army for the Republic.  History would later show that it was Emperor (then, Senator) Palpatine who secretly took over production of this army with the help of Count Dooku and bounty hunter Jango Fett.  You can tour this cloning facility where the grand Republic army was created.  It is still in operation today!  See how they do it all and after, enjoy a meal in the Prime Minister's former dining hall, overlooking the raging ocean below.", planet_name="Kamino")
+t20 = Tour(name="Aiwha Tour", description="If you're not afraid of heights and not afraid to get wet, take a ride of a lifetime on an Aiwha!  Aiwhas are native flying creatures of Kamino that Kaminoans use to get around.  Your Kaminoan tour guide will keep you safe and guide you around the coolest spots of Tipoca City.  Book today!", planet_name="Kamino")
+t21 = Tour(name="Petranaki Arena Tour", description="Since the end of the Separatist control of the planet during the Clone Wars, Petranaki Arena has been left abandoned.  Recently, however, conservationists from nearby Tatooine decided to turn the arena into a tourist attraction.  They've created a grand museum inside the halls of the arena and even stage mock fights in the arena.  They have also brought in exotic animals from every corner of the galaxy and created a zoo for them here!  All kinds of things to see here at Petranaki Arena, the site of the beginning of the Clone Wars!", planet_name="Geonosis")
+t22 = Tour(name="Separatist Facilities Tour", description="When the Clone Wars erupted at the First Battle of Geonosis, the planet was home to a vast Separatist facility, complete with a war room, docking ports for enormous star ships, hangars, and an impressive droid army factory.  Take a tour of this facility, where infamous Jedi-turned-Sith-apprentice Count Dooku ruled.  Tour his hangar where he cut off Anakin Skywalker's arm, nearly killed Obi-Wan Kenobi, and fought Master Yoda, and still got away!  Tour the war room where the first plans for the Death Star were created!  And coolest of all, visit a docking station that still has a Trade Federation star ship inside it!  Tour the inside of the docking station and the ship!  Excitement awaits here on Geonosis!", planet_name="Geonosis")
+t23 = Tour(name="Speeder Tour", description="Take a tour of the land on a speeder similar to the one Count Dooku used to get away during the First Battle of Geonosis!  You can speed across the great sand dunes, plateaus, mountains, and spires.  Admire the red beauty of Geonosis today!", planet_name="Geonosis")
+t24 = Tour(name="Varactyl Tour", description="Tour the many levels of Pau City on the back of a varactyl!  Varactyls, even though they are big and loud, are gentle and loyal creatures.  Your native Utapauan tour guide will teach you everything you need to know about varactyls and will take you on a tour through all the levels of Pau City.  Masters of climbing, these creatures will take you anywhere you want to go.  Hold on tight and have fun!", planet_name="Utapau")
+t25 = Tour(name="Wheel Bike Tour", description="Prefer a mechanical vehicle over a biological one?  Then take an exhilarating ride on a TSMEU-6 Wheel Bike!  This was the preferred mode of transportation for Separatist General Grievous.  Take it for a ride through the countless levels of Pau City.  Like the varactyls, the wheel bike also is good at climbing and gripping.  Your Utapauan tour guide will teach you all the safety stuff and guide you through the city.  Book now!", planet_name="Utapau")
+t26 = Tour(name="Klegger Corp. Mining Facility Tour", description="Take a tour of the mining facility where Obi-Wan Kenobi and Anakin Skywalker fought for the first time since Anakin's turn to the dark side.  Their lightsaber battle only lasted for about an hour, but the outcome of it shaped the course of history.  Walk in the exact steps of Kenobi and Vader, stand on the exact same lava river bank where Kenobi de-limbed Vader, thus fueling his hatred and cementing his place in the dark side of the Force.  Stand on the same landing pad Vader unknowingly killed his wife, Padme, in a fit of Force rage.  A heartbreaking but memorable site that you just have to visit.", planet_name="Mustafar")
+t27 = Tour(name="Fortress Vader Tour", description="Why was it that Lord Vader chose this planet, the planet he experienced the most pain and trauma he had ever experienced before on, to build his fortress?  The galaxy may never know.  Maybe it has to do with the fact that the site was once home to a mysterious ancient Sith cave.  Whatever the reason, the days of Vader are long gone, but his fortress still stands and is open to the public for tours!  It is an enormous structure that was home to one of the most evil leaders in history.  Take a tour inside, with your Mustafarian tour guide, but please, don't be tempted by the dark side!", planet_name="Mustafar")
+t28 = Tour(name="Lava River Tour", description="Take a scenic lava river tour on a floating barge the Klegger miners used to use!  As with the mining facility tour, on this tour, you'll get to pass and stand on the spot where Kenobi defeated Vader.  You have the high ground on this tour!", planet_name="Mustafar")
+t29 = Tour(name="Wookie Flying Catamaran Tour", description="The gentle and friendly wookies will take you on quite a ride with this tour!  Take a ride with your wookie tour guide on one of their famous flying catamarans and view their capital city of Kachirho from the air!  You'll soar over the beautiful coastal city and over the surrounding lush land.  It's an exhilarating, beautiful, and unforgettable ride!", planet_name="Kashyyyk")
+t30 = Tour(name="Battle of Kashyyyk Tour", description="The scars of war are still present in the city of Kachirho.  Take a tour of the city and visit the sites where the Battle of Kashyyyk, during the end of the Clone Wars, left its mark.  You will see burn marks on trees, defensive walls, and pieces of droids from the Separatist army still buried in the beach's sand.  History comes alive on this tour.  Book today!", planet_name="Kashyyyk")
+t31 = Tour(name="Luke and Leia Birthroom Tour", description="The most famous site on Polis Massa, maybe even in the whole galaxy, is this facility right here!  Home to many advanced research and medical facilities that are still in use today, and therefore off limits to the general public, one medical facility has been granted access to the public.  That's the delivery room where Luke Skywalker and his sister Leia were born and where their mother Padme tragically passed away giving birth.  It is almost as sacred to the galaxy as the Holy Selpulchre is on Earth.  Come visit the place where the two most celebrated people in the history of the galaxy were born!", planet_name="Polis Massa")
+t32 = Tour(name="City Tour", description="Mygeeto has tragically been home to more battles than any planet would like to admit.  After the native species was driven out of their home planet, or reduced to slave status, the world fell into the hands of the Separatists and the Empire.  But after the fall of the Empire, the world was abandoned by former Imperial forces and the native Lurmen reclaimed their planet.  Now, they are rebuilding and welcoming visitors to their revitalized world!  With help from neighboring planets, they have reconstructed most of their cities, and are now trading again and starting up their economy from scratch.  Contribute to their economy with this tour!  Your native Lurmen tour guide will take you through the Southern Mesas region of the planet, that has been home to the most battles.  They'll take you across the bridge where Jedi Ki-Adi-Mundi was killed by his own clone troopers during the galaxy-wide execution of Order 66.  They'll take you to buildings that have not been reconstructed yet, that still bear the scars of war.  Then you'll finish the tour off having a lovely meal in a newly reconstructed restaurant in the heart of the city.", planet_name="Mygeeto")
+t33 = Tour(name="Backpacking Tour", description="Felucia is home to the most diverse array of plant and animal life in the galaxy.  Your tour will start from the capital city of Kway Teow, where a native Felucian tour guide will take you on an overnight camping trip through the beautiful jungles of Felucia.  You'll return the next day and end with a meal at the city's fanciest restaurant, overlooking the jungle.  Beauty awaits on Felucia!", planet_name="Felucia")
+t34 = Tour(name="Aerial City Tour", description="Take an aerial tour of Cato Neimoidia's jewel city Tarko-Se in a small aircraft.  Take the ride at sunset for a beautiful and unforgettable view.", planet_name="Cato Neimoidia")
+t35 = Tour(name="Backpacking Tour", description="Take a camping trip with your Neimoidian tour guide and camp out atop one of the gigantic rocks that tether the city of Tarko-Se together.  Watch the beautiful sunset and sunrise above an below the magnificent arch city.", planet_name="Cato Neimoidia")
+t36 = Tour(name="Imperial Remnants Tour", description="Besides the white, sandy beaches and crystal-clear blue waters, Scarif also offers history.  Although it's merely a patch of scarred land now, this spot on Scarif was once home to the Imperial Security Complex that housed the infamous Imperial Citadel Tower and Imperial Vault.  During the Galactic Civil War, a small group of Rebel forces, known as Rogue One, infiltrated the complex and successfully transmitted the Empire's Death Star schematics and gave the Rebels the upper hand.  They later used those schematics to destroy the first Death Star at the Battle of Yavin.  Rogue One heroically sacrificed themselves for the cause and the complex was soon obliterated by a blast from the Death Star.  On this tour, you can visit the exact spots where the Citadel Tower once stood, where some of the landing pads were, and where the main transport tunnel to the tower was.  You will also visit a beautiful memorial dedicated to the members of Rogue One, placed on the beautiful white-sand beach touching the water.  Truly a historic and sacred place!", planet_name="Scarif")
+t37 = Tour(name="Snorkeling Tour", description="What trip to a tropical paradise planet would be complete without a snorkeling tour?  Take a swim in the crystal-clear waters of Scarif and look at the amazing sea life.  Plenty of alien fish, coral, and other sea creatures await on this magical tour!", planet_name="Scarif")
+
+db.session.add_all([t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37])
 db.session.commit()

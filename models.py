@@ -8,8 +8,9 @@ def connect_db(app):
 
 def get_gravity(diameter):
     gravity = int(diameter) / 12742
-    # This line rounds to exactly 2 decimal places.
+
     if gravity == 1:
+        # This line rounds to exactly 2 decimal places.
         return f"{round(gravity, 2)} Standard Earth G"
     else:
         return f"{round(gravity, 2)} Standard Earth Gs"
@@ -47,7 +48,8 @@ def add_percent_to_water(water):
 class User(db.Model):
     __tablename__ = 'users'
 
-    email = db.Column(db.Text, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.Text, nullable=False, unique=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
@@ -72,7 +74,7 @@ class Itinerary(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     depart_datetime = db.Column(db.DateTime, nullable=False)
     arrive_datetime = db.Column(db.DateTime, nullable=False)
-    user_email = db.Column(db.Text, db.ForeignKey('users.email'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # Should I add any ON DELETE CASCADEs to any of these relationships?  I feel like if I delete any planets, flights, or tours
     # this model won't be affected by that, because these aren't technically columns of data, they're just relationships
@@ -128,7 +130,7 @@ class PlanetImage(db.Model):
     __tablename__ = 'planet_images'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    image = db.Column(db.Text, nullable=False)
+    image_name = db.Column(db.Text, nullable=False)
     planet_name = db.Column(db.Text, db.ForeignKey('planets.name'))
 
 class Tour(db.Model):

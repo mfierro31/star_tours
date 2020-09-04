@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from models import db, connect_db, User, Flight, Itinerary, ItineraryFlight, ItineraryPlanet, ItineraryTour, Planet, PlanetImage, Tour, TourImage
+from models import *
 
 import requests
 
@@ -24,3 +24,7 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 db.create_all()
+
+@app.route('/')
+def show_home():
+    return render_template('home.html')
