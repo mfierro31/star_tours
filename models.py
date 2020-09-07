@@ -1,10 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime, timedelta
 
 db = SQLAlchemy()
 
 def connect_db(app):
     db.app = app
     db.init_app(app)
+
+# Helper methods to transform SWAPI data into clearer/cleaner/more logical data
 
 def get_gravity(diameter):
     gravity = int(diameter) / 12742
@@ -61,19 +64,47 @@ class User(db.Model):
 class Flight(db.Model):
     __tablename__ = 'flights'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    flight_num = db.Column(db.Integer, nullable=False)
+    flight_num = db.Column(db.Integer, primary_key=True)
     depart_planet = db.Column(db.Text, nullable=False)
     arrive_planet = db.Column(db.Text, nullable=False)
-    depart_port = db.Column(db.Text, nullable=False)
-    arrive_port = db.Column(db.Text, nullable=False)
+    depart_time = db.Column(db.Text, nullable=False)
+    arrive_time = db.Column(db.Text, nullable=False)
+    depart_date = db.Column(db.Text)
+    arrive_date = db.Column(db.Text)
+    flight_time = db.Column(db.Integer, nullable=False)
+
+    def prettify_depart_date(self):
+        date_as_datetime = datetime.strptime(self.depart_date, '%Y-%m-%d')
+        date_as_date = date_as_datetime.date()
+        pretty_date = date_as_date.strftime('%B %-d, %Y')
+
+        return pretty_date
+
+    def prettify_arrive_date(self):
+        date_as_datetime = datetime.strptime(self.arrive_date, '%Y-%m-%d')
+        date_as_date = date_as_datetime.date()
+        pretty_date = date_as_date.strftime('%B %-d, %Y')
+
+        return pretty_date
+
+    def prettify_flight_time(self):
+        if self.flight_time == 1:
+            return f'{self.flight_time} hour'
+        else:
+            return f'{self.flight_time} hours'
+
+    def set_arrive_date(self):
+        datetime_str = f'{self.depart_date} {self.depart_time}'
+        datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+        arrive_datetime = datetime_obj + timedelta(hours=self.flight_time)
+        arrive_date = arrive_datetime.date()
+
+        self.arrive_date = arrive_date.strftime('%Y-%m-%d')
 
 class Itinerary(db.Model):
     __tablename__ = 'itineraries'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    depart_datetime = db.Column(db.DateTime, nullable=False)
-    arrive_datetime = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # Should I add any ON DELETE CASCADEs to any of these relationships?  I feel like if I delete any planets, flights, or tours
@@ -93,7 +124,7 @@ class ItineraryFlight(db.Model):
     # would it be easier/make more sense to just make these things below my primary_key (both of them together)?  
     # or should I just stick to having the primary_key be a separate number id?
     itinerary_id = db.Column(db.Integer, db.ForeignKey('itineraries.id'))
-    flight_id = db.Column(db.Integer, db.ForeignKey('flights.id'))
+    flight_num = db.Column(db.Integer, db.ForeignKey('flights.flight_num'))
 
 class ItineraryPlanet(db.Model):
     __tablename__ = 'itineraries_planets'
@@ -139,9 +170,42 @@ class Tour(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
+    start_time = db.Column(db.Text, nullable=False)
+    end_time = db.Column(db.Text, nullable=False)
+    start_date = db.Column(db.Text)
+    end_date = db.Column(db.Text)
+    duration = db.Column(db.Integer, nullable=False)
     planet_name = db.Column(db.Text, db.ForeignKey('planets.name'))
 
     images = db.relationship('TourImage', backref='tour', cascade='all, delete-orphan')
+
+    def prettify_start_date(self):
+        date_as_datetime = datetime.strptime(self.start_date, '%Y-%m-%d')
+        date_as_date = date_as_datetime.date()
+        pretty_date = date_as_date.strftime('%B %-d, %Y')
+
+        return pretty_date
+
+    def prettify_end_date(self):
+        date_as_datetime = datetime.strptime(self.end_date, '%Y-%m-%d')
+        date_as_date = date_as_datetime.date()
+        pretty_date = date_as_date.strftime('%B %-d, %Y')
+
+        return pretty_date
+
+    def prettify_duration(self):
+        if self.duration == 1:
+            return f'{self.duration} hour'
+        else:
+            return f'{self.duration} hours'
+
+    def set_end_date(self):
+        datetime_str = f'{self.start_date} {self.start_time}'
+        datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+        end_datetime = datetime_obj + timedelta(hours=self.duration)
+        end_date = end_datetime.date()
+
+        self.end_date = end_date.strftime('%Y-%m-%d')
 
 class TourImage(db.Model):
     __tablename__ = 'tour_images'
