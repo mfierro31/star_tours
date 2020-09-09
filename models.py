@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
+from flask_bcrypt import Bcrypt
 
+bcrypt = Bcrypt()
 db = SQLAlchemy()
 
 def connect_db(app):
@@ -60,12 +62,11 @@ class User(db.Model):
 
     itinerariess = db.relationship('Itinerary', backref='user', cascade='all, delete-orphan')
 
-
 class Flight(db.Model):
     __tablename__ = 'flights'
 
     flight_num = db.Column(db.Integer, primary_key=True)
-    depart_planet = db.Column(db.Text, nullable=False)
+    depart_planet = db.Column(db.Text, db.ForeignKey('planets.name'))
     arrive_planet = db.Column(db.Text, nullable=False)
     depart_time = db.Column(db.Text, nullable=False)
     arrive_time = db.Column(db.Text, nullable=False)
@@ -113,16 +114,10 @@ class Itinerary(db.Model):
     planets = db.relationship('Planet', secondary='itineraries_planets', backref='itineraries')
     tours = db.relationship('Tour', secondary='itineraries_tours', backref='itineraries')
 
-# Could I do without these 3 classes below and just have done a class ItineraryFlightPlanetTour?
-
 class ItineraryFlight(db.Model):
-    # Do these middle tables get updated when I append info from another relationship?
-    # For instance, if I just appended flight info in a Itinerary object, would this table be automatically updated with the correct data?
     __tablename__ = 'itineraries_flights'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    # would it be easier/make more sense to just make these things below my primary_key (both of them together)?  
-    # or should I just stick to having the primary_key be a separate number id?
     itinerary_id = db.Column(db.Integer, db.ForeignKey('itineraries.id'))
     flight_num = db.Column(db.Integer, db.ForeignKey('flights.flight_num'))
 
@@ -156,6 +151,7 @@ class Planet(db.Model):
 
     tours = db.relationship('Tour', backref='planet', cascade='all, delete-orphan')
     images = db.relationship('PlanetImage', backref='planet', cascade='all, delete-orphan')
+    departures = db.relationship('Flight', cascade='all, delete-orphan')
 
 class PlanetImage(db.Model):
     __tablename__ = 'planet_images'
