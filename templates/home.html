@@ -4,6 +4,16 @@
 <div id="logo">  
   <img id="startours" class="img-fluid" src="/static/images/Star_Tours_logo.png" alt="Star Tours logo">
 </div>
-<h4 class="display-4 text-center text-light">Light speed to your favorite destinations across the galaxy!</h3>
-<input type="date" id="datepicker">
+<h3 class="text-center">Light speed to your favorite destinations across the galaxy!</h3>
+<p class="mt-5 text-center">Star Tours offers daily nonstop flights from Earth to the most famous planets around!</p>
+<p class="mt-5 text-center">From the Core to the Outer Rim, we got a place for everybody!  Where would you like to go today?</p>
+<div class="mt-5 row justify-content-center">
+  {% for planet in planets %}
+  <div class="mb-3 col-12 col-md-4 text-center">
+    <!-- On mobile devices, the heights of some images shrink and I have no idea why -->
+    <h3 class="text-center"><a class="text-warning" href="/planets/{{planet.name}}">{{planet.name}}</a></h3>
+    <img src="static/images/{{planet.images[0].image_name}}" class="img-fluid home-planets rounded-circle" alt="{{planet.name}}">
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}

@@ -2,16 +2,41 @@ html {
   margin: 0;
 }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-image: url('/static/images/space_background.jpg');
-  background-size: cover;
-}
-
 #logo {
   text-align: center;
 }
 
+#nav-logo {
+  width: 60px; 
+  height: 50px;
+}
+
+#nav-right {
+  float: right;
+}
+
+.home-planets {
+  width: 75%;
+  height: 75%;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  /* 
+  
+  Code to create a responsive background image - taken from here: 
+  https://www.webfx.com/blog/web-design/responsive-background-image/ 
+  
+  */
+  background-image: url('/static/images/light_speed_background.jpg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+/* If the screen is 768px or wider */
 @media screen and (min-width: 768px) {
   #startours {
     height: 40%;
@@ -19,7 +44,8 @@ body {
   }
 }
 
-@media screen and (max-width: 768px) {
+/* If the screen is 767px or less */
+@media screen and (max-width: 767px) {
   #startours {
     height: 70%;
     width: 75%;

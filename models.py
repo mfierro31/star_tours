@@ -12,6 +12,7 @@ def connect_db(app):
 # Helper methods to transform SWAPI data into clearer/cleaner/more logical data
 
 def get_gravity(diameter):
+    """Converts SWAPI gravity data into more logical and precise data"""
     gravity = int(diameter) / 12742
 
     if gravity == 1:
@@ -21,6 +22,7 @@ def get_gravity(diameter):
         return f"{round(gravity, 2)} Standard Earth Gs"
 
 def num_with_commas(num_as_str):
+    """Adds commas to large numbers making them more clear to read.  If it doesn't convert to a number, it returns num_as_str"""
     if num_as_str.isnumeric():
         num_as_int = int(num_as_str)
         # This line magically puts commas in the right places for any large number (thousand, million, billion, trillion, etc.)
@@ -33,18 +35,22 @@ def num_with_commas(num_as_str):
         return num_as_str
 
 def add_km_mi_to_diameter(diameter):
+    """Displays the SWAPI diameter data in km and mi"""
     miles = int(diameter) * 0.62137
     miles_rounded = round(miles, 2)
 
     return f"{num_with_commas(diameter)} km / {num_with_commas(str(miles_rounded))} mi"
 
 def add_hours_to_rotation(rotation):
+    """Adds 'Earth hours' to rotation period data from SWAPI"""
     return f"{num_with_commas(rotation)} Earth hours"
 
 def add_days_to_orbit(orbit):
+    """Adds 'Earth days' to orbital period data from SWAPI"""
     return f"{num_with_commas(orbit)} Earth days"
 
 def add_percent_to_water(water):
+    """Adds a percent sign to the surface water SWAPI data if it's a number"""
     if water.isnumeric() or water.replace('.', '').isnumeric():
         return f"{water}%"
     else:
@@ -62,6 +68,37 @@ class User(db.Model):
 
     itinerariess = db.relationship('Itinerary', backref='user', cascade='all, delete-orphan')
 
+    @classmethod
+    def signup(cls, email, username, password, first_name, last_name):
+        """Creates a user, hashes their password, and adds them to database"""
+
+        # check to see if username and email are unique
+        if cls.query.filter_by(username=username).first() and cls.query.filter_by(email=email).first():
+            return ["That username has already been taken.  Please choose another one.", "That email already has an account with us.  Please use another."]
+        if cls.query.filter_by(username=username).first():
+            return ["That username has already been taken.  Please choose another one."]
+        if cls.query.filter_by(email=email).first():
+            return ["That email already has an account with us.  Please use another."]
+
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('utf8')
+
+        return cls(username=username, password=hashed_pwd, email=email, first_name=first_name, last_name=last_name)
+
+    @classmethod
+    def authenticate(cls, username, password):
+        """
+        Checks to see if there is a user with the matching username and password.
+        If so, it returns the user, if not, returns False
+        """
+        user = cls.query.filter_by(username=username).first()
+
+        # If there is a user by that username AND that user's unhashed password matches the password passed in...
+        if user and bcrypt.check_password_hash(user.password, password):
+            return user
+        else:
+            return False
+
+
 class Flight(db.Model):
     __tablename__ = 'flights'
 
@@ -75,6 +112,9 @@ class Flight(db.Model):
     flight_time = db.Column(db.Integer, nullable=False)
 
     def prettify_depart_date(self):
+        """Takes depart_date as a string, converts it to a datetime object, and displays the date as the full month name, day as
+        a number, and year as a number - in that order
+        """
         date_as_datetime = datetime.strptime(self.depart_date, '%Y-%m-%d')
         date_as_date = date_as_datetime.date()
         pretty_date = date_as_date.strftime('%B %-d, %Y')
@@ -82,6 +122,7 @@ class Flight(db.Model):
         return pretty_date
 
     def prettify_arrive_date(self):
+        """Does the same thing as prettify_depart_date, except for arrive_date"""
         date_as_datetime = datetime.strptime(self.arrive_date, '%Y-%m-%d')
         date_as_date = date_as_datetime.date()
         pretty_date = date_as_date.strftime('%B %-d, %Y')
@@ -89,12 +130,15 @@ class Flight(db.Model):
         return pretty_date
 
     def prettify_flight_time(self):
+        """Adds 'hour' or 'hours' to the flight time"""
         if self.flight_time == 1:
             return f'{self.flight_time} hour'
         else:
             return f'{self.flight_time} hours'
 
     def set_arrive_date(self):
+        """Takes the depart date and time and turns them into a datetime object.  Then, using the timedelta function, takes the
+        flight time and adds that to the depart datetime and gives us back a new datetime, which we set the arrive date to"""
         datetime_str = f'{self.depart_date} {self.depart_time}'
         datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
         arrive_datetime = datetime_obj + timedelta(hours=self.flight_time)
@@ -174,6 +218,8 @@ class Tour(db.Model):
     planet_name = db.Column(db.Text, db.ForeignKey('planets.name'))
 
     images = db.relationship('TourImage', backref='tour', cascade='all, delete-orphan')
+
+    # These methods do exactly the same thing as the instance methods in the Flight model do
 
     def prettify_start_date(self):
         date_as_datetime = datetime.strptime(self.start_date, '%Y-%m-%d')
