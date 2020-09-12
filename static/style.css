@@ -16,8 +16,18 @@ html {
 }
 
 .home-planets {
-  width: 75%;
+  width: 85%;
   height: 75%;
+}
+
+.planet-imgs {
+  width: 100%;
+  height: 100%;
+}
+
+.tour-title-img {
+  width: 100%;
+  height: 100%;
 }
 
 body {
@@ -42,6 +52,10 @@ body {
     height: 40%;
     width: 45%;
   }
+
+  #two-in-one-row {
+    display: none;
+  }
 }
 
 /* If the screen is 767px or less */
@@ -49,5 +63,13 @@ body {
   #startours {
     height: 70%;
     width: 75%;
+  }
+
+  #tour-title-row {
+    display: none;
+  }
+
+  #tour-img-row {
+    display: none;
   }
 }

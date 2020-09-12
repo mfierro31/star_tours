@@ -26,16 +26,15 @@ db.create_all()
 # This method will run before every request that is made.
 
 @app.before_request
-def add_user_to_g():
+def add_user_and_img_path_to_g():
     """If we're logged in, add curr user to Flask global."""
+    g.img_path = "/static/images/"
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
 
     else:
         g.user = None
-
-##########################################################################
 
 ##########################################################################
 # Global helper functions
@@ -53,8 +52,6 @@ def do_logout():
         del session[CURR_USER_KEY]
 
 ##########################################################################
-
-##########################################################################
 # Home page route
 
 @app.route('/')
@@ -63,3 +60,12 @@ def show_home():
     return render_template('home.html', planets=planets)
 
 ##########################################################################
+# Planet routes
+
+@app.route('/planets/<planet_name>')
+def show_planet(planet_name):
+    planet = Planet.query.get_or_404(planet_name)
+    return render_template('planet.html', planet=planet)
+
+##########################################################################
+# Tour routes

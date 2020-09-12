@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}{{planet.name}}{% endblock %}
+{% block content %}
+<h1 class="display-1 text-warning text-center">{{planet.name}}</h1>
+
+<div class="row justify-content-center">
+  <img class="img-fluid rounded-circle" id="planet-img" src="{{g.img_path}}{{planet.images[0].image_name}}" alt="{{planet.name}}">
+</div>
+
+<h3 class="display-3 text-warning text-center">Planet Info.</h3>
+
+<p class="text-center text-md-left">Diameter: {{planet.diameter}}</p>
+<p class="text-center text-md-left">Length of Day: {{planet.rotation_period}}</p>
+<p class="text-center text-md-left">Length of Year: {{planet.orbital_period}}</p>
+<p class="text-center text-md-left">Gravity: {{planet.gravity}}</p>
+<p class="text-center text-md-left">Population: {{planet.population}}</p>
+<p class="text-center text-md-left">Climate: {{planet.climate}}</p>
+<p class="text-center text-md-left">Terrain: {{planet.terrain}}</p>
+<p class="text-center text-md-left">Surface Water: {{planet.surface_water}}</p>
+<p class="text-center text-md-left">{{planet.description}}</p>
+
+<div class="mb-4 row justify-content-center">
+  <a class="btn btn-lg btn-success" href="/flights/{{planet.name}}">Book a flight!</a>
+</div>
+
+<div class="row justify-content-around">
+  {% for i in range(1, planet.images|length) %}
+  <div class="mb-3 col-12 col-md-3">
+    <img class="img-fluid planet-imgs" src="{{g.img_path}}{{planet.images[i].image_name}}" alt="{{planet.images[i].image_name}}">
+  </div>
+  {% endfor %}
+</div>
+
+<h3 class="display-3 text-warning text-center">Tours</h3>
+
+<!-- These two separate rows will be displayed on medium and wider screens because they make the titles and images
+     line up perfectly with each other.  On small and xsmall screens, their display is set to none in CSS.
+-->
+<div id="tour-title-row" class="row justify-content-around">
+  {% for tour in planet.tours %}
+  <div class="col-12 col-md-3">
+    <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
+  </div>
+  {% endfor %}
+</div>
+
+<div id="tour-img-row" class="mb-5 row justify-content-around">
+  {% for tour in planet.tours %}
+  <div class="col-12 col-md-3">
+    <img class="tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
+  </div>
+  {% endfor %}
+</div>
+<!------------------------------------------------------------------------------------------------------------------->
+
+<!-- This row will be displayed on xtra small and small screens.  On medium and up, its display is set to none. -->
+<div id="two-in-one-row" class="row justify-content-center">
+  {% for tour in planet.tours %}
+  <div class="mb-5 col-12 col-md-3">
+    <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
+    <img class="mb-5 tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}
