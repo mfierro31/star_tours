@@ -62,6 +62,11 @@ def show_home():
 ##########################################################################
 # Planet routes
 
+@app.route('/planets')
+def show_planets():
+    planets = Planet.query.filter(Planet.name != 'Earth').all()
+    return render_template('planets.html', planets=planets)
+
 @app.route('/planets/<planet_name>')
 def show_planet(planet_name):
     planet = Planet.query.get_or_404(planet_name)
@@ -69,3 +74,8 @@ def show_planet(planet_name):
 
 ##########################################################################
 # Tour routes
+
+@app.route('/tours')
+def show_tours():
+    planets = Planet.query.filter(Planet.name != 'Earth').all()
+    return render_template('tours.html', planets=planets)

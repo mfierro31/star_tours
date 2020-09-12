@@ -33,6 +33,8 @@
           <a class="nav-link text-light" href="/about">About Us</a>
         </li>
       </ul>
+      <!-- To make these stick to the right side of the screen, I had to make a separate ul.navbar-nav and instead
+      of setting it to mr-auto, it's set to ml-auto -->
       <ul class="navbar-nav ml-auto">
         {% if not g.user %}
         <li><a class="nav-link text-light" href="/signup">Create an account</a></li>
