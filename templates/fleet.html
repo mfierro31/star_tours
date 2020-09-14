@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Our Fleet{% endblock %}
+{% block content %}
+<h1 class="display-1 text-center text-warning">Our Fleet</h1>
+<p class="text-center text-md-left">
+  Here at Star Tours we make your safety and comfort our number one priority.  That's why we've chosen the Starspeeder 3000
+  to be the sole ship in our fleet.
+</p>
+<div class="row justify-content-around">
+  <div class="mb-4 col-12 col-md-4">
+    <img class="img-fluid starspeeder-pics" src="{{g.img_path}}Starspeeder3000.png" alt="Starspeeder 3000 front view">
+  </div>
+  <div class="mb-4 col-12 col-md-4">
+    <img class="img-fluid starspeeder-pics" src="{{g.img_path}}starspeeder_cruising.jpg" alt="Starspeeder 3000 back view">
+  </div>
+  <div class="mb-4 col-12 col-md-4">
+    <img class="img-fluid starspeeder-pics" src="{{g.img_path}}Starspeeder_3000_specifications.jpg" alt="Starspeeder 3000 schematics">
+  </div>
+</div>
+<p class="text-center text-md-left">
+  Its safety record and comfort is unmatched.  With cushioned and reclinable seats, sit back, relax and enjoy the view as you 
+  zip across the galaxy.  
+</p>
+<div class="row justify-content-around">
+  <div class="mb-4 col-12 col-md-6">
+    <img class="img-fluid starspeeder-pics" src="{{g.img_path}}starspeeder_interior_2.jpg" alt="Starspeeder 3000 interior view">
+  </div>
+  <div class="mb-4 col-12 col-md-6">
+    <img class="img-fluid starspeeder-pics" src="{{g.img_path}}starspeeder_interior.jpg" alt="Starspeeder 3000 interior back view">
+  </div>
+</div>
+<p class="text-center">
+  What are you waiting for?  <a class="text-light" href="/flights">Come aboard today!</a>  
+</p>
+<div class="row justify-content-around">
+  <div class="mb-4 col-12 col-md-6">
+    <img class="img-fluid starspeeder-pics" src="{{g.img_path}}starspeeder_entrance.jpg" alt="Starspeeder 3000 entrance view">
+  </div>
+</div>
+{% endblock %}

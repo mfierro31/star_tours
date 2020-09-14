@@ -56,7 +56,7 @@ def do_logout():
 
 @app.route('/')
 def show_home():
-    planets = Planet.query.filter(Planet.name != 'Earth').all()
+    planets = Planet.query.all()
     return render_template('home.html', planets=planets)
 
 ##########################################################################
@@ -64,18 +64,47 @@ def show_home():
 
 @app.route('/planets')
 def show_planets():
-    planets = Planet.query.filter(Planet.name != 'Earth').all()
+    planets = Planet.query.all()
     return render_template('planets.html', planets=planets)
 
 @app.route('/planets/<planet_name>')
 def show_planet(planet_name):
     planet = Planet.query.get_or_404(planet_name)
-    return render_template('planet.html', planet=planet)
+    flights = Flight.query.filter((Flight.depart_planet == planet_name) | (Flight.arrive_planet == planet_name)).all()
+    return render_template('planet.html', planet=planet, flights=flights)
 
 ##########################################################################
 # Tour routes
 
 @app.route('/tours')
 def show_tours():
-    planets = Planet.query.filter(Planet.name != 'Earth').all()
+    planets = Planet.query.all()
     return render_template('tours.html', planets=planets)
+
+@app.route('/tours/<int:tour_id>')
+def show_tour(tour_id):
+    tour = Tour.query.get_or_404(tour_id)
+    return render_template('tour.html', tour=tour)
+
+##########################################################################
+# Flight routes
+
+@app.route('/flights')
+def show_flights():
+    flights = Flight.query.all()
+    planets = Planet.query.all()
+    return render_template('flights.html', flights=flights, planets=planets)
+
+##########################################################################
+# Our Fleet route
+
+@app.route('/fleet')
+def show_fleet():
+    return render_template('fleet.html')
+
+##########################################################################
+# About Us route
+
+@app.route('/about')
+def show_about_page():
+    return render_template('about.html')

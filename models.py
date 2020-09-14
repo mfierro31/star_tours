@@ -103,7 +103,7 @@ class Flight(db.Model):
     __tablename__ = 'flights'
 
     flight_num = db.Column(db.Integer, primary_key=True)
-    depart_planet = db.Column(db.Text, db.ForeignKey('planets.name'))
+    depart_planet = db.Column(db.Text, nullable=False)
     arrive_planet = db.Column(db.Text, nullable=False)
     depart_time = db.Column(db.Text, nullable=False)
     arrive_time = db.Column(db.Text, nullable=False)
@@ -195,7 +195,6 @@ class Planet(db.Model):
 
     tours = db.relationship('Tour', backref='planet', cascade='all, delete-orphan')
     images = db.relationship('PlanetImage', backref='planet', cascade='all, delete-orphan')
-    departures = db.relationship('Flight', cascade='all, delete-orphan')
 
 class PlanetImage(db.Model):
     __tablename__ = 'planet_images'

@@ -52,8 +52,7 @@ for resp_dict in resp_dicts:
     db.session.commit()
 
 scarif = Planet(name='Scarif', description="Can you imagine the most battle-hardened stormtroopers of the Empire stripping down to their boxers every day after 'work' and going swimming in the ocean?  Well, I bet that really happened here on Scarif!  How could you not take a dip in these perfect waters?  Even if you are a stormtrooper!  The entire planet is like the Imperial Security Complex.  Nothing but a bunch of small, tropical islands with perfect sandy beaches and crystal clear blue waters.  This planet is an absolute paradise.  Book now!", diameter="12,000 km / 7,456.44 mi", rotation_period="30 Earth hours", orbital_period="289 Earth days", gravity="0.94 Standard Earth Gs", population="150,000,000", climate="tropical", terrain="islands, ocean", surface_water="85%")
-earth = Planet(name='Earth', description="Your home planet!  No description needed!", diameter="12,742 km / 7,917.5 mi", rotation_period="24 Earth hours", orbital_period="365 Earth days", gravity="1 Standard Earth G", population="7,000,000,000", climate="tropical, arid, temperate, frozen, windy, hot, cold, humid", terrain="ocean, mountains, islands, fields, forests, glaciers, jungles, lakes, rivers, volcanoes, desert", surface_water="70%")
-db.session.add_all([scarif, earth])
+db.session.add(scarif)
 db.session.commit()
 
 # Adding images to planets
@@ -459,6 +458,8 @@ f33 = Flight(flight_num=5860, depart_planet="Earth", arrive_planet="Kamino", dep
 f34 = Flight(flight_num=5861, depart_planet="Kamino", arrive_planet="Earth", depart_time="08:00 AM", arrive_time="09:00 AM", flight_time=25)
 f35 = Flight(flight_num=5870, depart_planet="Earth", arrive_planet="Scarif", depart_time="05:30 AM", arrive_time="06:30 AM", flight_time=25)
 f36 = Flight(flight_num=5871, depart_planet="Scarif", arrive_planet="Earth", depart_time="07:30 AM", arrive_time="08:30 AM", flight_time=25)
+f37 = Flight(flight_num=5702, depart_planet="Earth", arrive_planet="Coruscant", depart_time="09:45 AM", arrive_time="09:45 PM", flight_time=12)
+f38 = Flight(flight_num=5703, depart_planet="Coruscant", arrive_planet="Earth", depart_time="10:45 PM", arrive_time="10:45 AM", flight_time=12)
 
-db.session.add_all([f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36])
+db.session.add_all([f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38])
 db.session.commit()

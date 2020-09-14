@@ -20,12 +20,12 @@ html {
   height: 75%;
 }
 
-.planet-imgs {
-  width: 100%;
-  height: 100%;
+#planet-img {
+  width: 50%;
+  height: 50%;
 }
 
-.tour-title-img {
+.tour-imgs, .tour-title-img, .planet-imgs, .starspeeder-pics {
   width: 100%;
   height: 100%;
 }
@@ -48,7 +48,7 @@ body {
 
 /* If the screen is 768px or wider */
 @media screen and (min-width: 768px) {
-  #startours {
+  .startours {
     height: 40%;
     width: 45%;
   }
@@ -60,7 +60,7 @@ body {
 
 /* If the screen is 767px or less */
 @media screen and (max-width: 767px) {
-  #startours {
+  .startours {
     height: 70%;
     width: 75%;
   }

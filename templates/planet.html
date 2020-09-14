@@ -19,10 +19,6 @@
 <p class="text-center text-md-left">Surface Water: {{planet.surface_water}}</p>
 <p class="text-center text-md-left">{{planet.description}}</p>
 
-<div class="mb-4 row justify-content-center">
-  <a class="btn btn-lg btn-success" href="/flights/{{planet.name}}">Book a flight!</a>
-</div>
-
 <div class="row justify-content-around">
   {% for i in range(1, planet.images|length) %}
   <div class="mb-3 col-12 col-md-3">
@@ -61,6 +57,51 @@
     <img class="mb-5 tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
   </div>
   {% endfor %}
+</div>
+
+<h3 class="display-3 text-warning text-center">Flights</h3>
+
+<div class="row justify-content-around">
+  <div class="col-12 col-md-6">
+    <h4 class="text-light text-center">Departures</h4>
+    {% for flight in flights %}
+      {% if flight.depart_planet == planet.name %}
+      <div class="jumbotron bg-secondary">
+        <div class="row align-items-md-center">
+          <div class="col-12 col-md-6">
+            <p class="text-center text-md-left">Flight {{flight.flight_num}} - {{flight.depart_planet}} to {{flight.arrive_planet}}</p>
+            <p class="text-center text-md-left">Depart Time: {{flight.depart_time}}</p>
+            <p class="text-center text-md-left">Arrive Time: {{flight.arrive_time}}</p>
+            <p class="text-center text-md-left">Flight Time: {{flight.prettify_flight_time()}}</p>
+          </div>
+          <div class="col-12 d-flex justify-content-center col-md-6">
+            <a class="btn btn-lg btn-success" href="#">Book</a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="col-12 col-md-6">
+    <h4 class="text-light text-center">Arrivals</h4>
+    {% for flight in flights %}
+      {% if flight.arrive_planet == planet.name %}
+      <div class="jumbotron bg-secondary">
+        <div class="row align-items-md-center">
+          <div class="col-12 col-md-6">
+            <p class="text-center text-md-left">Flight {{flight.flight_num}} - {{flight.depart_planet}} to {{flight.arrive_planet}}</p>
+            <p class="text-center text-md-left">Depart Time: {{flight.depart_time}}</p>
+            <p class="text-center text-md-left">Arrive Time: {{flight.arrive_time}}</p>
+            <p class="text-center text-md-left">Flight Time: {{flight.prettify_flight_time()}}</p>
+          </div>
+          <div class="col-12 d-flex justify-content-center col-md-6">
+            <a class="btn btn-lg btn-success" href="#">Book</a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
 </div>
 
 {% endblock %}

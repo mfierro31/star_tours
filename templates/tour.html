@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Tour{% endblock %}
+{% block content %}
+<h1 class="display-1 text-center text-warning">{{tour.name}}</h1>
+<p class="text-center">{{tour.description}}</p>
+<div class="row my-4 justify-content-around">
+  {% for img in tour.images %}
+  <div class="mb-3 mb-md-0 col-12 col-md-3">
+    <img class="img-fluid tour-imgs" src="{{g.img_path}}{{img.image_name}}" alt="{{img.image_name}}">
+  </div>
+  {% endfor %}
+</div>
+<div class="row justify-content-center">
+  <div class="col-12 col-md-4 text-center">
+    Start Time: {{tour.start_time}}
+  </div>
+  <div class="col-12 col-md-4 text-center">
+    End Time: {{tour.end_time}}
+  </div>
+  <div class="col-12 col-md-4 text-center">
+    Duration: {{tour.prettify_duration()}}
+  </div>
+</div>
+<div class="my-5 row justify-content-center">
+  <a class="btn btn-lg btn-success" href="#">Book</a>
+</div>
+{% endblock %}
