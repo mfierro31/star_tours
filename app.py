@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import *
+from forms import SignupForm, LoginForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -27,7 +28,7 @@ db.create_all()
 
 @app.before_request
 def add_user_and_img_path_to_g():
-    """If we're logged in, add curr user to Flask global."""
+    """Set path to images and if we're logged in, add curr user to Flask global."""
     g.img_path = "/static/images/"
 
     if CURR_USER_KEY in session:
@@ -50,6 +51,97 @@ def do_logout():
 
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
+
+##########################################################################
+# User routes
+
+@app.route('/signup', methods=["GET", "POST"])
+def signup():
+    form = SignupForm()
+
+    if g.user:
+        flash('Please log out first if you want to create a new account.', 'danger')
+        return redirect('/')
+
+    if form.validate_on_submit():
+        # Make a list of values from the form.data dict and splat them out into User.signup instead of having to enter
+        # every field's data one by one
+        form_data = form.data
+        form_data.pop('csrf_token')
+        form_data = form_data
+        form_data = [v for v in form_data.values()]
+
+        new_user = User.signup(*form_data)
+        
+        if type(new_user) == list:
+            # Logic to check the errors.  If it's for both username and email, we want to display both error messages, if just one,
+            # we want to display the correct error message for the correct field
+            if len(new_user) == 2:
+                form.username.errors = [new_user[0]]
+                form.email.errors = [new_user[1]]
+                # Notice we have to use render_template instead of redirect here, otherwise our errors won't show up
+                # This is because with redirect, you can't pass in the form to it.  And since errors are located in form, they
+                # don't show up
+                return render_template('signup.html', form=form)
+            elif 'username' in new_user[0]:
+                form.username.errors = [new_user[0]]
+                return render_template('signup.html', form=form)
+            elif 'email' in new_user[0]:
+                form.email.errors = [new_user[0]]
+                return render_template('signup.html', form=form)
+        else:
+            db.session.add(new_user)
+            db.session.commit()
+
+            do_login(new_user)
+
+            flash(f'Welcome, {new_user.first_name}!  Successfully created your account!', 'success')
+            return redirect('/')
+    else:
+        return render_template('signup.html', form=form)
+
+@app.route('/logout')
+def logout():
+    if g.user:
+        name = g.user.first_name
+
+        do_logout()
+
+        flash(f'Successfully logged out.  Come back soon, {name}!', 'success')
+        return redirect('/')
+    else:
+        flash("You're already logged out!", "danger")
+        return redirect('/')
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if g.user:
+        flash("You're already logged in!", "danger")
+        return redirect('/')
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data, form.password.data)
+        
+        if user:
+            do_login(user)
+            flash(f'Log in successful.  Welcome back, {user.first_name}!', 'success')
+            return redirect('/')
+        else:
+            flash('Incorrect username/password combination.  Please try again.', 'danger')
+            return redirect('/login')
+    else:
+        return render_template('login.html', form=form)
+
+@app.route('/account')
+def view_account():
+    if g.user:
+        return render_template('account.html')
+    else:
+        flash('Please log in first to view your account.', 'danger')
+        return redirect('/')
+
 
 ##########################################################################
 # Home page route
