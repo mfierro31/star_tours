@@ -2,13 +2,61 @@
 {% block title %}Account{% endblock %}
 {% block content %}
 <h1 class="display-1 text-warning text-center">Account</h1>
+<h3 class="display-3 text-warning text-center">Personal Info.</h3>
 <h3 class="text-center text-md-left text-warning">Name</h3>
 <p class="text-center text-md-left">{{g.user.first_name}} {{g.user.last_name}}</p>
 <h3 class="text-center text-md-left text-warning">Email</h3>
 <p class="text-center text-md-left">{{g.user.email}}</p>
 <h3 class="text-center text-md-left text-warning">Username</h3>
 <p class="text-center text-md-left">{{g.user.username}}</p>
+<h3 class="text-center text-md-left text-warning">Password</h3>
+<p class="text-center text-md-left">************</p>
 <div class="d-flex justify-content-center justify-content-md-start">
   <a class="btn btn-success" href="/edit-user-info">Edit</a>
 </div>
+<h3 class="display-3 text-warning text-center">Itineraries</h3>
+{% if g.user.itineraries|length == 0 %}
+<p class="text-center text-md-left">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
+{% else %}
+<div class="row justify-content-start">
+  {% for itinerary in g.user.itineraries %}
+  <div class="col-12 col-md-6">
+    <div class="jumbotron bg-secondary">
+      <h3 class="text-warning">Trip starting {{itinerary.flights[0].prettify_depart_date()}}</h3>
+      <p>Depart Flight: {{itinerary.flights[0].flight_num}}</p>
+      <p class="ml-5">Depart Planet: {{itinerary.flights[0].depart_planet}}</p>
+      <p class="ml-5">Depart Date: {{itinerary.flights[0].prettify_depart_date()}}</p>
+      <p class="ml-5">Depart Time: {{itinerary.flights[0].depart_time}}</p>
+      <p class="ml-5">Arrive Planet: {{itinerary.flights[0].arrive_planet}}</p>
+      <p class="ml-5">Arrive Date: {{itinerary.flights[0].prettify_arrive_date()}}</p>
+      <p class="ml-5">Arrive Time: {{itinerary.flights[0].arrive_time}}</p>
+      <p>Return Flight: {% if itinerary.flights|length > 1 %}{{itinerary.flights[1].flight_num}}{% else %}None{% endif %}</p>
+      {% if itinerary.flights|length > 1 %}
+      <p class="ml-5">Depart Planet: {{itinerary.flights[1].depart_planet}}</p>
+      <p class="ml-5">Depart Date: {{itinerary.flights[1].prettify_depart_date()}}</p>
+      <p class="ml-5">Depart Time: {{itinerary.flights[1].depart_time}}</p>
+      <p class="ml-5">Arrive Planet: {{itinerary.flights[1].arrive_planet}}</p>
+      <p class="ml-5">Arrive Date: {{itinerary.flights[1].prettify_arrive_date()}}</p>
+      <p class="ml-5">Arrive Time: {{itinerary.flights[1].arrive_time}}</p>
+      {% endif %}
+      <p>Tours: {% if itinerary.tours|length == 0 %}None{% endif %}</p>
+      {% if itinerary.tours|length > 0 %}
+      {% for tour in itinerary.tours %}
+      <p class="ml-5">{{tour.name}}</p>
+      <p class="double-tab">Start Date: {{tour.prettify_start_date()}}</p>
+      <p class="double-tab">End Date: {{tour.prettify_end_date()}}</p>
+      <p class="double-tab">Start Time: {{tour.start_time}}</p>
+      <p class="double-tab">End Time: {{tour.end_time}}</p>
+      {% endfor %}
+      {% endif %}
+      <div class="d-flex justify-content-center">
+        <form action="/delete-trip/{{itinerary.id}}" method="post">
+          <button class="btn btn-danger">Cancel Trip</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 {% endblock %}

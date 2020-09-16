@@ -66,7 +66,7 @@ class User(db.Model):
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
 
-    itinerariess = db.relationship('Itinerary', backref='user', cascade='all, delete-orphan')
+    itineraries = db.relationship('Itinerary', backref='user', cascade='all, delete-orphan')
 
     @classmethod
     def signup(cls, email, username, password, first_name, last_name):

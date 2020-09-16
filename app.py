@@ -24,7 +24,7 @@ connect_db(app)
 db.create_all()
 
 ##########################################################################
-# This method will run before every request that is made.
+# These methods will run before every request that is made.
 
 @app.before_request
 def add_user_and_img_path_to_g():
@@ -36,6 +36,12 @@ def add_user_and_img_path_to_g():
 
     else:
         g.user = None
+
+@app.before_request
+def make_session_permanent():
+    """Sets session to be permanent, so user stays logged in even after quitting out of browser"""
+    # Even this has a limit though.  According to Flask docs, the default is 31 days.
+    session.permanent = True
 
 ##########################################################################
 # Global helper functions
