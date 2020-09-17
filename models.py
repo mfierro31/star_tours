@@ -152,11 +152,27 @@ class Itinerary(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    # Should I add any ON DELETE CASCADEs to any of these relationships?  I feel like if I delete any planets, flights, or tours
-    # this model won't be affected by that, because these aren't technically columns of data, they're just relationships
-    flights = db.relationship('Flight', secondary='itineraries_flights', backref='itineraries')
-    planets = db.relationship('Planet', secondary='itineraries_planets', backref='itineraries')
-    tours = db.relationship('Tour', secondary='itineraries_tours', backref='itineraries')
+    # Be careful with deleting individual items in these relationships - you could potentially delete the items in these 
+    # relationships not just from the relationship itself, but also from the entire database.  So instead of using
+    # db.session.delete(me.itineraries[0].flights[0]), which will delete the item from the entire database, use methods 
+    # associated with the relationship, like .remove(), which will remove whatever object you pass in - EXAMPLE:
+
+        # me.itineraries[0].flights.remove(Flight.query.get(5701))
+
+    # Or there is also a .pop() method that removes and returns the item at the index you pass in.  If you don't pass in an
+    # index, it will remove and return the last item in the relationship list.  EXAMPLE:
+
+        # me.itineraries[0].flights.pop(0)
+        # ---> <Flight 5700>
+        # me.itineraries[0].flights
+        # ---> [<Flight 5701>]
+
+    # There are other useful methods for relationships.  Just go into ipython and pass in me.itineraries[0].flights to the help()
+    # method.
+
+    flights = db.relationship('Flight', secondary="itineraries_flights", backref='itineraries')
+    planets = db.relationship('Planet', secondary="itineraries_planets", backref='itineraries')
+    tours = db.relationship('Tour', secondary="itineraries_tours", backref='itineraries')
 
 class ItineraryFlight(db.Model):
     __tablename__ = 'itineraries_flights'
