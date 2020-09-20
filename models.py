@@ -98,6 +98,20 @@ class User(db.Model):
         else:
             return False
 
+    @classmethod
+    def verify(cls, email, username, password):
+        """Verifies the identity of the user when user tries to change their personal information"""
+        user = cls.query.filter(cls.email == email, cls.username == username).first()
+
+        if user and bcrypt.check_password_hash(user.password, password):
+            return user
+        else:
+            return False
+
+    def update_password(self, password):
+        """Sets user's password to a new hashed password"""
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('utf8')
+        self.password = hashed_pwd
 
 class Flight(db.Model):
     __tablename__ = 'flights'

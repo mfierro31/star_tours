@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Edit Info.{% endblock %}
+{% block content %}
+<h1 class="display-1 text-center text-warning">Edit Personal Info.</h1>
+<form method="POST">
+  {{form.hidden_tag()}}
+  {% for field in form 
+    if field.widget.input_type != 'hidden'  %}
+  <div class="form-group">
+    {{field.label}}
+    {{field(class_="form-control")}}
+    {% for err in field.errors %}
+    <small class="form-text text-light bg-danger">
+      {{err}}
+    </small>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <button class="btn btn-success btn-lg">Submit</button>
+  <a href="/account" class="btn btn-info btn-lg">Go back</a>
+</form>
+{% endblock %}

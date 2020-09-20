@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import *
-from forms import SignupForm, LoginForm
+from forms import SignupForm, LoginForm, EditUserForm, VerifyUserForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -57,6 +57,14 @@ def do_logout():
 
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
+    
+    if 'verified' in session:
+        del session['verified']
+
+def unverify():
+    """Unverify a user so that every time they want to change their personal info, the app will ask them to verify their identity"""
+    if 'verified' in session:
+        session['verified'] = False
 
 ##########################################################################
 # User routes
@@ -148,6 +156,64 @@ def view_account():
         flash('Please log in first to view your account.', 'danger')
         return redirect('/')
 
+@app.route('/account/edit/verify', methods=["GET", "POST"])
+def verify_user():
+    if g.user:
+        form = VerifyUserForm()
+
+        if form.validate_on_submit():
+            user = User.verify(form.email.data, form.username.data, form.password.data)
+
+            # Check to see if logged in user and verified user are the same user
+            if user and user.id == g.user.id:
+                session['verified'] = True
+                return redirect('/account/edit')
+            else:
+                flash('Incorrect email, username, and password combination.', 'danger')
+                return redirect('/account/edit/verify')
+        else:
+            return render_template('verify_user.html', form=form)
+    else:
+        flash('Access denied. Log in first.', 'danger')
+        return redirect('/')
+
+@app.route('/account/edit', methods=["GET", "POST"])
+def edit_account():
+    if 'verified' in session and session['verified'] == False or 'verified' not in session:
+        return redirect('/account/edit/verify')
+    
+    form = EditUserForm(obj=g.user)
+
+    if g.user:
+        user = g.user
+
+        if form.validate_on_submit():
+            if form.email.data:
+                user.email = form.email.data
+
+            if form.username.data:
+                user.username = form.username.data
+
+            if form.password.data:
+                user.update_password(form.password.data)
+
+            if form.first_name.data:
+                user.first_name = form.first_name.data
+
+            if form.last_name.data:
+                user.last_name = form.last_name.data
+
+            db.session.commit()
+
+            unverify()
+
+            flash('Personal info. successfully updated!', 'success')
+            return redirect('/account')
+        else:
+            return render_template('edit_user.html', form=form)
+    else:
+        flash('Please log in first to edit your account.', 'danger')
+        return redirect('/')
 
 ##########################################################################
 # Home page route
