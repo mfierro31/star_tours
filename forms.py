@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, IntegerField, SelectField, PasswordField
+from wtforms import StringField, BooleanField, IntegerField, SelectField, PasswordField, SelectMultipleField
+from wtforms.fields.html5 import DateField
 from wtforms.validators import InputRequired, Email, Optional, Length
 
 class SignupForm(FlaskForm):
@@ -28,3 +29,13 @@ class VerifyUserForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(), Email()])
     username = StringField('Username', validators=[InputRequired(), Length(max=50)])
     password = PasswordField('Password', validators=[InputRequired()])
+
+class BookForm(FlaskForm):
+    """Form for booking a trip"""
+    depart_date = DateField('Depart Date', validators=[Optional()])
+    return_date = DateField('Return Date', validators=[Optional()])
+    planet = SelectField('Planet', validators=[InputRequired()])
+    depart_flight = SelectField('Depart Flight', choices=[(0, "None")], coerce=int, validators=[Optional()])
+    return_flight = SelectField('Return Flight', choices=[(0, "None")], coerce=int, validators=[Optional()])
+    tour = SelectField('Tour', choices=[(0, "None")], coerce=int, validators=[Optional()])
+    tour_date = DateField('Tour Date', validators=[Optional()])

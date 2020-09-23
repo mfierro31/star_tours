@@ -125,6 +125,18 @@ class Flight(db.Model):
     arrive_date = db.Column(db.Text)
     flight_time = db.Column(db.Integer, nullable=False)
 
+    def serialize(self):
+        return {
+            "num": self.flight_num,
+            "depart_planet": self.depart_planet,
+            "arrive_planet": self.arrive_planet,
+            "depart_time": self.depart_time,
+            "arrive_time": self.arrive_time,
+            "depart_date": self.depart_date,
+            "arrive_date": self.arrive_date,
+            "flight_time": self.prettify_flight_time()
+        }
+
     def prettify_depart_date(self):
         """Takes depart_date as a string, converts it to a datetime object, and displays the date as the full month name, day as
         a number, and year as a number - in that order
@@ -247,6 +259,15 @@ class Tour(db.Model):
     planet_name = db.Column(db.Text, db.ForeignKey('planets.name'))
 
     images = db.relationship('TourImage', backref='tour', cascade='all, delete-orphan')
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+            "duration": self.prettify_duration(),
+        }
 
     # These methods do exactly the same thing as the instance methods in the Flight model do
 

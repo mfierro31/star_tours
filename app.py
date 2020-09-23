@@ -1,10 +1,10 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, redirect, session, g, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import *
-from forms import SignupForm, LoginForm, EditUserForm, VerifyUserForm
+from forms import SignupForm, LoginForm, EditUserForm, VerifyUserForm, BookForm
 
 CURR_USER_KEY = "curr_user"
 
@@ -214,6 +214,45 @@ def edit_account():
     else:
         flash('Please log in first to edit your account.', 'danger')
         return redirect('/')
+
+##########################################################################
+# Book route
+
+@app.route('/book', methods=["GET", "POST"])
+def book_trip():
+    if g.user:
+        form = BookForm()
+        
+        planets = [(p.name, p.name) for p in Planet.query.all()]
+
+        form.planet.choices = planets
+
+        if form.validate_on_submit():
+            flash('Submitted!', 'success')
+            return redirect('/')
+        else:
+            return render_template('book.html', form=form)
+    else:
+        flash('Please log in or create an account first!', 'danger')
+        return redirect('/')
+
+##########################################################################
+# API for book form routes
+
+@app.route('/tours/<planet_name>')
+def get_tours(planet_name):
+    planet = Planet.query.get_or_404(planet_name)
+    tours = planet.tours
+    serialized_tours = [tour.serialize() for tour in tours]
+
+    return jsonify(tours=serialized_tours)
+
+@app.route('/flights/<planet_name>')
+def get_flights(planet_name):
+    flights = Flight.query.filter((Flight.depart_planet == planet_name) | (Flight.arrive_planet == planet_name)).all()
+    flights_serialized = [flight.serialize() for flight in flights]
+
+    return jsonify(flights=flights_serialized)
 
 ##########################################################################
 # Home page route
