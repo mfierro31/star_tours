@@ -72,5 +72,44 @@ async function getTours() {
   $('#tour').append('<option value="0">None</option>')
 };
 
-// On page load for our book page, load all the tours for the selected planet
+// Getting the flights for a particular planet when that planet is selected
+async function getFlights() {
+  $('.flight').empty();
+
+  const $planet = $('#planet').val();
+  const resp = await axios.get(`/flights/${$planet}`)
+
+  for (flight of resp.data.flights) {
+    if (flight.arrive_planet === $planet) {
+      $('#depart-flight').append(`
+      <option value="${flight.num}">
+        Flight ${flight.num}: ${flight.depart_planet} to ${flight.arrive_planet} 
+        | 
+        Depart Time: ${flight.depart_time} 
+        | 
+        Arrive Time: ${flight.arrive_time}
+        |
+        Flight Time: ${flight.flight_time}
+      </option>
+      `)
+    } else if (flight.depart_planet === $planet) {
+      $('#return-flight').append(`
+      <option value="${flight.num}">
+        Flight ${flight.num}: ${flight.depart_planet} to ${flight.arrive_planet} 
+        | 
+        Depart Time: ${flight.depart_time} 
+        | 
+        Arrive Time: ${flight.arrive_time}
+        |
+        Flight Time: ${flight.flight_time}
+      </option>
+      `)
+    }
+  }
+
+  $('.flight').append('<option value="0">None</option>')
+}
+
+// On page load for our book page, load all the tours and flights for the selected planet
 $(document).ready(getTours());
+$(document).ready(getFlights());

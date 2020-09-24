@@ -14,7 +14,9 @@
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
         {{form.planet.label}}
-        {{form.planet(class_="form-control", id="planet", onchange="getTours()")}}
+        <!-- Every time we select a new planet, we'll automatically get its associated tours and flights in our tour select field 
+        and flight select fields, thanks to onchange="getTours(); getFlights();" -->
+        {{form.planet(class_="form-control", id="planet", onchange="getTours(); getFlights();")}}
         {% for err in form.planet.errors %}
         <small class="form-text text-light bg-danger">
           {{err}}
@@ -57,7 +59,7 @@
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
         {{form.depart_flight.label}}
-        {{form.depart_flight(class_="form-control")}}
+        {{form.depart_flight(class_="form-control flight", id="depart-flight", onchange="getFlights()")}}
         {% for err in form.depart_flight.errors %}
         <small class="form-text text-light bg-danger">
           {{err}}
@@ -69,7 +71,7 @@
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
         {{form.return_flight.label}}
-        {{form.return_flight(class_="form-control")}}
+        {{form.return_flight(class_="form-control flight", id="return-flight", onchange="getFlights()")}}
         {% for err in form.return_flight.errors %}
         <small class="form-text text-light bg-danger">
           {{err}}
@@ -77,11 +79,7 @@
         {% endfor %}
       </div>
     </div>
-  </div>
-
-  <div class="text-center mb-5">
-    <a href="#">Add another planet</a>
-  </div>  
+  </div> 
   
   <h2 class="text-center text-warning">Tours</h2>
   <div class="form-row justify-content-center my-4">
@@ -114,7 +112,10 @@
   </div>
 
   <div class="text-center mb-5">
-    <a href="#">Add another tour</a>
+    <a href="javascript:void();">Add another tour</a>
+  </div>
+  <div class="text-center mb-5">
+    <a href="javascript:void();">Add another planet</a>
   </div>
 
   <div class="row justify-content-center mb-5">
