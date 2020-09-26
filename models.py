@@ -56,6 +56,62 @@ def add_percent_to_water(water):
     else:
         return water
 
+# Helper method for comparing dates
+
+def strings_to_datetime(date_str, time_str):
+    """Convert a date and time string - formatted as '2020-09-30' and '09:00 AM' - into a datetime object"""
+    datetime_str = f'{date_str} {time_str}'
+    datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+
+    return datetime_obj
+
+def compare_flight_dates_to_tour_dates(depart_flight_id, return_flight_id, depart_flight_date, return_flight_date, tour):
+    """Compare departure and arrival flights' datetimes to tour's start and end datetimes to see if they conflict"""
+    if depart_flight_id and return_flight_id and depart_flight_date and return_flight_date:
+        depart_flight = Flight.query.get(depart_flight_id)
+        depart_flight.depart_date = depart_flight_date
+        depart_flight.set_arrive_date()
+
+        return_flight = Flight.query.get(return_flight_id)
+        return_flight.depart_date = return_flight_date
+        return_flight.set_arrive_date()
+        
+        db.session.commit()
+
+        depart_arrive_datetime = strings_to_datetime(depart_flight.arrive_date, depart_flight.arrive_time)
+        return_depart_datetime = strings_to_datetime(return_flight.depart_date, return_flight.depart_time)
+
+        tour_start_datetime = strings_to_datetime(tour.start_date, tour.start_time)
+        tour_end_datetime = strings_to_datetime(tour.end_date, tour.end_time)
+
+        if tour_start_datetime < depart_arrive_datetime or tour_start_datetime > return_depart_datetime or tour_end_datetime > return_depart_datetime or tour_end_datetime < depart_arrive_datetime:
+            return "Your tour needs to start and end after your arrival time and date and before your departure time and date."
+        else:
+            return "You're all good!"
+
+    elif depart_flight_id and depart_flight_date:
+        depart_flight = Flight.query.get(depart_flight_id)
+        depart_flight.depart_date = depart_flight_date
+        depart_flight.set_arrive_date()
+        
+        db.session.commit()
+
+        depart_arrive_datetime = strings_to_datetime(depart_flight.arrive_date, depart_flight.arrive_time)
+
+        tour_start_datetime = strings_to_datetime(tour.start_date, tour.start_time)
+        tour_end_datetime = strings_to_datetime(tour.end_date, tour.end_time)
+
+        if tour_start_datetime < depart_arrive_datetime or tour_end_datetime < depart_arrive_datetime:
+            return "Your tour needs to start and end after your arrival time and date."
+        else:
+            return "You're all good!"
+
+    elif not depart_flight_id and not return_flight_id and not depart_flight_date and not return_flight_date:
+        return "You're all good!"
+
+    else:
+        return "If you're going to book a flight, make sure to pick both a date and a flight.  If you're not, then make sure to clear both date fields and select 'None' for both flights."
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -172,6 +228,20 @@ class Flight(db.Model):
 
         self.arrive_date = arrive_date.strftime('%Y-%m-%d')
 
+    def get_depart_datetime(self):
+        """Returns datetime object using the flight's depart time and date"""
+        depart_datetime_str = f'{self.depart_date} {self.depart_time}'
+        depart_datetime_obj = datetime.strptime(depart_datetime_str, '%Y-%m-%d %I:%M %p')
+
+        return depart_datetime_obj
+
+    def get_arrive_datetime(self):
+        """Returns datetime object using the flight's arrive time and date"""
+        arrive_datetime_str = f'{self.arrive_date} {self.arrive_time}'
+        arrive_datetime_obj = datetime.strptime(arrive_datetime_str, '%Y-%m-%d %I:%M %p')
+
+        return arrive_datetime_obj
+
 class Itinerary(db.Model):
     __tablename__ = 'itineraries'
 
@@ -264,9 +334,13 @@ class Tour(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "description": self.description,
             "start_time": self.start_time,
             "end_time": self.end_time,
+            "start_date": self.start_date,
+            "end_date": self.end_date,
             "duration": self.prettify_duration(),
+            "planet_name": self.planet_name
         }
 
     # These methods do exactly the same thing as the instance methods in the Flight model do

@@ -5,6 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 from models import *
 from forms import SignupForm, LoginForm, EditUserForm, VerifyUserForm, BookForm
+from datetime import datetime
 
 CURR_USER_KEY = "curr_user"
 
@@ -27,8 +28,8 @@ db.create_all()
 # These methods will run before every request that is made.
 
 @app.before_request
-def add_user_and_img_path_to_g():
-    """Set path to images and if we're logged in, add curr user to Flask global."""
+def add_to_g():
+    """Set path to images, add itinerary (if any), and if we're logged in, add curr user to Flask global."""
     g.img_path = "/static/images/"
 
     if CURR_USER_KEY in session:
@@ -36,6 +37,12 @@ def add_user_and_img_path_to_g():
 
     else:
         g.user = None
+
+    if 'itin' in session:
+        g.itin = Itinerary.query.get(session['itin'])
+
+    else:
+        g.itin = None
 
 @app.before_request
 def make_session_permanent():
@@ -60,6 +67,9 @@ def do_logout():
     
     if 'verified' in session:
         del session['verified']
+
+    if 'itin' in session:
+        del session['itin']
 
 def unverify():
     """Unverify a user so that every time they want to change their personal info, the app will ask them to verify their identity"""
@@ -226,12 +236,38 @@ def book_trip():
         planets = [(p.name, p.name) for p in Planet.query.all()]
 
         form.planet.choices = planets
+        # First thing we do is delete the tours, flights, and planets of any unfinished itineraries that we made in previous 
+        # visits to our book page (if any)
+        if 'itin' in session and session['itin']:
+            old_itin = Itinerary.query.get(session['itin'])
+            old_itin.tours.clear()
+            old_itin.flights.clear()
+            old_itin.planets.clear()
 
-        if form.validate_on_submit():
-            flash('Submitted!', 'success')
-            return redirect('/')
+            db.session.commit()
+
+            if form.validate_on_submit():
+                flash('Submitted!', 'success')
+                return redirect('/')
+            else:
+                return render_template('book.html', form=form)
         else:
-            return render_template('book.html', form=form)
+            # If there isn't an existing itinerary to work from, either because this is the user's first time to the page, or 
+            # because a trip was just booked and we cleared session['itin'] and g.itin from the app, we create a new one
+            itin = Itinerary(user_id=g.user.id)
+            db.session.add(itin)
+            db.session.commit()
+            # Store this itinerary_id in session so that our itineraries/add/tour and itineraries/add/planet routes can reference
+            # it if someone wants to add more tours or planets/flights and so that this newly created itinerary overwrites any
+            # previous one(s).  This will also make it so that if we add an extra tour or planet, g.itin will be updated to be this 
+            # new itinerary.
+            session['itin'] = itin.id
+
+            if form.validate_on_submit():
+                flash('Submitted!', 'success')
+                return redirect('/')
+            else:
+                return render_template('book.html', form=form)
     else:
         flash('Please log in or create an account first!', 'danger')
         return redirect('/')
@@ -245,14 +281,59 @@ def get_tours(planet_name):
     tours = planet.tours
     serialized_tours = [tour.serialize() for tour in tours]
 
-    return jsonify(tours=serialized_tours)
+    return (jsonify(tours=serialized_tours), 200)
 
 @app.route('/flights/<planet_name>')
 def get_flights(planet_name):
     flights = Flight.query.filter((Flight.depart_planet == planet_name) | (Flight.arrive_planet == planet_name)).all()
     flights_serialized = [flight.serialize() for flight in flights]
 
-    return jsonify(flights=flights_serialized)
+    return (jsonify(flights=flights_serialized), 200)
+
+@app.route('/itineraries/add/tour', methods=["POST"])
+def add_tour_to_itin():
+    # First, check to see if user is logged in.
+    if g.user:
+        tour_id = request.json["tourId"]
+        tour_date = request.json["tourDate"]
+        depart_flight_date = request.json["departFlightDate"]
+        return_flight_date = request.json["returnFlightDate"]
+        depart_flight_id = request.json["departFlightId"]
+        return_flight_id = request.json["returnFlightId"]
+
+        if tour_id and tour_date:
+            # If tour_id isn't 0 and tour_date isn't blank, then we get the tour, add the dates to it and commit
+            tour = Tour.query.get(tour_id)
+            tour.start_date = tour_date
+            tour.set_end_date()
+
+            db.session.commit()                    
+            
+            # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
+            result = compare_flight_dates_to_tour_dates(depart_flight_id, return_flight_id, depart_flight_date, return_flight_date, tour)
+            
+            if result != "You're all good!":
+                return (jsonify(msg=result), 200)
+            else:
+                # If someone makes a request to this route through Insomnia, we'd have to account for that:
+                if g.itin and g.itin.user_id == g.user.id:
+                    # Get the current itinerary
+                    itin = Itinerary.query.get(g.itin.id)
+                    # Add current tour to itin
+                    itin.tours.append(tour)
+                    db.session.commit()
+
+                    return (jsonify(msg="Successfully added tour to user's itinerary."), 200)
+                else:
+                    return (jsonify(msg="You must go to the 'Book A Trip' page first and click on 'Add another tour' to access this route."), 200)        
+        else:
+            return (jsonify(msg="You must pick a tour AND a date before adding another tour"), 200)
+    else:
+        return (jsonify(msg="You need to log in first to do that!"), 200)
+
+# @app.route('/itineraries/add/planet', methods=["POST"])
+# def add_planet_flights_to_itin():
+
 
 ##########################################################################
 # Home page route

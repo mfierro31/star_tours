@@ -59,7 +59,7 @@
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
         {{form.depart_flight.label}}
-        {{form.depart_flight(class_="form-control flight", id="depart-flight", onchange="getFlights()")}}
+        {{form.depart_flight(class_="form-control flight", id="depart-flight")}}
         {% for err in form.depart_flight.errors %}
         <small class="form-text text-light bg-danger">
           {{err}}
@@ -71,7 +71,7 @@
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
         {{form.return_flight.label}}
-        {{form.return_flight(class_="form-control flight", id="return-flight", onchange="getFlights()")}}
+        {{form.return_flight(class_="form-control flight", id="return-flight")}}
         {% for err in form.return_flight.errors %}
         <small class="form-text text-light bg-danger">
           {{err}}
@@ -85,7 +85,7 @@
   <div class="form-row justify-content-center my-4">
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
-        {{form.tour.label}}
+        {{form.tour.label(id="tour-label")}}
         {{form.tour(class_="form-control", id="tour")}}
         {% for err in form.tour.errors %}
         <small class="form-text text-light bg-danger">
@@ -96,12 +96,12 @@
     </div>
   </div>
   
-  <div class="form-row justify-content-center my-4">
+  <div class="form-row justify-content-center">
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
-        {{form.tour_date.label}}
+        {{form.tour_date.label(id="tour-date-label")}}
         {{form.tour_date(class_="form-control datepicker mb-3", id="tour-date")}}
-        <a class="clear-link" href="javascript:void();">Clear</a>
+        <a class="clear-link" id="tour-date-clear" href="javascript:void();">Clear</a>
         {% for err in form.tour_date.errors %}
         <small class="form-text text-light bg-danger">
           {{err}}
@@ -111,11 +111,11 @@
     </div>
   </div>
 
-  <div class="text-center mb-5">
-    <a href="javascript:void();">Add another tour</a>
+  <div class="text-center mb-4" id="add-tour-container">
+    <a id="add-xtra-tour-link" href="javascript:void();" onclick="addTour();">Add another tour</a>
   </div>
-  <div class="text-center mb-5">
-    <a href="javascript:void();">Add another planet</a>
+  <div class="text-center mb-4">
+    <a id="add-xtra-planet-link" href="javascript:void();">Add another planet</a>
   </div>
 
   <div class="row justify-content-center mb-5">
