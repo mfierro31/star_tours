@@ -2,9 +2,9 @@
 {% block title %}Book{% endblock %}
 {% block content %}
 <h1 class="display-1 text-center text-warning mb-4">Book A Trip</h1>
-<p class="text-center">Use this form below to book everything from just a tour (if you're already on-planet), to a whole trip,
-  including multiple flights to multiple planets, and multiple tours.  And remember, all flights and tours run 
-  <b><i>DAILY</i></b>!
+<p class="text-center">Use this form below to book tours and flights.  You can select no flights and just tours or no tours and 
+  just flights, but you have to select at least one tour or one flight to submit the form.  If you want to go to multiple planets 
+  on your trip, simply book a 2nd trip. And remember, all flights and tours run <b><i>DAILY</i></b>!
 </p>
 <form class="mt-5" method="POST">
   {{form.hidden_tag()}}
@@ -13,7 +13,7 @@
   <div class="form-row justify-content-center my-4">
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
-        {{form.planet.label}}
+        {{form.planet.label(id="planet-label")}}
         <!-- Every time we select a new planet, we'll automatically get its associated tours and flights in our tour select field 
         and flight select fields, thanks to onchange="getTours(); getFlights();" -->
         {{form.planet(class_="form-control", id="planet", onchange="getTours(); getFlights();")}}
@@ -29,7 +29,7 @@
   <div class="form-row justify-content-around my-4">
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
-        {{form.depart_date.label}}
+        {{form.depart_date.label(id="depart-date-label")}}
         {{form.depart_date(class_="form-control datepicker mb-3", id="depart-date")}}
         <!-- Add javascript:void(); here to prevent page from jumping to top when clicking this link -->
         <a class="clear-link" href="javascript:void();">Clear</a>
@@ -43,7 +43,7 @@
 
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
-        {{form.return_date.label}}
+        {{form.return_date.label(id="return-date-label")}}
         {{form.return_date(class_="form-control datepicker mb-3", id="return-date")}}
         <a class="clear-link" href="javascript:void();">Clear</a>
         {% for err in form.return_date.errors %}
@@ -58,30 +58,39 @@
   <div class="form-row justify-content-around my-4">
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
-        {{form.depart_flight.label}}
-        {{form.depart_flight(class_="form-control flight", id="depart-flight")}}
+        {{form.depart_flight.label(id="depart-flight-label")}}
+        {{form.depart_flight(class_="form-control flight mb-3", id="depart-flight")}}
         {% for err in form.depart_flight.errors %}
         <small class="form-text text-light bg-danger">
           {{err}}
         </small>
         {% endfor %}
       </div>
+      <div class="form-group text-center form-check">
+        {{form.no_depart(class_="form-check-input", id="no_depart", onchange="clearFlightOrTour('departFlight');")}}
+        {{form.no_depart.label(class_="form-check-label")}}
+      </div>
     </div>
 
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
-        {{form.return_flight.label}}
-        {{form.return_flight(class_="form-control flight", id="return-flight")}}
+        {{form.return_flight.label(id="return-flight-label")}}
+        {{form.return_flight(class_="form-control flight mb-3", id="return-flight")}}
         {% for err in form.return_flight.errors %}
         <small class="form-text text-light bg-danger">
           {{err}}
         </small>
         {% endfor %}
       </div>
+      <div class="form-group text-center form-check">
+        {{form.no_return(class_="form-check-input", id="no_return", onchange="clearFlightOrTour('returnFlight');")}}
+        {{form.no_return.label(class_="form-check-label")}}
+      </div>
     </div>
   </div> 
   
   <h2 class="text-center text-warning">Tours</h2>
+  <hr>
   <div class="form-row justify-content-center my-4">
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
@@ -92,6 +101,10 @@
           {{err}}
         </small>
         {% endfor %}
+      </div>
+      <div class="form-group text-center form-check">
+        {{form.no_tour(class_="form-check-input", id="no_tour", onchange="clearFlightOrTour('tour');")}}
+        {{form.no_tour.label(class_="form-check-label", id="no_tour_label")}}
       </div>
     </div>
   </div>
@@ -110,17 +123,23 @@
       </div>
     </div>
   </div>
+  <hr>
+
+  <h4 id="warning-msg" class="text-center text-danger">
+    <b>
+    Make sure you're done selecting your current planet, flight(s), and tour before adding additional tours.  You won't be able 
+    to change your previous planet, flight(s), or tour(s) after you click the "Add another tour" link below.
+    </b>
+  </h4>
 
   <div class="text-center mb-4" id="add-tour-container">
     <a id="add-xtra-tour-link" href="javascript:void();" onclick="addTour();">Add another tour</a>
   </div>
-  <div class="text-center mb-4">
-    <a id="add-xtra-planet-link" href="javascript:void();">Add another planet</a>
-  </div>
 
   <div class="row justify-content-center mb-5">
-    <button class="btn btn-success btn-lg mr-3">Submit</button>
-    <a href="/" class="btn btn-info btn-lg">Go back</a>
+    <button id="submit-trip-btn" class="btn btn-success btn-lg mr-3">Submit</button>
+    <a href="/" class="btn btn-info btn-lg">Home</a>
+    <a href="/book" class="ml-3 btn btn-danger btn-lg" id="start-over-btn">Start Over</a>
   </div>
 </form>
 {% endblock %}

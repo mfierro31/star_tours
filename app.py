@@ -74,7 +74,12 @@ def do_logout():
 def unverify():
     """Unverify a user so that every time they want to change their personal info, the app will ask them to verify their identity"""
     if 'verified' in session:
-        session['verified'] = False
+        del session['verified']
+
+def remove_itin():
+    """Remove the user's itinerary from Flask g and from the session"""
+    if 'itin' in session:
+        del session['itin']
 
 ##########################################################################
 # User routes
@@ -189,7 +194,7 @@ def verify_user():
 
 @app.route('/account/edit', methods=["GET", "POST"])
 def edit_account():
-    if 'verified' in session and session['verified'] == False or 'verified' not in session:
+    if 'verified' not in session:
         return redirect('/account/edit/verify')
     
     form = EditUserForm(obj=g.user)
@@ -238,19 +243,13 @@ def book_trip():
         form.planet.choices = planets
         # First thing we do is delete the tours, flights, and planets of any unfinished itineraries that we made in previous 
         # visits to our book page (if any)
-        if 'itin' in session and session['itin']:
-            old_itin = Itinerary.query.get(session['itin'])
-            old_itin.tours.clear()
-            old_itin.flights.clear()
-            old_itin.planets.clear()
+        if g.itin:
+            itin = Itinerary.query.get(g.itin.id)
+            itin.tours.clear()
+            itin.flights.clear()
+            itin.planets.clear()
 
             db.session.commit()
-
-            if form.validate_on_submit():
-                flash('Submitted!', 'success')
-                return redirect('/')
-            else:
-                return render_template('book.html', form=form)
         else:
             # If there isn't an existing itinerary to work from, either because this is the user's first time to the page, or 
             # because a trip was just booked and we cleared session['itin'] and g.itin from the app, we create a new one
@@ -263,17 +262,49 @@ def book_trip():
             # new itinerary.
             session['itin'] = itin.id
 
-            if form.validate_on_submit():
-                flash('Submitted!', 'success')
-                return redirect('/')
-            else:
-                return render_template('book.html', form=form)
+        if form.validate_on_submit():
+            tour_id = form.tour.data
+            tour_date = form.tour_date.data
+            no_tour = form.no_tour.data
+            depart_date = form.depart_date.data
+            depart_id = form.depart_flight.data
+            no_depart = form.no_depart.data
+            return_date = form.return_date.data
+            return_id = form.return_flight.data
+            no_return = form.no_return.data
+            planet_name = form.planet.data
+
+            # Checks to see if the currently selected flights conflict with one another
+            result1 = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)
+            # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
+            result2 = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour)
+            # Checks to see if the current tour's start and end datetime conflict with any other tours' start and end datetimes
+            result3 = compare_curr_tour_to_itin_tours(itin, tour)
+
+            if type(result1) == str:
+                flash(f"{result1}", "danger")
+                return redirect('/book')
+
+            if type(result2) == str:
+                flash(f"{result2}", "danger")
+                return redirect('/book')
+
+            if result3 != "You're all good!":
+                flash(f"{result3}", "danger")
+                return redirect('/book')
+
+            remove_itin()
+            
+            flash('Successfully booked your trip!', 'success')
+            return redirect('/account')
+        else:
+            return render_template('book.html', form=form)
     else:
         flash('Please log in or create an account first!', 'danger')
         return redirect('/')
 
 ##########################################################################
-# API for book form routes
+# API routes for booking form
 
 @app.route('/tours/<planet_name>')
 def get_tours(planet_name):
@@ -292,48 +323,101 @@ def get_flights(planet_name):
 
 @app.route('/itineraries/add/tour', methods=["POST"])
 def add_tour_to_itin():
-    # First, check to see if user is logged in.
+    """Adding a tour to user's itinerary"""
     if g.user:
         tour_id = request.json["tourId"]
         tour_date = request.json["tourDate"]
-        depart_flight_date = request.json["departFlightDate"]
-        return_flight_date = request.json["returnFlightDate"]
-        depart_flight_id = request.json["departFlightId"]
-        return_flight_id = request.json["returnFlightId"]
+        no_tour = request.json["noTour"]
+        depart_date = request.json["departFlightDate"]
+        depart_id = request.json["departFlightId"]
+        no_depart = request.json["noDepart"]
+        return_date = request.json["returnFlightDate"]
+        return_id = request.json["returnFlightId"]
+        no_return = request.json["noReturn"]
 
-        if tour_id and tour_date:
-            # If tour_id isn't 0 and tour_date isn't blank, then we get the tour, add the dates to it and commit
-            tour = Tour.query.get(tour_id)
-            tour.start_date = tour_date
-            tour.set_end_date()
+        if no_tour and no_depart and no_return:
+            return (jsonify(msg="You have to select either a flight and date or a tour and date to add another tour."), 200)
 
-            db.session.commit()                    
-            
-            # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
-            result = compare_flight_dates_to_tour_dates(depart_flight_id, return_flight_id, depart_flight_date, return_flight_date, tour)
-            
-            if result != "You're all good!":
-                return (jsonify(msg=result), 200)
-            else:
-                # If someone makes a request to this route through Insomnia, we'd have to account for that:
-                if g.itin and g.itin.user_id == g.user.id:
-                    # Get the current itinerary
-                    itin = Itinerary.query.get(g.itin.id)
-                    # Add current tour to itin
-                    itin.tours.append(tour)
-                    db.session.commit()
+        if g.itin and session['itin'] and g.user.id == g.itin.user_id and g.itin.id == session['itin']:                
+            itin = Itinerary.query.get(g.itin.id)
 
-                    return (jsonify(msg="Successfully added tour to user's itinerary."), 200)
+            if not no_tour:
+                # If tour_id isn't 0 and tour_date isn't blank, then we get the tour, add the dates to it and commit
+                tour = Tour.query.get(tour_id)
+                tour.start_date = tour_date
+                tour.set_end_date()
+
+                db.session.commit()                    
+                
+                # Checks to see if the currently selected flights conflict with one another
+                result1 = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)
+                # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
+                result2 = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour)
+                # Checks to see if the current tour's start and end datetime conflict with any other tours' start and end datetimes
+                result3 = compare_curr_tour_to_itin_tours(itin, tour)
+
+                if type(result1) == str:
+                    return (jsonify(msg=result1), 200)
+
+                if type(result2) == str:
+                    return (jsonify(msg=result2), 200)
+
+                if result3 != "You're all good!":
+                    return (jsonify(msg=result3), 200)
+
+                itin.tours.append(tour)
+
+                db.session.commit()
+
+                if len(result2) == 0:
+                    resp_obj = {
+                        "msg": "Successfully added tour to user's itinerary.",
+                        "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
+                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}"
+                    }
+
+                    return (jsonify(resp_obj), 200)
+
+                elif len(result2) == 1 and result2[0].depart_or_return == "depart":
+                    resp_obj = {
+                        "msg": "Successfully added tour to user's itinerary.",
+                        "departure_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
+                        "arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
+                        "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
+                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}"                    
+                    }
+
+                    return (jsonify(resp_obj), 200)
+
+                elif len(result2) == 1 and result2[0].depart_or_return == "return":
+                    resp_obj = {
+                        "msg": "Successfully added tour to user's itinerary.",
+                        "return_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
+                        "return_arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
+                        "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
+                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}"
+                    }
+
+                    return (jsonify(resp_obj), 200)
+
                 else:
-                    return (jsonify(msg="You must go to the 'Book A Trip' page first and click on 'Add another tour' to access this route."), 200)        
+                    resp_obj = {
+                        "msg": "Successfully added tour to user's itinerary.",
+                        "departure_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
+                        "arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
+                        "return_datetime": f"{result2[1].depart_time} {result2[1].prettify_depart_date()}",
+                        "return_arrival_datetime": f"{result2[1].arrive_time} {result2[1].prettify_arrive_date()}",
+                        "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
+                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}"                   
+                    }
+
+                    return (jsonify(resp_obj), 200)
+            else:
+                return (jsonify(msg="You must pick a tour and a tour date in order to add another tour."), 200)  
         else:
-            return (jsonify(msg="You must pick a tour AND a date before adding another tour"), 200)
+            return (jsonify(msg="You have to log in first, then go to the 'Book A Trip' page and click on 'Add another planet' to access this route."), 200)
     else:
-        return (jsonify(msg="You need to log in first to do that!"), 200)
-
-# @app.route('/itineraries/add/planet', methods=["POST"])
-# def add_planet_flights_to_itin():
-
+        return (jsonify(msg="You need to log in first to do that!"), 200)    
 
 ##########################################################################
 # Home page route

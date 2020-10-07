@@ -9,6 +9,9 @@ def connect_db(app):
     db.app = app
     db.init_app(app)
 
+#################################################################################################################################
+# HELPER METHODS
+
 # Helper methods to transform SWAPI data into clearer/cleaner/more logical data
 
 def get_gravity(diameter):
@@ -56,61 +59,119 @@ def add_percent_to_water(water):
     else:
         return water
 
-# Helper method for comparing dates
+# Helper methods for comparing dates
 
-def strings_to_datetime(date_str, time_str):
-    """Convert a date and time string - formatted as '2020-09-30' and '09:00 AM' - into a datetime object"""
-    datetime_str = f'{date_str} {time_str}'
-    datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
-
-    return datetime_obj
-
-def compare_flight_dates_to_tour_dates(depart_flight_id, return_flight_id, depart_flight_date, return_flight_date, tour):
-    """Compare departure and arrival flights' datetimes to tour's start and end datetimes to see if they conflict"""
-    if depart_flight_id and return_flight_id and depart_flight_date and return_flight_date:
-        depart_flight = Flight.query.get(depart_flight_id)
-        depart_flight.depart_date = depart_flight_date
+def compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour):
+    """Compare current departure and arrival flights' datetimes to current tour's start and end datetimes to see if they conflict."""
+    if not no_depart and not no_return:
+        depart_flight = Flight.query.get(depart_id)
+        depart_flight.depart_date = depart_date
         depart_flight.set_arrive_date()
+        depart_flight.depart_or_return = "depart"
 
-        return_flight = Flight.query.get(return_flight_id)
-        return_flight.depart_date = return_flight_date
+        return_flight = Flight.query.get(return_id)
+        return_flight.depart_date = return_date
         return_flight.set_arrive_date()
+        return_flight.depart_or_return = "return"
         
         db.session.commit()
 
-        depart_arrive_datetime = strings_to_datetime(depart_flight.arrive_date, depart_flight.arrive_time)
-        return_depart_datetime = strings_to_datetime(return_flight.depart_date, return_flight.depart_time)
+        depart_arrive_datetime = depart_flight.get_arrive_datetime()
+        return_depart_datetime = return_flight.get_depart_datetime()
 
-        tour_start_datetime = strings_to_datetime(tour.start_date, tour.start_time)
-        tour_end_datetime = strings_to_datetime(tour.end_date, tour.end_time)
+        tour_start_datetime = tour.get_start_datetime()
+        tour_end_datetime = tour.get_end_datetime()
 
-        if tour_start_datetime < depart_arrive_datetime or tour_start_datetime > return_depart_datetime or tour_end_datetime > return_depart_datetime or tour_end_datetime < depart_arrive_datetime:
-            return "Your tour needs to start and end after your arrival time and date and before your departure time and date."
+        if tour_start_datetime <= depart_arrive_datetime or tour_start_datetime >= return_depart_datetime or tour_end_datetime >= return_depart_datetime or tour_end_datetime <= depart_arrive_datetime:
+            return "Your tour needs to start and end after your depart flight's arrival time and date and before your return flight's departure time and date."
         else:
-            return "You're all good!"
+            return [depart_flight, return_flight]
 
-    elif depart_flight_id and depart_flight_date:
-        depart_flight = Flight.query.get(depart_flight_id)
-        depart_flight.depart_date = depart_flight_date
+    elif not no_depart:
+        depart_flight = Flight.query.get(depart_id)
+        depart_flight.depart_date = depart_date
         depart_flight.set_arrive_date()
+        depart_flight.depart_or_return = "depart"
         
         db.session.commit()
 
-        depart_arrive_datetime = strings_to_datetime(depart_flight.arrive_date, depart_flight.arrive_time)
+        depart_arrive_datetime = depart_flight.get_arrive_datetime()
 
-        tour_start_datetime = strings_to_datetime(tour.start_date, tour.start_time)
-        tour_end_datetime = strings_to_datetime(tour.end_date, tour.end_time)
+        tour_start_datetime = tour.get_start_datetime()
+        tour_end_datetime = tour.get_end_datetime()
 
-        if tour_start_datetime < depart_arrive_datetime or tour_end_datetime < depart_arrive_datetime:
-            return "Your tour needs to start and end after your arrival time and date."
+        if tour_start_datetime <= depart_arrive_datetime or tour_end_datetime <= depart_arrive_datetime:
+            return "Your tour needs to start and end after your depart flight's arrival time and date."
         else:
-            return "You're all good!"
+            return [depart_flight]
 
-    elif not depart_flight_id and not return_flight_id and not depart_flight_date and not return_flight_date:
+    elif not no_return:
+        return_flight = Flight.query.get(return_id)
+        return_flight.depart_date = return_date
+        return_flight.set_arrive_date()
+        return_flight.depart_or_return = "return"
+        
+        db.session.commit()
+
+        return_depart_datetime = return_flight.get_depart_datetime()
+
+        tour_start_datetime = tour.get_start_datetime()
+        tour_end_datetime = tour.get_end_datetime()
+
+        if tour_start_datetime >= return_depart_datetime or tour_end_datetime >= return_depart_datetime:
+            return "Your tour needs to start and end before your return flight's depart time and date."
+        else:
+            return [return_flight]
+
+    elif no_depart and no_return:
+        return []
+
+def compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date):
+    """Compares current flights to see if they conflict with one another"""
+    if no_depart or no_return:
+        return []
+    else:
+        depart_flight = Flight.query.get(depart_id)
+        depart_flight.depart_date = depart_date
+        depart_flight.set_arrive_date()
+        depart_flight.depart_or_return = "depart"
+
+        return_flight = Flight.query.get(return_id)
+        return_flight.depart_date = return_date
+        return_flight.set_arrive_date()
+        return_flight.depart_or_return = "return"
+
+        db.session.commit()
+
+        depart_depart = depart_flight.get_depart_datetime()
+        depart_arrive = depart_flight.get_arrive_datetime()
+        return_depart = return_flight.get_depart_datetime()
+        return_arrive = return_flight.get_arrive_datetime()
+
+        if (depart_depart >= return_depart and depart_depart <= return_arrive) or (depart_arrive >= return_depart and depart_arrive <= return_arrive) or (return_depart >= depart_depart and return_depart <= depart_arrive) or (return_arrive >= depart_depart and return_arrive <= depart_arrive):
+            return "Your current flights conflict with one another.  Please select a different one."
+        else:
+            return [depart_flight, return_flight]
+
+def compare_curr_tour_to_itin_tours(itin, curr_tour):
+    """Compare to see if any of the tour dates and times in the itinerary conflict with the current tour"""
+    curr_tour_start = curr_tour.get_start_datetime()
+    curr_tour_end = curr_tour.get_end_datetime()
+
+    if len(itin.tours) > 0:
+        for tour in itin.tours:
+            start = tour.get_start_datetime()
+            end = tour.get_end_datetime()
+
+            if (curr_tour_start >= start and curr_tour_end <= end) or (curr_tour_end >= start and curr_tour_end <= end) or (curr_tour_start <= end and curr_tour_end >= start):
+                return "This tour's date and time conflicts with a previous tour's date and time.  Please choose a different tour or different date."
+            else:
+                return "You're all good!"
+    else:
         return "You're all good!"
 
-    else:
-        return "If you're going to book a flight, make sure to pick both a date and a flight.  If you're not, then make sure to clear both date fields and select 'None' for both flights."
+#################################################################################################################################
+# MODELS
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -179,6 +240,7 @@ class Flight(db.Model):
     arrive_time = db.Column(db.Text, nullable=False)
     depart_date = db.Column(db.Text)
     arrive_date = db.Column(db.Text)
+    depart_or_return = db.Column(db.Text)
     flight_time = db.Column(db.Integer, nullable=False)
 
     def serialize(self):
@@ -246,6 +308,10 @@ class Itinerary(db.Model):
     __tablename__ = 'itineraries'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    start_time = db.Column(db.Text)
+    end_time = db.Column(db.Text)
+    start_date = db.Column(db.Text)
+    end_date = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # Be careful with deleting individual items in these relationships - you could potentially delete the items in these 
@@ -269,6 +335,34 @@ class Itinerary(db.Model):
     flights = db.relationship('Flight', secondary="itineraries_flights", backref='itineraries')
     planets = db.relationship('Planet', secondary="itineraries_planets", backref='itineraries')
     tours = db.relationship('Tour', secondary="itineraries_tours", backref='itineraries')
+
+    def prettify_start_date(self):
+        date_as_datetime = datetime.strptime(self.start_date, '%Y-%m-%d')
+        date_as_date = date_as_datetime.date()
+        pretty_date = date_as_date.strftime('%B %-d, %Y')
+
+        return pretty_date
+
+    def prettify_end_date(self):
+        date_as_datetime = datetime.strptime(self.end_date, '%Y-%m-%d')
+        date_as_date = date_as_datetime.date()
+        pretty_date = date_as_date.strftime('%B %-d, %Y')
+
+        return pretty_date
+
+    def get_start_datetime(self):
+        """Returns datetime object using the tour's start time and date"""
+        start_datetime_str = f'{self.start_date} {self.start_time}'
+        start_datetime_obj = datetime.strptime(start_datetime_str, '%Y-%m-%d %I:%M %p')
+
+        return start_datetime_obj
+
+    def get_end_datetime(self):
+        """Returns datetime object using the tour's end time and date"""
+        end_datetime_str = f'{self.end_date} {self.end_time}'
+        end_datetime_obj = datetime.strptime(end_datetime_str, '%Y-%m-%d %I:%M %p')
+
+        return end_datetime_obj
 
 class ItineraryFlight(db.Model):
     __tablename__ = 'itineraries_flights'
@@ -372,6 +466,20 @@ class Tour(db.Model):
         end_date = end_datetime.date()
 
         self.end_date = end_date.strftime('%Y-%m-%d')
+
+    def get_start_datetime(self):
+        """Returns datetime object using the tour's start time and date"""
+        start_datetime_str = f'{self.start_date} {self.start_time}'
+        start_datetime_obj = datetime.strptime(start_datetime_str, '%Y-%m-%d %I:%M %p')
+
+        return start_datetime_obj
+
+    def get_end_datetime(self):
+        """Returns datetime object using the tour's end time and date"""
+        end_datetime_str = f'{self.end_date} {self.end_time}'
+        end_datetime_obj = datetime.strptime(end_datetime_str, '%Y-%m-%d %I:%M %p')
+
+        return end_datetime_obj
 
 class TourImage(db.Model):
     __tablename__ = 'tour_images'

@@ -34,6 +34,13 @@ html {
   margin-left: 6rem;
 }
 
+hr {
+  border: none;
+  height: 5px;
+  /* Set the hr color */
+  background-color: rgb(0, 124, 41);
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
   color: white;
@@ -75,5 +82,11 @@ body {
 
   #tour-img-row {
     display: none;
+  }
+}
+
+@media screen and (max-width: 349px) {
+  #start-over-btn {
+    margin-top: 20px;
   }
 }

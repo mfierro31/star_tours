@@ -499,5 +499,10 @@ itin.tours.append(t18)
 
 itin.planets.append(Planet.query.get("Coruscant"))
 
+itin.start_date = f1.depart_date
+itin.end_date = f2.arrive_date
+itin.start_time = f1.depart_time
+itin.end_time = f2.arrive_time
+
 db.session.add(itin)
 db.session.commit()

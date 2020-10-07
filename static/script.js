@@ -19,7 +19,7 @@ today = `${yyyy}-${mm}-${dd}`;
 $('.datepicker').attr('min', today);
 
 // Clear date value from datepicker, in case user doesn't want to pick a flight or a tour after all
-$('.clear-link').click(function () {
+$('.container').on("click", ".clear-link", function () {
   // prev() selects the element immediately before the "Clear" link, which is our datepicker input box
   $(this).prev().val("");
   // Have to manually trigger a change here, otherwise the logic below for date min and max changing won't work
@@ -29,10 +29,24 @@ $('.clear-link').click(function () {
 // If depart date is picked, all other datepickers' min dates should be the depart date
 $('#depart-date').change(function() {
   if ($('#depart-date').val()) {
-    $('#return-date').attr('min', $('#depart-date').val());
+    // Unless tour date is already present, then return date's min should be the tour date, since it's always going to be the
+    // same or later than the depart date
+    if ($('#tour-date').val()) {
+      $('#return-date').attr('min', $('#tour-date').val());
+    } else {
+      $('#return-date').attr('min', $('#depart-date').val());
+    }
+
     $('#tour-date').attr('min', $('#depart-date').val());
   } else {
-    $('#return-date').attr('min', today);
+    // If depart date is empty, then if tour date is present, set return date's min to tour date, otherwise, make the min for
+    // both today.
+    if ($('#tour-date').val()) {
+      $('#return-date').attr('min', $('#tour-date').val());
+    } else {
+      $('#return-date').attr('min', today);
+    }
+
     $('#tour-date').attr('min', today);
   }
 });
@@ -43,8 +57,35 @@ $('#return-date').change(function() {
     $('#depart-date').attr('max', $('#return-date').val());
     $('#tour-date').attr('max', $('#return-date').val());
   } else {
-    $('#depart-date').attr('max', '');
+    // Unless tour date is present, then depart date's max should be tour date
+    if ($('#tour-date').val()) {
+      $('#depart-date').attr('max', $('#tour-date').val());
+    } else {
+      $('#depart-date').attr('max', '');
+    }
+
     $('#tour-date').attr('max', '');
+  }
+});
+
+// If tour date is picked, then depart date's max and return date's min should be the tour date
+$('#tour-date').change(function() {
+  if ($('#tour-date').val()) {
+    $('#depart-date').attr('max', $('#tour-date').val());
+    $('#return-date').attr('min', $('#tour-date').val());
+  } else {
+    // Unless return date is present, then depart date's max should be return date
+    if ($('#return-date').val()) {
+      $('#depart-date').attr('max', $('#return-date').val());
+    } else {
+      $('#depart-date').attr('max', '');
+    }
+    // Unless depart date is present, then return date's min should be depart date
+    if ($('#depart-date').val()) {
+      $('#return-date').attr('min', $('#depart-date').val());
+    } else {
+      $('#return-date').attr('min', today);
+    }
   }
 });
 
@@ -110,8 +151,58 @@ async function getFlights() {
   $('.flight').append('<option value="0">None</option>');
 }
 
-// Adds a tour to the user's itinerary in the database on the backend and adds a new tour and tour_date field
+function clearFlightOrTour(thing) {
+  // Function to clear out the flight, date, and tour fields when their checkboxes are checked
+  if (thing === "departFlight") {
+    if ($('#no_depart').prop('checked')) {
+      $('#depart-flight').val('0');
+      $('#depart-date').val('');
+      // Have to manually trigger a change for these values, otherwise other functionality won't work.
+      $('#depart-date').change();
+      $('#depart-flight').prop('disabled', true);
+      $('#depart-date').prop('disabled', true);
+    } else {
+      $('#depart-flight').prop('disabled', false);
+      $('#depart-date').prop('disabled', false);
+    }
+  }
+
+  if (thing === "returnFlight") {
+    if ($('#no_return').prop('checked')) {
+      $('#return-flight').val('0');
+      $('#return-date').val('');
+      $('#return-date').change();
+      $('#return-flight').prop('disabled', true);
+      $('#return-date').prop('disabled', true);
+    } else {
+      $('#return-flight').prop('disabled', false);
+      $('#return-date').prop('disabled', false);
+    }
+  }
+
+  if (thing === "tour") {
+    if ($('#no_tour').prop('checked')) {
+      $('#tour').val('0');
+      $('#tour-date').val('');
+      $('#tour-date').change();
+      $('#tour').prop('disabled', true);
+      $('#tour-date').prop('disabled', true);
+    } else {
+      $('#tour').prop('disabled', false);
+      $('#tour-date').prop('disabled', false);
+    }
+  }
+}
+
 async function addTour() {
+  // First, remove any previous alerts
+  $('.alert').remove();
+
+  // Secondly, declare our variables and check to see if any of the flights & dates or tour & date are missing values.  If they
+  // are, manually check their associated no flight/no tour checkbox
+  let noDepart;
+  let noReturn;
+  let noTour;
   const $tourId = parseInt($('#tour').val());
   const $tourDate = $('#tour-date').val();
   const $departFlightDate = $('#depart-date').val();
@@ -119,25 +210,87 @@ async function addTour() {
   const $departFlightId = parseInt($('#depart-flight').val());
   const $returnFlightId = parseInt($('#return-flight').val());
 
-  request_obj = {
+  if (!$tourId || !$tourDate) {
+    $('#no_tour').prop('checked', true);
+    $('#no_tour').change();
+  }
+
+  if (!$departFlightId || !$departFlightDate) {
+    $('#no_depart').prop('checked', true);
+    $('#no_depart').change();
+  }
+
+  if (!$returnFlightId || !$returnFlightDate) {
+    $('#no_return').prop('checked', true);
+    $('#no_return').change();
+  }
+
+  // Now, check to see which checkboxes are checked and assign their variables values
+  if ($('#no_depart').prop('checked')) {
+    noDepart = true;
+  } else {
+    noDepart = false;
+  }
+
+  if ($('#no_return').prop('checked')) {
+    noReturn = true;
+  } else {
+    noReturn = false;
+  }
+
+  if ($('#no_tour').prop('checked')) {
+    noTour = true;
+  } else {
+    noTour = false;
+  }
+
+  requestObj = {
     tourId: $tourId,
     tourDate: $tourDate,
     departFlightDate: $departFlightDate,
     returnFlightDate: $returnFlightDate,
     departFlightId: $departFlightId,
-    returnFlightId: $returnFlightId
+    returnFlightId: $returnFlightId,
+    noDepart: noDepart,
+    noReturn: noReturn,
+    noTour: noTour
   };
 
-  const resp = await axios.post('/itineraries/add/tour', request_obj);
+  const resp = await axios.post('/itineraries/add/tour', requestObj);
 
   if (resp.data.msg === "Successfully added tour to user's itinerary.") {
-    // add a new tour form and disable the tour form before it as well as deleting its ID and name, so that its info is not
-    // received in the final submit of the form.
-    $('.alert').remove();
+    // add a new tour field/planet field and disable the tour/planet field before it as well as deleting its ID and name, so that 
+    // its info is not received in the final submit of the form.
 
-    // First, disable the previous tour inputs
-    $('#tour').prop('disabled', true);
-    $('#tour-date').prop('disabled', true);
+    // Remove previous dates/times of flights
+    $('.depart-arrive-datetimes').remove();
+
+    // Remove 'clear' links as well for the previous date pickers.  You can still clear the previous dates if you click on the 
+    //'clear' links, even though the input boxes are disabled
+    $('.clear-link').remove();
+
+    // First, disable all previous inputs, except for our submit button, which is in fact, an input type
+    $('form :input:not([id=submit-trip-btn])').prop('disabled', true);
+
+    // To help the user remember the dates and times of the tours and flights they chose, we can display them below each one
+    $(`
+    <p>Start Date/Time: ${resp.data.tour_start_datetime}</p>
+    <p>End Date/Time: ${resp.data.tour_end_datetime}</p>
+    `).insertAfter('#tour-date');
+
+    if (resp.data.departure_datetime && resp.data.arrival_datetime) {
+      $(`
+      <p class="depart-arrive-datetimes">Depart Date/Time: ${resp.data.departure_datetime}</p>
+      <p class="depart-arrive-datetimes">Arrival Date/Time: ${resp.data.arrival_datetime}</p>
+    `).insertAfter('#depart-flight');
+    }
+
+    if (resp.data.return_datetime && resp.data.return_arrival_datetime) {
+      $(`
+      <p class="depart-arrive-datetimes">Depart Date/Time: ${resp.data.return_datetime}</p>
+      <p class="depart-arrive-datetimes">Arrival Date/Time: ${resp.data.return_arrival_datetime}</p>
+    `).insertAfter('#return-flight');
+    }
 
     // Then, remove all the previous tour inputs' unique attributes so we can use those same unique attributes for our new inputs
     $('#tour-label').removeAttr('for');
@@ -150,9 +303,10 @@ async function addTour() {
     $('#tour-date').removeAttr('name');
     $('#tour-date').removeAttr('id');
 
-    // Remove 'clear' link as well for the previous date picker.  You can still clear the previous date if you click on it, even
-    // though the input box is disabled
-    $('#tour-date-clear').remove();
+    $('#no_tour').removeAttr('name');
+    $('#no_tour').removeAttr('id');
+    $('#no_tour_label').removeAttr('for');
+    $('#no_tour_label').removeAttr('id');
 
     //Finally, insert new tour inputs with previous unique attributes
     $(`
@@ -163,6 +317,10 @@ async function addTour() {
           <select class="form-control" id="tour" name="tour">
           
           </select>
+        </div>
+        <div class="form-group text-center form-check">
+          <input class="form-check-input" id="no_tour" name="no_tour" onchange="clearFlightOrTour('tour');" type="checkbox" value="y">
+          <label class="form-check-label" for="no_tour" id="no_tour_label">No Tour</label>
         </div>
       </div>
     </div>
@@ -175,9 +333,12 @@ async function addTour() {
           <a class="clear-link" id="tour-date-clear" href="javascript:void();">Clear</a>
         </div>
       </div>
-    </div>`).insertBefore('#add-tour-container');
+    </div>
+    <hr>`).insertBefore('#warning-msg');
 
     // We also have to set all the dynamic attributes, like min and max for the datepicker
+    $('#tour-date').attr('min', today);
+
     if ($('#depart-date').val()) {
       $('#tour-date').attr('min', $('#depart-date').val());
     }
@@ -186,22 +347,13 @@ async function addTour() {
       $('#tour-date').attr('max', $('#return-date').val());
     }
 
-    if (!$('#depart-date').val() && !$('#return-date').val()) {
-      $('#tour-date').attr('min', today);
-    }
-
     // And we have to manually call getTours() again, otherwise our new tour selection box won't get populated
     getTours();
   } else {
-    // If something goes wrong, we insert an alert right above the 'add another tour' link
-    $('.alert').remove();
-    $(`<div class="alert alert-danger">${resp.data.msg}</div>`).insertBefore("#add-xtra-tour-link");
+    // If something goes wrong, we insert an alert right above the 'add another tour' or 'add another planet' link
+    $(`<div class="alert alert-danger mt-3">${resp.data.msg}</div>`).insertBefore("#add-xtra-tour-link");
   }
 }
-
-// async function addPlanet() {
-  
-// }
 
 // On page load for our book page, load all the tours and flights for the selected planet
 $(document).ready(getTours());

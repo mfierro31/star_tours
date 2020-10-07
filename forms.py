@@ -39,3 +39,6 @@ class BookForm(FlaskForm):
     return_flight = SelectField('Return Flight', choices=[(0, "None")], coerce=int, validators=[Optional()])
     tour = SelectField('Tour', choices=[(0, "None")], coerce=int, validators=[Optional()])
     tour_date = DateField('Tour Date', validators=[Optional()])
+    no_depart = BooleanField('No Depart Flight', validators=[Optional()])
+    no_return = BooleanField('No Return Flight', validators=[Optional()])
+    no_tour = BooleanField('No Tour', validators=[Optional()])
