@@ -481,9 +481,11 @@ itin = Itinerary(user_id=me.id)
 
 f1.depart_date = '2020-09-30'
 f1.set_arrive_date()
+f1.depart_or_return = "depart"
 
 f2.depart_date = '2020-10-15'
 f2.set_arrive_date()
+f2.depart_or_return = "return"
 
 itin.flights.append(f1)
 itin.flights.append(f2)

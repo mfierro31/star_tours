@@ -233,7 +233,7 @@ def edit_account():
 ##########################################################################
 # Book route
 
-@app.route('/book', methods=["GET", "POST"])
+@app.route('/book', methods=["GET"])
 def book_trip():
     if g.user:
         form = BookForm()
@@ -244,9 +244,10 @@ def book_trip():
 
         # We have to add all the possible choices for depart_flight, return_flight, and tour here, otherwise WTForms won't
         # recognize the choices that we've populated those fields with on the frontend with JS and will give us errors
-        form.depart_flight.choices = [(f.flight_num, f"Flight: {f.flight_num}") for f in Flight.query.all()]
+        flights = [(f.flight_num, f"Flight: {f.flight_num}") for f in Flight.query.all()]
+        form.depart_flight.choices = flights
         form.depart_flight.choices.append((0, "None"))
-        form.return_flight.choices = [(f.flight_num, f"Flight: {f.flight_num}") for f in Flight.query.all()]
+        form.return_flight.choices = flights
         form.return_flight.choices.append((0, "None"))
         form.tour.choices = [(t.id, t.name) for t in Tour.query.all()]
         form.tour.choices.append((0, "None"))
@@ -271,6 +272,30 @@ def book_trip():
             # previous one(s).  This will also make it so that if we add an extra tour or planet, g.itin will be updated to be this 
             # new itinerary.
             session['itin'] = itin.id
+       
+        return render_template('book.html', form=form)
+    else:
+        flash('Please log in or create an account first!', 'danger')
+        return redirect('/')
+
+@app.route('/book/submit', methods=["POST"])
+def submit_book_form():
+    if g.user:
+        form = BookForm()
+
+        planets = [(p.name, p.name) for p in Planet.query.all()]
+
+        form.planet.choices = planets
+
+        # We have to add all the possible choices for depart_flight, return_flight, and tour here, otherwise WTForms won't
+        # recognize the choices that we've populated those fields with on the frontend with JS and will give us errors
+        flights = [(f.flight_num, f"Flight: {f.flight_num}") for f in Flight.query.all()]
+        form.depart_flight.choices = flights
+        form.depart_flight.choices.append((0, "None"))
+        form.return_flight.choices = flights
+        form.return_flight.choices.append((0, "None"))
+        form.tour.choices = [(t.id, t.name) for t in Tour.query.all()]
+        form.tour.choices.append((0, "None"))
 
         if form.validate_on_submit():
             tour_id = form.tour.data
@@ -302,6 +327,11 @@ def book_trip():
                     tour.set_end_date()
 
                     db.session.commit()
+
+                    if planet_name != tour.planet_name:
+                        flash("Your selected planet doesn't match the tour's planet.  Please select the correct planet for the tour.", "danger")
+                        return redirect('/book')                
+
                     # Checks to see if the currently selected flights conflict with one another
                     result1 = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)
                     # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
@@ -400,6 +430,10 @@ def book_trip():
                         return redirect('/book')
 
                     if len(result) == 1:
+                        if planet_name != result[0].depart_planet and result[0].arrive_planet:
+                            flash("Your selected planet doesn't match your flight's planet.  Please select the correct planet for flight.", "danger")
+                            return redirect('/book')
+
                         itin.flights.append(result[0])
                         
                         itin.start_time = result[0].depart_time
@@ -410,6 +444,10 @@ def book_trip():
                         db.session.commit()
 
                     if len(result) == 2:
+                        if planet_name != result[0].depart_planet and result[0].arrive_planet and result[1].depart_planet and result[1].arrive_planet:
+                            flash("Your selected planet doesn't match your depart flight's or arrive flight's planets.  Please select the correct planet for the flights.", "danger")
+                            return redirect('/book')
+
                         itin.flights.append(result[0])
                         itin.flights.append(result[1])
 
@@ -433,10 +471,8 @@ def book_trip():
             else:
                 flash("You have to log in first, then go to the 'Book A Trip' page and click on 'Add another planet' to access this route.", "danger")
                 return redirect('/book')
-        else:
-            return render_template('book.html', form=form)
     else:
-        flash('Please log in or create an account first!', 'danger')
+        flash("You have to log in first to access this route.", "danger")
         return redirect('/')
 
 ##########################################################################
@@ -470,6 +506,7 @@ def add_tour_to_itin():
         return_date = request.json["returnFlightDate"]
         return_id = request.json["returnFlightId"]
         no_return = request.json["noReturn"]
+        planet_name = request.json["planetName"]
 
         if no_tour and no_depart and no_return:
             return (jsonify(msg="You have to select either a flight and date or a tour and date to add another tour."), 200)
@@ -483,7 +520,10 @@ def add_tour_to_itin():
                 tour.start_date = tour_date
                 tour.set_end_date()
 
-                db.session.commit()                    
+                db.session.commit()
+
+                if planet_name != tour.planet_name:
+                    return (jsonify(msg="Your selected planet doesn't match the tour's planet.  Please select the correct planet for the tour."), 200)                    
                 
                 # Checks to see if the currently selected flights conflict with one another
                 result1 = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)

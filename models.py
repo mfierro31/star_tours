@@ -59,7 +59,9 @@ def add_percent_to_water(water):
     else:
         return water
 
+#################################################################################################################################
 # Helper methods for comparing dates
+
 def datetime_to_strings(datetime_obj):
     time = datetime_obj.strftime("%I:%M %p")
     date = datetime_obj.strftime("%Y-%m-%d")

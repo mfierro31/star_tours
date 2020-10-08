@@ -24,26 +24,30 @@
   <div class="col-12 col-md-6">
     <div class="jumbotron bg-secondary">
       <h3 class="text-warning">Trip starting {{itinerary.prettify_start_date()}}</h3>
-      <p>Depart Flight: {% if itinerary.flights|length > 0 %}{{itinerary.flights[0].flight_num}}{% else %}None{% endif %}</p>
       {% if itinerary.flights|length > 0 %}
-      <p class="ml-5">Depart Planet: {{itinerary.flights[0].depart_planet}}</p>
-      <p class="ml-5">Depart Date: {{itinerary.flights[0].prettify_depart_date()}}</p>
-      <p class="ml-5">Depart Time: {{itinerary.flights[0].depart_time}}</p>
-      <p class="ml-5">Arrive Planet: {{itinerary.flights[0].arrive_planet}}</p>
-      <p class="ml-5">Arrive Date: {{itinerary.flights[0].prettify_arrive_date()}}</p>
-      <p class="ml-5">Arrive Time: {{itinerary.flights[0].arrive_time}}</p>
+      {% for flight in itinerary.flights %}
+      {% if flight.depart_or_return == "depart" %}
+      <p>Depart Flight: {{flight.flight_num}}</p>
+      <p class="ml-5">Depart Planet: {{flight.depart_planet}}</p>
+      <p class="ml-5">Depart Date: {{flight.prettify_depart_date()}}</p>
+      <p class="ml-5">Depart Time: {{flight.depart_time}}</p>
+      <p class="ml-5">Arrive Planet: {{flight.arrive_planet}}</p>
+      <p class="ml-5">Arrive Date: {{flight.prettify_arrive_date()}}</p>
+      <p class="ml-5">Arrive Time: {{flight.arrive_time}}</p>
+      {% elif flight.depart_or_return == "return" %}
+      <p>Return Flight: {{flight.flight_num}}</p>
+      <p class="ml-5">Depart Planet: {{flight.depart_planet}}</p>
+      <p class="ml-5">Depart Date: {{flight.prettify_depart_date()}}</p>
+      <p class="ml-5">Depart Time: {{flight.depart_time}}</p>
+      <p class="ml-5">Arrive Planet: {{flight.arrive_planet}}</p>
+      <p class="ml-5">Arrive Date: {{flight.prettify_arrive_date()}}</p>
+      <p class="ml-5">Arrive Time: {{flight.arrive_time}}</p>
       {% endif %}
-      <p>Return Flight: {% if itinerary.flights|length > 1 %}{{itinerary.flights[1].flight_num}}{% else %}None{% endif %}</p>
-      {% if itinerary.flights|length > 1 %}
-      <p class="ml-5">Depart Planet: {{itinerary.flights[1].depart_planet}}</p>
-      <p class="ml-5">Depart Date: {{itinerary.flights[1].prettify_depart_date()}}</p>
-      <p class="ml-5">Depart Time: {{itinerary.flights[1].depart_time}}</p>
-      <p class="ml-5">Arrive Planet: {{itinerary.flights[1].arrive_planet}}</p>
-      <p class="ml-5">Arrive Date: {{itinerary.flights[1].prettify_arrive_date()}}</p>
-      <p class="ml-5">Arrive Time: {{itinerary.flights[1].arrive_time}}</p>
+      {% endfor %}
       {% endif %}
-      <p>Tours: {% if itinerary.tours|length == 0 %}None{% endif %}</p>
+      
       {% if itinerary.tours|length > 0 %}
+      <p>Tours:</p>
       {% for tour in itinerary.tours %}
       <p class="ml-5">{{tour.name}}</p>
       <p class="double-tab">Start Date: {{tour.prettify_start_date()}}</p>
@@ -53,8 +57,8 @@
       {% endfor %}
       {% endif %}
       <div class="d-flex justify-content-center">
-        <form action="/delete-trip/{{itinerary.id}}" method="post">
-          <button class="btn btn-danger">Cancel Trip</button>
+        <form action="/itineraries/delete/{{itinerary.id}}" method="post">
+          <button class="btn btn-danger">Cancel / Delete Trip</button>
         </form>
       </div>
     </div>

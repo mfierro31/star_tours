@@ -209,6 +209,7 @@ async function addTour() {
   const $returnFlightDate = $('#return-date').val();
   const $departFlightId = parseInt($('#depart-flight').val());
   const $returnFlightId = parseInt($('#return-flight').val());
+  const $planetName = $('#planet').val();
 
   if (!$tourId || !$tourDate) {
     $('#no_tour').prop('checked', true);
@@ -251,6 +252,7 @@ async function addTour() {
     returnFlightDate: $returnFlightDate,
     departFlightId: $departFlightId,
     returnFlightId: $returnFlightId,
+    planetName: $planetName,
     noDepart: noDepart,
     noReturn: noReturn,
     noTour: noTour
@@ -355,6 +357,33 @@ async function addTour() {
   }
 }
 
+function changeFormInputs() {
+  $(':disabled').each(function() {
+    $(this).removeAttr('disabled');
+  });
+
+  const $tourId = parseInt($('#tour').val());
+  const $tourDate = $('#tour-date').val();
+  const $departFlightDate = $('#depart-date').val();
+  const $returnFlightDate = $('#return-date').val();
+  const $departFlightId = parseInt($('#depart-flight').val());
+  const $returnFlightId = parseInt($('#return-flight').val());
+
+  if (!$tourId || !$tourDate) {
+    $('#no_tour').prop('checked', true);
+    $('#no_tour').change();
+  }
+
+  if (!$departFlightId || !$departFlightDate) {
+    $('#no_depart').prop('checked', true);
+    $('#no_depart').change();
+  }
+
+  if (!$returnFlightId || !$returnFlightDate) {
+    $('#no_return').prop('checked', true);
+    $('#no_return').change();
+  }
+}
+
 // On page load for our book page, load all the tours and flights for the selected planet
-$(document).ready(getTours());
-$(document).ready(getFlights());
+$(document).ready($('#planet').change());
