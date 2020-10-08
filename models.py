@@ -60,6 +60,11 @@ def add_percent_to_water(water):
         return water
 
 # Helper methods for comparing dates
+def datetime_to_strings(datetime_obj):
+    time = datetime_obj.strftime("%I:%M %p")
+    date = datetime_obj.strftime("%Y-%m-%d")
+
+    return [time, date]
 
 def compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour):
     """Compare current departure and arrival flights' datetimes to current tour's start and end datetimes to see if they conflict."""
@@ -123,13 +128,31 @@ def compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id
         else:
             return [return_flight]
 
-    elif no_depart and no_return:
+    else:
         return []
 
 def compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date):
-    """Compares current flights to see if they conflict with one another"""
-    if no_depart or no_return:
+    """Compares current flights to see if they conflict with one another.  Can be especially useful in the /book route when there are only flights booked"""
+    if no_depart and no_return:
         return []
+    elif no_depart:
+        return_flight = Flight.query.get(return_id)
+        return_flight.depart_date = return_date
+        return_flight.set_arrive_date()
+        return_flight.depart_or_return = "return"
+
+        db.session.commit()
+
+        return [return_flight]
+    elif no_return:
+        depart_flight = Flight.query.get(depart_id)
+        depart_flight.depart_date = depart_date
+        depart_flight.set_arrive_date()
+        depart_flight.depart_or_return = "depart"
+
+        db.session.commit()
+
+        return [depart_flight]
     else:
         depart_flight = Flight.query.get(depart_id)
         depart_flight.depart_date = depart_date
@@ -169,6 +192,20 @@ def compare_curr_tour_to_itin_tours(itin, curr_tour):
                 return "You're all good!"
     else:
         return "You're all good!"
+
+def compare_curr_itin_to_itins(user, curr_itin):
+    """Compare the start and end datetimes of the user's current itinerary and past itineraries to see if there's any conflicts"""
+    itin_start = curr_itin.get_start_datetime()
+    itin_end = curr_itin.get_end_datetime()
+
+    for itinerary in user.itineraries:
+        itinerary_start = itinerary.get_start_datetime()
+        itinerary_end = itinerary.get_end_datetime()
+
+        if (itin_start >= itinerary_start and itin_start <= itinerary_end) or (itin_end >= itinerary_start and itin_end <= itinerary_end):
+            return f"Your current trip's start and end time conflicts with your previous trip starting on {itinerary.prettify_start_date()} at {itinerary.start_time} and ending on {itinerary.prettify_end_date()} at {itinerary.end_time}."
+        else:
+            return "You're all good!"
 
 #################################################################################################################################
 # MODELS

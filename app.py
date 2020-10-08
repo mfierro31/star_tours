@@ -241,6 +241,16 @@ def book_trip():
         planets = [(p.name, p.name) for p in Planet.query.all()]
 
         form.planet.choices = planets
+
+        # We have to add all the possible choices for depart_flight, return_flight, and tour here, otherwise WTForms won't
+        # recognize the choices that we've populated those fields with on the frontend with JS and will give us errors
+        form.depart_flight.choices = [(f.flight_num, f"Flight: {f.flight_num}") for f in Flight.query.all()]
+        form.depart_flight.choices.append((0, "None"))
+        form.return_flight.choices = [(f.flight_num, f"Flight: {f.flight_num}") for f in Flight.query.all()]
+        form.return_flight.choices.append((0, "None"))
+        form.tour.choices = [(t.id, t.name) for t in Tour.query.all()]
+        form.tour.choices.append((0, "None"))
+
         # First thing we do is delete the tours, flights, and planets of any unfinished itineraries that we made in previous 
         # visits to our book page (if any)
         if g.itin:
@@ -274,29 +284,155 @@ def book_trip():
             no_return = form.no_return.data
             planet_name = form.planet.data
 
-            # Checks to see if the currently selected flights conflict with one another
-            result1 = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)
-            # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
-            result2 = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour)
-            # Checks to see if the current tour's start and end datetime conflict with any other tours' start and end datetimes
-            result3 = compare_curr_tour_to_itin_tours(itin, tour)
-
-            if type(result1) == str:
-                flash(f"{result1}", "danger")
+            if no_tour and no_depart and no_return:
+                flash("You have to select either a flight and flight date or a tour and tour date to submit this form.", "danger")
                 return redirect('/book')
 
-            if type(result2) == str:
-                flash(f"{result2}", "danger")
-                return redirect('/book')
+            if g.itin and session['itin'] and g.user.id == g.itin.user_id and g.itin.id == session['itin']:                
+                itin = Itinerary.query.get(g.itin.id)
+                planet = Planet.query.get(planet_name)
+                
+                itin.planets.append(planet)
+                db.session.commit()
 
-            if result3 != "You're all good!":
-                flash(f"{result3}", "danger")
-                return redirect('/book')
+                if not no_tour:
+                    # If tour_id isn't 0 and tour_date isn't blank, then we get the tour, add the dates to it and commit
+                    tour = Tour.query.get(tour_id)
+                    tour.start_date = tour_date
+                    tour.set_end_date()
 
-            remove_itin()
-            
-            flash('Successfully booked your trip!', 'success')
-            return redirect('/account')
+                    db.session.commit()
+                    # Checks to see if the currently selected flights conflict with one another
+                    result1 = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)
+                    # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
+                    result2 = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour)
+                    # Checks to see if the current tour's start and end datetime conflict with any other tours' start and end datetimes
+                    result3 = compare_curr_tour_to_itin_tours(itin, tour)
+
+                    if type(result1) == str:
+                        flash(result1, "danger")
+                        return redirect('/book')
+
+                    if type(result2) == str:
+                        flash(result2, "danger")
+                        return redirect('/book')
+
+                    if result3 != "You're all good!":
+                        flash(result3, "danger")
+                        return redirect('/book')
+
+                    itin.tours.append(tour)
+                    db.session.commit()
+
+                    # In cases where we have no flights and only tours or one flight and tours, we need to determine which tour
+                    # has the earliest start_date, so it can be the itinerary's start_date, and which tour has the latest
+                    # end_date, so it can be the itinerary's end_date
+                    start_datetimes = []
+                    end_datetimes = []
+
+                    for tour in itin.tours:
+                        start_datetimes.append(tour.get_start_datetime())
+                        end_datetimes.append(tour.get_end_datetime())
+
+                    earliest_datetime = min(start_datetimes)
+                    latest_datetime = max(end_datetimes)
+
+                    earliest_datetime_arr = datetime_to_strings(earliest_datetime)
+                    latest_datetime_arr = datetime_to_strings(latest_datetime)
+
+                    if len(result2) == 0:
+                        itin.start_time = earliest_datetime_arr[0]
+                        itin.start_date = earliest_datetime_arr[1]
+                        itin.end_time = latest_datetime_arr[0]
+                        itin.end_date = latest_datetime_arr[1]
+
+                        db.session.commit()
+
+                    if len(result2) == 1:
+                        itin.flights.append(result2[0])
+
+                        # If there's only 1 flight, it matters if it's the depart or the return flight.  If it's the depart flight,
+                        # then the start time and date for the itinerary will be that flight's start time and date.  If it's the
+                        # return flight, then the itinerary's end time and date will be that flight's end time and date.
+                        if result2[0].depart_or_return == "depart":
+                            itin.start_time = result2[0].depart_time
+                            itin.start_date = result2[0].depart_date
+                            itin.end_time = latest_datetime_arr[0]
+                            itin.end_date = latest_datetime_arr[1]
+                        
+                        if result2[0].depart_or_return == "return":
+                            itin.start_time = earliest_datetime_arr[0]
+                            itin.start_date = earliest_datetime_arr[1]
+                            itin.end_time = result2[0].arrive_time
+                            itin.end_date = result2[0].arrive_date
+
+                        db.session.commit()
+
+                    if len(result2) == 2:
+                        itin.flights.append(result2[0])
+                        itin.flights.append(result2[1])
+
+                        itin.start_time = result2[0].depart_time
+                        itin.start_date = result2[0].depart_date
+                        itin.end_time = result2[1].arrive_time
+                        itin.end_date = result2[1].arrive_date
+
+                        db.session.commit()
+
+                    # Compare user's past itineraries to this current one.  If any dates conflict with each other, we flash an 
+                    # error
+                    resp = compare_curr_itin_to_itins(User.query.get(g.user.id), itin)
+
+                    if resp != "You're all good!":
+                        flash(resp, 'danger')
+                        return redirect('/book')
+                    else:
+                        remove_itin()
+                        
+                        flash('Successfully booked your trip!', 'success')
+                        return redirect('/account')
+                else:
+                    # If there are no tours
+                    result = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)
+                    
+                    if type(result) == str:
+                        flash(result, 'danger')
+                        return redirect('/book')
+
+                    if len(result) == 1:
+                        itin.flights.append(result[0])
+                        
+                        itin.start_time = result[0].depart_time
+                        itin.start_date = result[0].depart_date
+                        itin.end_time = result[0].arrive_time
+                        itin.end_date = result[0].arrive_date
+
+                        db.session.commit()
+
+                    if len(result) == 2:
+                        itin.flights.append(result[0])
+                        itin.flights.append(result[1])
+
+                        itin.start_time = result[0].depart_time
+                        itin.start_date = result[0].depart_date
+                        itin.end_time = result[1].arrive_time
+                        itin.end_date = result[1].arrive_date
+
+                        db.session.commit()
+
+                    resp = compare_curr_itin_to_itins(User.query.get(g.user.id), itin)
+
+                    if resp != "You're all good!":
+                        flash(resp, 'danger')
+                        return redirect('/book')
+                    else:
+                        remove_itin()
+                        
+                        flash('Successfully booked your trip!', 'success')
+                        return redirect('/account')                
+            else:
+                flash("You have to log in first, then go to the 'Book A Trip' page and click on 'Add another planet' to access this route.", "danger")
+                return redirect('/book')
         else:
             return render_template('book.html', form=form)
     else:
