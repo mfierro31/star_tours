@@ -8,9 +8,6 @@
     <!-- On mobile devices, the heights of some images shrink and I have no idea why -->
     <h3 class="text-center"><a class="text-warning" href="/planets/{{planet.name}}">{{planet.name}}</a></h3>
     <img src="static/images/{{planet.images[0].image_name}}" class="img-fluid home-planets rounded-circle" alt="{{planet.name}}">
-    <div class="row justify-content-center">
-      <a class="text-light font-weight-bold" href="/flights/{{planet.name}}">Book Flight</a>
-    </div>
   </div>
   {% endfor %}
 </div>

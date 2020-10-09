@@ -414,6 +414,13 @@ def submit_book_form():
                     resp = compare_curr_itin_to_itins(User.query.get(g.user.id), itin)
 
                     if resp != "You're all good!":
+                        itin.start_time = ''
+                        itin.end_time = ''
+                        itin.start_date = ''
+                        itin.end_date = ''
+
+                        db.session.commit()
+
                         flash(resp, 'danger')
                         return redirect('/book')
                     else:
@@ -461,6 +468,13 @@ def submit_book_form():
                     resp = compare_curr_itin_to_itins(User.query.get(g.user.id), itin)
 
                     if resp != "You're all good!":
+                        itin.start_time = ''
+                        itin.end_time = ''
+                        itin.start_date = ''
+                        itin.end_date = ''
+
+                        db.session.commit()
+
                         flash(resp, 'danger')
                         return redirect('/book')
                     else:
@@ -469,8 +483,11 @@ def submit_book_form():
                         flash('Successfully booked your trip!', 'success')
                         return redirect('/account')                
             else:
-                flash("You have to log in first, then go to the 'Book A Trip' page and click on 'Add another planet' to access this route.", "danger")
+                flash("You have to log in first, then go to the 'Book A Trip' page and click on 'Submit' to access this route.", "danger")
                 return redirect('/book')
+        else:
+            flash("Something went wrong when submitting the form.  Please try again.", "danger")
+            return redirect('/book')
     else:
         flash("You have to log in first to access this route.", "danger")
         return redirect('/')
@@ -488,7 +505,9 @@ def get_tours(planet_name):
 
 @app.route('/flights/<planet_name>')
 def get_flights(planet_name):
-    flights = Flight.query.filter((Flight.depart_planet == planet_name) | (Flight.arrive_planet == planet_name)).all()
+    planet = Planet.query.get_or_404(planet_name)
+
+    flights = Flight.query.filter((Flight.depart_planet == planet.name) | (Flight.arrive_planet == planet.name)).all()
     flights_serialized = [flight.serialize() for flight in flights]
 
     return (jsonify(flights=flights_serialized), 200)
@@ -593,7 +612,28 @@ def add_tour_to_itin():
         else:
             return (jsonify(msg="You have to log in first, then go to the 'Book A Trip' page and click on 'Add another planet' to access this route."), 200)
     else:
-        return (jsonify(msg="You need to log in first to do that!"), 200)    
+        return (jsonify(msg="You need to log in first to do that!"), 200)
+
+##########################################################################
+# Delete itinerary route    
+
+@app.route('/itineraries/delete/<int:id>', methods=["POST"])
+def delete_itin(id):
+    if g.user:
+        itin = Itinerary.query.get_or_404(id)
+
+        if g.user.id == itin.user_id:
+            db.session.delete(itin)
+            db.session.commit()
+
+            flash("Successfully deleted/cancelled trip!", "success")
+            return redirect('/account')
+        else:
+            flash("You don't have authorization to delete that itinerary.", "danger")
+            return redirect('/')
+    else:
+        flash("Please log in first.", "danger")
+        return redirect('/')
 
 ##########################################################################
 # Home page route

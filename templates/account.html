@@ -15,7 +15,7 @@
   <a class="btn btn-success" href="/account/edit/verify">Edit</a>
 </div>
 <h3 class="display-3 text-warning text-center">Itineraries</h3>
-{% if g.user.itineraries|length == 0 %}
+{% if g.user.itineraries|length == 0 or (g.user.itineraries|length == 1 and not g.user.itineraries[0].start_date) %}
 <p class="text-center text-md-left">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
 {% else %}
 <div class="row justify-content-start">
