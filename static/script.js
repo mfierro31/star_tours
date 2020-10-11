@@ -278,19 +278,22 @@ async function addTour() {
     $(`
     <p>Start Date/Time: ${resp.data.tour_start_datetime}</p>
     <p>End Date/Time: ${resp.data.tour_end_datetime}</p>
+    <p>Price: $${resp.data.tour_price}</p>
     `).insertAfter('#tour-date');
 
-    if (resp.data.departure_datetime && resp.data.arrival_datetime) {
+    if (resp.data.departure_datetime && resp.data.arrival_datetime && resp.data.d_flight_price) {
       $(`
       <p class="depart-arrive-datetimes">Depart Date/Time: ${resp.data.departure_datetime}</p>
       <p class="depart-arrive-datetimes">Arrival Date/Time: ${resp.data.arrival_datetime}</p>
+      <p class="depart-arrive-datetimes">Price: $${resp.data.d_flight_price}</p>
     `).insertAfter('#depart-flight');
     }
 
-    if (resp.data.return_datetime && resp.data.return_arrival_datetime) {
+    if (resp.data.return_datetime && resp.data.return_arrival_datetime && resp.data.r_flight_price) {
       $(`
       <p class="depart-arrive-datetimes">Depart Date/Time: ${resp.data.return_datetime}</p>
       <p class="depart-arrive-datetimes">Arrival Date/Time: ${resp.data.return_arrival_datetime}</p>
+      <p class="depart-arrive-datetimes">Price: $${resp.data.r_flight_price}</p>
     `).insertAfter('#return-flight');
     }
 
@@ -383,6 +386,32 @@ function changeFormInputs() {
     $('#no_return').prop('checked', true);
     $('#no_return').change();
   }
+}
+
+async function addUpTotal() {
+  const $noDepart = $('#no_depart').prop('checked');
+  const $noReturn = $('#no_return').prop('checked');
+  const $noTour = $('#no_tour').prop('checked');
+  const $departId = parseInt($('#depart-flight').val());
+  const $returnId = parseInt($('#return-flight').val());
+  const $tourId = parseInt($('#tour').val());
+
+  const requestObj = {
+    noDepart: $noDepart,
+    noReturn: $noReturn,
+    noTour: $noTour,
+    departId: $departId,
+    returnId: $returnId,
+    tourId: $tourId
+  };
+
+  const resp = await axios.post('/calculate-total', requestObj);
+
+  $('#total-amt').text(`$${resp.data.total}`);
+}
+
+function bookFormSubmit() {
+  $('#book-form').submit();
 }
 
 // On page load for our book page, load all the tours and flights for the selected planet

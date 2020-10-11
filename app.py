@@ -256,6 +256,11 @@ def book_trip():
         # visits to our book page (if any)
         if g.itin:
             itin = Itinerary.query.get(g.itin.id)
+            itin.start_time = ''
+            itin.end_time = ''
+            itin.start_date = ''
+            itin.end_date = ''
+            itin.total = 0
             itin.tours.clear()
             itin.flights.clear()
             itin.planets.clear()
@@ -352,6 +357,7 @@ def submit_book_form():
                         return redirect('/book')
 
                     itin.tours.append(tour)
+                    itin.total = itin.total + tour.price
                     db.session.commit()
 
                     # In cases where we have no flights and only tours or one flight and tours, we need to determine which tour
@@ -380,6 +386,7 @@ def submit_book_form():
 
                     if len(result2) == 1:
                         itin.flights.append(result2[0])
+                        db.session.commit()
 
                         # If there's only 1 flight, it matters if it's the depart or the return flight.  If it's the depart flight,
                         # then the start time and date for the itinerary will be that flight's start time and date.  If it's the
@@ -389,14 +396,18 @@ def submit_book_form():
                             itin.start_date = result2[0].depart_date
                             itin.end_time = latest_datetime_arr[0]
                             itin.end_date = latest_datetime_arr[1]
+                            itin.total += result2[0].price
+
+                            db.session.commit()
                         
                         if result2[0].depart_or_return == "return":
                             itin.start_time = earliest_datetime_arr[0]
                             itin.start_date = earliest_datetime_arr[1]
                             itin.end_time = result2[0].arrive_time
                             itin.end_date = result2[0].arrive_date
+                            itin.total += result2[0].price
 
-                        db.session.commit()
+                            db.session.commit()
 
                     if len(result2) == 2:
                         itin.flights.append(result2[0])
@@ -407,6 +418,8 @@ def submit_book_form():
                         itin.end_time = result2[1].arrive_time
                         itin.end_date = result2[1].arrive_date
 
+                        itin.total += result2[0].price + result2[1].price
+
                         db.session.commit()
 
                     # Compare user's past itineraries to this current one.  If any dates conflict with each other, we flash an 
@@ -414,13 +427,6 @@ def submit_book_form():
                     resp = compare_curr_itin_to_itins(User.query.get(g.user.id), itin)
 
                     if resp != "You're all good!":
-                        itin.start_time = ''
-                        itin.end_time = ''
-                        itin.start_date = ''
-                        itin.end_date = ''
-
-                        db.session.commit()
-
                         flash(resp, 'danger')
                         return redirect('/book')
                     else:
@@ -448,6 +454,8 @@ def submit_book_form():
                         itin.end_time = result[0].arrive_time
                         itin.end_date = result[0].arrive_date
 
+                        itin.total += result[0].price
+
                         db.session.commit()
 
                     if len(result) == 2:
@@ -463,18 +471,13 @@ def submit_book_form():
                         itin.end_time = result[1].arrive_time
                         itin.end_date = result[1].arrive_date
 
+                        itin.total += result[0].price + result[1].price
+
                         db.session.commit()
 
                     resp = compare_curr_itin_to_itins(User.query.get(g.user.id), itin)
 
                     if resp != "You're all good!":
-                        itin.start_time = ''
-                        itin.end_time = ''
-                        itin.start_date = ''
-                        itin.end_date = ''
-
-                        db.session.commit()
-
                         flash(resp, 'danger')
                         return redirect('/book')
                     else:
@@ -561,6 +564,7 @@ def add_tour_to_itin():
                     return (jsonify(msg=result3), 200)
 
                 itin.tours.append(tour)
+                itin.total += tour.price
 
                 db.session.commit()
 
@@ -568,7 +572,8 @@ def add_tour_to_itin():
                     resp_obj = {
                         "msg": "Successfully added tour to user's itinerary.",
                         "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
-                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}"
+                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}",
+                        "tour_price": f"{tour.price}"
                     }
 
                     return (jsonify(resp_obj), 200)
@@ -578,8 +583,10 @@ def add_tour_to_itin():
                         "msg": "Successfully added tour to user's itinerary.",
                         "departure_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
                         "arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
+                        "d_flight_price": f"{result2[0].price}",
                         "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
-                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}"                    
+                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}",
+                        "tour_price": f"{tour.price}"   
                     }
 
                     return (jsonify(resp_obj), 200)
@@ -589,8 +596,10 @@ def add_tour_to_itin():
                         "msg": "Successfully added tour to user's itinerary.",
                         "return_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
                         "return_arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
+                        "r_flight_price": f"{result2[0].price}",
                         "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
-                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}"
+                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}",
+                        "tour_price": f"{tour.price}"
                     }
 
                     return (jsonify(resp_obj), 200)
@@ -600,10 +609,13 @@ def add_tour_to_itin():
                         "msg": "Successfully added tour to user's itinerary.",
                         "departure_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
                         "arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
+                        "d_flight_price": f"{result2[0].price}",
                         "return_datetime": f"{result2[1].depart_time} {result2[1].prettify_depart_date()}",
                         "return_arrival_datetime": f"{result2[1].arrive_time} {result2[1].prettify_arrive_date()}",
+                        "r_flight_price": f"{result2[1].price}",
                         "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
-                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}"                   
+                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}",
+                        "tour_price": f"{tour.price}"                  
                     }
 
                     return (jsonify(resp_obj), 200)
@@ -613,6 +625,34 @@ def add_tour_to_itin():
             return (jsonify(msg="You have to log in first, then go to the 'Book A Trip' page and click on 'Add another planet' to access this route."), 200)
     else:
         return (jsonify(msg="You need to log in first to do that!"), 200)
+
+@app.route('/calculate-total', methods=["POST"])
+def calculate_total():
+    """Calculates user's total for trip they're about to book."""
+    itin = Itinerary.query.get_or_404(g.itin.id)
+
+    no_depart = request.json["noDepart"]
+    no_return = request.json["noReturn"]
+    no_tour = request.json["noTour"]
+    depart_id = request.json["departId"]
+    return_id = request.json["returnId"]
+    tour_id = request.json["tourId"]
+
+    total = itin.total
+
+    if not no_depart:
+        d_flight = Flight.query.get_or_404(depart_id)
+        total += d_flight.price
+
+    if not no_return:
+        r_flight = Flight.query.get_or_404(return_id)
+        total += r_flight.price
+
+    if not no_tour:
+        tour = Tour.query.get_or_404(tour_id)
+        total += tour.price
+
+    return (jsonify(total=num_with_commas(str(total))), 200)
 
 ##########################################################################
 # Delete itinerary route    

@@ -16,9 +16,9 @@
 </div>
 <h3 class="display-3 text-warning text-center">Itineraries</h3>
 {% if g.user.itineraries|length == 0 or (g.user.itineraries|length == 1 and not g.user.itineraries[0].start_date) %}
-<p class="text-center text-md-left">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
+<p class="text-center mb-5 text-md-left">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
 {% else %}
-<div class="row justify-content-start">
+<div class="row mb-5 justify-content-center">
   {% for itinerary in g.user.itineraries %}
   {% if itinerary.start_date %}
   <div class="col-12 col-md-6">
@@ -34,6 +34,7 @@
       <p class="ml-5">Arrive Planet: {{flight.arrive_planet}}</p>
       <p class="ml-5">Arrive Date: {{flight.prettify_arrive_date()}}</p>
       <p class="ml-5">Arrive Time: {{flight.arrive_time}}</p>
+      <p class="ml-5">Price: ${{flight.price}}</p>
       {% elif flight.depart_or_return == "return" %}
       <p>Return Flight: {{flight.flight_num}}</p>
       <p class="ml-5">Depart Planet: {{flight.depart_planet}}</p>
@@ -42,6 +43,7 @@
       <p class="ml-5">Arrive Planet: {{flight.arrive_planet}}</p>
       <p class="ml-5">Arrive Date: {{flight.prettify_arrive_date()}}</p>
       <p class="ml-5">Arrive Time: {{flight.arrive_time}}</p>
+      <p class="ml-5">Price: ${{flight.price}}</p>
       {% endif %}
       {% endfor %}
       {% endif %}
@@ -54,8 +56,10 @@
       <p class="double-tab">End Date: {{tour.prettify_end_date()}}</p>
       <p class="double-tab">Start Time: {{tour.start_time}}</p>
       <p class="double-tab">End Time: {{tour.end_time}}</p>
+      <p class="double-tab">Price: ${{tour.price}}</p>
       {% endfor %}
       {% endif %}
+      <h4><b>Total: ${{itinerary.add_commas_to_total()}}</b></h4>
       <div class="d-flex justify-content-center">
         <form action="/itineraries/delete/{{itinerary.id}}" method="post">
           <button class="btn btn-danger">Cancel / Delete Trip</button>

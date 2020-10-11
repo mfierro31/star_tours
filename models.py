@@ -280,6 +280,7 @@ class Flight(db.Model):
     depart_date = db.Column(db.Text)
     arrive_date = db.Column(db.Text)
     depart_or_return = db.Column(db.Text)
+    price = db.Column(db.Integer, nullable=False)
     flight_time = db.Column(db.Integer, nullable=False)
 
     def serialize(self):
@@ -291,7 +292,8 @@ class Flight(db.Model):
             "arrive_time": self.arrive_time,
             "depart_date": self.depart_date,
             "arrive_date": self.arrive_date,
-            "flight_time": self.prettify_flight_time()
+            "flight_time": self.prettify_flight_time(),
+            "price": self.price
         }
 
     def prettify_depart_date(self):
@@ -351,6 +353,7 @@ class Itinerary(db.Model):
     end_time = db.Column(db.Text)
     start_date = db.Column(db.Text)
     end_date = db.Column(db.Text)
+    total = db.Column(db.Integer, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     # Be careful with deleting individual items in these relationships - you could potentially delete the items in these 
@@ -374,6 +377,11 @@ class Itinerary(db.Model):
     flights = db.relationship('Flight', secondary="itineraries_flights", backref='itineraries')
     planets = db.relationship('Planet', secondary="itineraries_planets", backref='itineraries')
     tours = db.relationship('Tour', secondary="itineraries_tours", backref='itineraries')
+
+    def add_commas_to_total(self):
+        """Adds commas to large totals making them more clear to read."""
+        # This line magically puts commas in the right places for any large number (thousand, million, billion, trillion, etc.)
+        return f"{self.total:,d}"
 
     def prettify_start_date(self):
         date_as_datetime = datetime.strptime(self.start_date, '%Y-%m-%d')
@@ -459,6 +467,7 @@ class Tour(db.Model):
     start_date = db.Column(db.Text)
     end_date = db.Column(db.Text)
     duration = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False)
     planet_name = db.Column(db.Text, db.ForeignKey('planets.name'))
 
     images = db.relationship('TourImage', backref='tour', cascade='all, delete-orphan')
@@ -473,7 +482,8 @@ class Tour(db.Model):
             "start_date": self.start_date,
             "end_date": self.end_date,
             "duration": self.prettify_duration(),
-            "planet_name": self.planet_name
+            "planet_name": self.planet_name,
+            "price": self.price
         }
 
     # These methods do exactly the same thing as the instance methods in the Flight model do

@@ -11,14 +11,17 @@
   {% endfor %}
 </div>
 <div class="row justify-content-center">
-  <div class="col-12 col-md-4 text-center">
+  <div class="col-12 col-md-3 text-center">
     Start Time: {{tour.start_time}}
   </div>
-  <div class="col-12 col-md-4 text-center">
+  <div class="col-12 col-md-3 text-center">
     End Time: {{tour.end_time}}
   </div>
-  <div class="col-12 col-md-4 text-center">
+  <div class="col-12 col-md-3 text-center">
     Duration: {{tour.prettify_duration()}}
+  </div>
+  <div class="col-12 col-md-3 text-center">
+    Price: ${{tour.price}}
   </div>
 </div>
 <div class="my-5 row justify-content-center">
