@@ -200,14 +200,22 @@ def compare_curr_itin_to_itins(user, curr_itin):
     itin_start = curr_itin.get_start_datetime()
     itin_end = curr_itin.get_end_datetime()
 
-    for itinerary in user.itineraries:
-        itinerary_start = itinerary.get_start_datetime()
-        itinerary_end = itinerary.get_end_datetime()
+    if len(user.itineraries) == 0 or (len(user.itineraries) == 1 and user.itineraries[0].id == curr_itin.id):
+        return "You're all good!"
+    else:
+        for itinerary in user.itineraries:
+            if itinerary.id == curr_itin.id:
+                # continue allows us to skip over all of the code below it and continue on with the for loop.  So, we're basically
+                # saying here that if an itinerary in the for loop is the current itinerary, don't compare it, and keep moving on
+                # to the next itinerary in the loop
+                continue
+            itinerary_start = itinerary.get_start_datetime()
+            itinerary_end = itinerary.get_end_datetime()
 
-        if (itin_start >= itinerary_start and itin_start <= itinerary_end) or (itin_end >= itinerary_start and itin_end <= itinerary_end):
-            return f"Your current trip's start and end time conflicts with your previous trip starting on {itinerary.prettify_start_date()} at {itinerary.start_time} and ending on {itinerary.prettify_end_date()} at {itinerary.end_time}."
-        else:
-            return "You're all good!"
+            if (itin_start >= itinerary_start and itin_start <= itinerary_end) or (itin_end >= itinerary_start and itin_end <= itinerary_end):
+                return f"Your current trip's start and end time conflicts with your previous trip starting on {itinerary.prettify_start_date()} at {itinerary.start_time} and ending on {itinerary.prettify_end_date()} at {itinerary.end_time}."
+            else:
+                return "You're all good!"
 
 #################################################################################################################################
 # MODELS

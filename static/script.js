@@ -102,9 +102,9 @@ async function getTours() {
     $('#tour').append(`<option value="${tour.id}">
                         ${tour.name}
                         |
-                        Start Time: ${tour.start_time}
+                        Start: ${tour.start_time}
                         |
-                        End Time: ${tour.end_time}
+                        End: ${tour.end_time}
                         |
                         Duration: ${tour.duration}
                         |
@@ -126,13 +126,13 @@ async function getFlights() {
     if (flight.arrive_planet === $planet) {
       $('#depart-flight').append(`
       <option value="${flight.num}">
-        Flight ${flight.num}: ${flight.depart_planet} to ${flight.arrive_planet} 
+        ${flight.num}: ${flight.depart_planet} to ${flight.arrive_planet} 
         | 
-        Depart Time: ${flight.depart_time} 
+        Takeoff: ${flight.depart_time} 
         | 
-        Arrive Time: ${flight.arrive_time}
+        Arrive: ${flight.arrive_time}
         |
-        Flight Time: ${flight.flight_time}
+        Duration: ${flight.flight_time}
         |
         Price: $${flight.price}
       </option>
@@ -140,13 +140,13 @@ async function getFlights() {
     } else if (flight.depart_planet === $planet) {
       $('#return-flight').append(`
       <option value="${flight.num}">
-        Flight ${flight.num}: ${flight.depart_planet} to ${flight.arrive_planet} 
+        ${flight.num}: ${flight.depart_planet} to ${flight.arrive_planet} 
         | 
-        Depart Time: ${flight.depart_time} 
+        Takeoff: ${flight.depart_time} 
         | 
-        Arrive Time: ${flight.arrive_time}
+        Arrive: ${flight.arrive_time}
         |
-        Flight Time: ${flight.flight_time}
+        Duration: ${flight.flight_time}
         |
         Price: $${flight.price}
       </option>
