@@ -2,10 +2,22 @@
 {% block title %}Book{% endblock %}
 {% block content %}
 <h1 class="display-1 text-center text-warning mb-4">Book A Trip</h1>
-<p class="text-center">Use this form below to book tours and flights.  Your total will be displayed when you click 'Submit' and 
-  you'll be able to confirm the total before officially booking.  All payments are made in full either at your departing 
-  spaceport or to your tour guide, if you're just booking a tour.  You can select no flights and just tours or no tours and just 
-  flights, or two flights and many tours.  But you have to select at least one tour or one flight to submit the form.  If you want 
+<p class="text-center">Use this form below to book tours and flights.
+  <br>  
+  <br>
+  Your total will be displayed when you click 'Submit' and 
+  you'll be able to confirm the total before officially booking.
+  <br>  
+  <br>
+  <b class="text-primary"><i>All payments are made in full either at your departing 
+    spaceport or to your tour guide, if you're just booking a tour.</i></b>
+  <br>  
+  <br>
+  You can select no flights and just tours or no tours and just 
+  flights, or two flights and many tours.  But you have to select at least one tour or one flight to submit the form.
+  <br>  
+  <br>
+  If you want 
   to go to multiple planets on your trip, simply book a 2nd trip. And remember, all flights and tours run <b><i>DAILY</i></b>!
 </p>
 <form class="mt-5" id="book-form" action="/book/submit" method="POST">
@@ -149,7 +161,7 @@
   <div class="modal-dialog">
     <div class="modal-content bg-secondary">
       <div class="modal-header">
-        <h1 class="modal-title text-warning text-center" id="totalModalLabel">Your Total</h1>
+        <h1 class="modal-title text-warning w-100 text-center" id="totalModalLabel">Your Total</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -157,10 +169,10 @@
       <div class="modal-body">
         <h3 class="text-center" id="total-amt"></h3>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
         <a href="/book" class="btn btn-danger">Start Over</a>
-        <button type="button" onclick="bookFormSubmit();" class="btn btn-success">Book!</button>
+        <button type="button" onclick="bookFormSubmit();" class="btn btn-success">Book!</button>  
       </div>
     </div>
   </div>

@@ -237,7 +237,7 @@ def edit_account():
 def book_trip():
     if g.user:
         form = BookForm()
-        
+
         planets = [(p.name, p.name) for p in Planet.query.all()]
 
         form.planet.choices = planets
@@ -252,6 +252,29 @@ def book_trip():
         form.tour.choices = [(t.id, t.name) for t in Tour.query.all()]
         form.tour.choices.append((0, "None"))
 
+        # If someone clicks the 'book' button on a particular planet, flight, or tour, I want that planet, or flight or tour's 
+        # planet, to be selected
+        query_planet = request.args.get('planet', None)
+        query_tour = request.args.get('tour', None)
+        query_d_flight = request.args.get('d_flight', None)
+        query_r_flight = request.args.get('r_flight', None)
+
+        if query_planet:
+            planet = Planet.query.get_or_404(query_planet)
+            form.planet.data = planet.name
+
+        elif query_tour:
+            tour = Tour.query.get_or_404(query_tour)
+            form.planet.data = tour.planet_name
+
+        elif query_d_flight:
+            flight = Flight.query.get_or_404(query_d_flight)
+            form.planet.data = flight.arrive_planet
+
+        elif query_r_flight:
+            flight = Flight.query.get_or_404(query_r_flight)
+            form.planet.data = flight.depart_planet
+            
         # First thing we do is delete the tours, flights, and planets of any unfinished itineraries that we made in previous 
         # visits to our book page (if any)
         if g.itin:
@@ -432,7 +455,7 @@ def submit_book_form():
                     else:
                         remove_itin()
                         
-                        flash('Successfully booked your trip!', 'success')
+                        flash("Successfully booked your trip!  Thank you for choosing Star Tours!  Enjoy your trip!", 'success')
                         return redirect('/account')
                 else:
                     # If there are no tours
@@ -483,7 +506,7 @@ def submit_book_form():
                     else:
                         remove_itin()
                         
-                        flash('Successfully booked your trip!', 'success')
+                        flash("Successfully booked your trip!  Thank you for choosing Star Tours!  Enjoy your trip!", 'success')
                         return redirect('/account')                
             else:
                 flash("You have to log in first, then go to the 'Book A Trip' page and click on 'Submit' to access this route.", "danger")
@@ -629,30 +652,34 @@ def add_tour_to_itin():
 @app.route('/calculate-total', methods=["POST"])
 def calculate_total():
     """Calculates user's total for trip they're about to book."""
-    itin = Itinerary.query.get_or_404(g.itin.id)
+    if g.user and g.itin and g.user.id == g.itin.user_id:
+        itin = Itinerary.query.get_or_404(g.itin.id)
 
-    no_depart = request.json["noDepart"]
-    no_return = request.json["noReturn"]
-    no_tour = request.json["noTour"]
-    depart_id = request.json["departId"]
-    return_id = request.json["returnId"]
-    tour_id = request.json["tourId"]
+        no_depart = request.json["noDepart"]
+        no_return = request.json["noReturn"]
+        no_tour = request.json["noTour"]
+        depart_id = request.json["departId"]
+        return_id = request.json["returnId"]
+        tour_id = request.json["tourId"]
 
-    total = itin.total
+        total = itin.total
 
-    if not no_depart:
-        d_flight = Flight.query.get_or_404(depart_id)
-        total += d_flight.price
+        if not no_depart:
+            d_flight = Flight.query.get_or_404(depart_id)
+            total += d_flight.price
 
-    if not no_return:
-        r_flight = Flight.query.get_or_404(return_id)
-        total += r_flight.price
+        if not no_return:
+            r_flight = Flight.query.get_or_404(return_id)
+            total += r_flight.price
 
-    if not no_tour:
-        tour = Tour.query.get_or_404(tour_id)
-        total += tour.price
+        if not no_tour:
+            tour = Tour.query.get_or_404(tour_id)
+            total += tour.price
 
-    return (jsonify(total=num_with_commas(str(total))), 200)
+        return (jsonify(total=num_with_commas(str(total))), 200)
+    else:
+        flash("You have to log in first, go to the 'Book A Trip' page, and click 'Submit' to access this route.", "danger")
+        return redirect('/')
 
 ##########################################################################
 # Delete itinerary route    

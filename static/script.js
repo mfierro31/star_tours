@@ -107,6 +107,8 @@ async function getTours() {
                         End Time: ${tour.end_time}
                         |
                         Duration: ${tour.duration}
+                        |
+                        Price: $${tour.price}
                       </option>`);
   }
 
@@ -131,6 +133,8 @@ async function getFlights() {
         Arrive Time: ${flight.arrive_time}
         |
         Flight Time: ${flight.flight_time}
+        |
+        Price: $${flight.price}
       </option>
       `);
     } else if (flight.depart_planet === $planet) {
@@ -143,6 +147,8 @@ async function getFlights() {
         Arrive Time: ${flight.arrive_time}
         |
         Flight Time: ${flight.flight_time}
+        |
+        Price: $${flight.price}
       </option>
       `);
     }
