@@ -229,6 +229,7 @@ class User(db.Model):
     password = db.Column(db.Text, nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     itineraries = db.relationship('Itinerary', backref='user', cascade='all, delete-orphan')
 

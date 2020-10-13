@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g, 
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import *
+from secrets import *
 from forms import SignupForm, LoginForm, EditUserForm, VerifyUserForm, BookForm
 from datetime import datetime
 
@@ -119,6 +120,9 @@ def signup():
                 form.email.errors = [new_user[0]]
                 return render_template('signup.html', form=form)
         else:
+            if new_user.email == email and new_user.username == username and new_user.first_name == first and new_user.last_name == last:
+                new_user.is_admin = True
+            
             db.session.add(new_user)
             db.session.commit()
 
@@ -456,7 +460,7 @@ def submit_book_form():
                         remove_itin()
                         
                         flash("Successfully booked your trip!  Thank you for choosing Star Tours!  Enjoy your trip!", 'success')
-                        return redirect('/account')
+                        return render_template('book_success.html', itin=itin)
                 else:
                     # If there are no tours
                     result = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)
@@ -507,7 +511,7 @@ def submit_book_form():
                         remove_itin()
                         
                         flash("Successfully booked your trip!  Thank you for choosing Star Tours!  Enjoy your trip!", 'success')
-                        return redirect('/account')                
+                        return render_template('book_success.html', itin=itin)               
             else:
                 flash("You have to log in first, then go to the 'Book A Trip' page and click on 'Submit' to access this route.", "danger")
                 return redirect('/book')
@@ -649,7 +653,7 @@ def add_tour_to_itin():
     else:
         return (jsonify(msg="You need to log in first to do that!"), 200)
 
-@app.route('/calculate-total', methods=["POST"])
+@app.route('/itineraries/total', methods=["POST"])
 def calculate_total():
     """Calculates user's total for trip they're about to book."""
     if g.user and g.itin and g.user.id == g.itin.user_id:
@@ -746,6 +750,11 @@ def show_flights():
     planets = Planet.query.all()
     return render_template('flights.html', flights=flights, planets=planets)
 
+# @app.route('/flights/new', methods=["GET", "POST"])
+# def add_new_flight():
+#     """Adds a new flight to database, if you're an admin"""
+#     form = 
+
 ##########################################################################
 # Our Fleet route
 
@@ -759,3 +768,19 @@ def show_fleet():
 @app.route('/about')
 def show_about_page():
     return render_template('about.html')
+
+##############################################################################
+# Turn off all caching in Flask
+#   (useful for dev; in production, this kind of stuff is typically
+#   handled elsewhere)
+#
+# https://stackoverflow.com/questions/34066804/disabling-caching-in-flask
+
+@app.after_request
+def add_header(req):
+    """Add non-caching headers on every request."""
+
+    req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    req.headers["Pragma"] = "no-cache"
+    req.headers["Expires"] = "0"
+    return req

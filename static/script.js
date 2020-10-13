@@ -411,7 +411,7 @@ async function addUpTotal() {
     tourId: $tourId
   };
 
-  const resp = await axios.post('/calculate-total', requestObj);
+  const resp = await axios.post('/itineraries/total', requestObj);
 
   $('#total-amt').text(`$${resp.data.total}`);
 }
@@ -421,4 +421,6 @@ function bookFormSubmit() {
 }
 
 // On page load for our book page, load all the tours and flights for the selected planet
-$(document).ready($('#planet').change());
+$(document).ready(function() {
+  $('#planet').change();
+});
