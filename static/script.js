@@ -367,10 +367,6 @@ async function addTour() {
 }
 
 function changeFormInputs() {
-  $(':disabled').each(function() {
-    $(this).removeAttr('disabled');
-  });
-
   const $tourId = parseInt($('#tour').val());
   const $tourDate = $('#tour-date').val();
   const $departFlightDate = $('#depart-date').val();
@@ -379,18 +375,24 @@ function changeFormInputs() {
   const $returnFlightId = parseInt($('#return-flight').val());
 
   if (!$tourId || !$tourDate) {
-    $('#no_tour').prop('checked', true);
-    $('#no_tour').change();
+    if ($('#no_tour').prop('disabled', false)) {
+      $('#no_tour').prop('checked', true);
+      $('#no_tour').change();
+    }
   }
 
   if (!$departFlightId || !$departFlightDate) {
-    $('#no_depart').prop('checked', true);
-    $('#no_depart').change();
+    if ($('#no_depart').prop('disabled', false)) {
+      $('#no_depart').prop('checked', true);
+      $('#no_depart').change();
+    }
   }
 
   if (!$returnFlightId || !$returnFlightDate) {
-    $('#no_return').prop('checked', true);
-    $('#no_return').change();
+    if ($('#no_return').prop('disabled', false)) {
+      $('#no_return').prop('checked', true);
+      $('#no_return').change();
+    }
   }
 }
 
@@ -414,6 +416,10 @@ async function addUpTotal() {
   const resp = await axios.post('/itineraries/total', requestObj);
 
   $('#total-amt').text(`$${resp.data.total}`);
+}
+
+function unDisable() {
+  $(':disabled').prop('disabled', false);
 }
 
 function bookFormSubmit() {

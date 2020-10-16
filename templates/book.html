@@ -20,7 +20,7 @@
   If you want 
   to go to multiple planets on your trip, simply book a 2nd trip. And remember, all flights and tours run <b><i>DAILY</i></b>!
 </p>
-<form class="mt-5" id="book-form" action="/book/submit" method="POST">
+<form class="mt-5" id="book-form" action="/book/submit" method="POST" onsubmit="unDisable();">
   {{form.hidden_tag()}}
 
   <h2 class="text-center text-warning">Where Do You Want To Go?</h2>

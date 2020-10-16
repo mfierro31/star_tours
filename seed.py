@@ -426,44 +426,44 @@ db.session.commit()
 
 # Adding flights
 
-f1 = Flight(flight_num=5700, depart_planet="Earth", arrive_planet="Coruscant", depart_time="07:00 AM", arrive_time="07:00 PM", flight_time=12, price=250)
-f2 = Flight(flight_num=5701, depart_planet="Coruscant", arrive_planet="Earth", depart_time="08:00 PM", arrive_time="08:00 AM", flight_time=12, price=250)
-f3 = Flight(flight_num=5710, depart_planet="Earth", arrive_planet="Endor", depart_time="08:00 AM", arrive_time="09:00 PM", flight_time=13, price=285)
-f4 = Flight(flight_num=5711, depart_planet="Endor", arrive_planet="Earth", depart_time="10:00 PM", arrive_time="11:00 AM", flight_time=13, price=285)
-f5 = Flight(flight_num=5720, depart_planet="Earth", arrive_planet="Mygeeto", depart_time="12:00 PM", arrive_time="02:00 AM", flight_time=14, price=320)
-f6 = Flight(flight_num=5721, depart_planet="Mygeeto", arrive_planet="Earth", depart_time="03:00 AM", arrive_time="05:00 PM", flight_time=14, price=320)
-f7 = Flight(flight_num=5730, depart_planet="Earth", arrive_planet="Bespin", depart_time="11:00 AM", arrive_time="03:00 AM", flight_time=16, price=390)
-f8 = Flight(flight_num=5731, depart_planet="Bespin", arrive_planet="Earth", depart_time="04:00 AM", arrive_time="08:00 PM", flight_time=16, price=390)
-f9 = Flight(flight_num=5740, depart_planet="Earth", arrive_planet="Hoth", depart_time="02:45 PM", arrive_time="06:45 AM", flight_time=16, price=390)
-f10 = Flight(flight_num=5741, depart_planet="Hoth", arrive_planet="Earth", depart_time="07:45 AM", arrive_time="11:45 PM", flight_time=16, price=390)
-f11 = Flight(flight_num=5750, depart_planet="Earth", arrive_planet="Polis Massa", depart_time="04:00 PM", arrive_time="09:00 AM", flight_time=17, price=425)
-f12 = Flight(flight_num=5751, depart_planet="Polis Massa", arrive_planet="Earth", depart_time="10:00 AM", arrive_time="03:00 AM", flight_time=17, price=425)
-f13 = Flight(flight_num=5760, depart_planet="Earth", arrive_planet="Mustafar", depart_time="05:30 PM", arrive_time="11:30 AM", flight_time=18, price=460)
-f14 = Flight(flight_num=5761, depart_planet="Mustafar", arrive_planet="Earth", depart_time="12:30 PM", arrive_time="06:30 AM", flight_time=18, price=460)
-f15 = Flight(flight_num=5770, depart_planet="Earth", arrive_planet="Dagobah", depart_time="02:45 PM", arrive_time="09:45 AM", flight_time=19, price=495)
-f16 = Flight(flight_num=5771, depart_planet="Dagobah", arrive_planet="Earth", depart_time="10:45 AM", arrive_time="05:45 AM", flight_time=19, price=495)
-f17 = Flight(flight_num=5780, depart_planet="Earth", arrive_planet="Utapau", depart_time="06:30 PM", arrive_time="02:30 PM", flight_time=20, price=530)
-f18 = Flight(flight_num=5781, depart_planet="Utapau", arrive_planet="Earth", depart_time="03:30 PM", arrive_time="11:30 AM", flight_time=20, price=530)
-f19 = Flight(flight_num=5790, depart_planet="Earth", arrive_planet="Kashyyyk", depart_time="01:45 PM", arrive_time="06:45 AM", flight_time=17, price=425)
-f20 = Flight(flight_num=5791, depart_planet="Kashyyyk", arrive_planet="Earth", depart_time="07:45 AM", arrive_time="12:45 AM", flight_time=17, price=425)
-f21 = Flight(flight_num=5800, depart_planet="Earth", arrive_planet="Yavin IV", depart_time="03:00 PM", arrive_time="10:00 AM", flight_time=19, price=495)
-f22 = Flight(flight_num=5801, depart_planet="Yavin IV", arrive_planet="Earth", depart_time="11:00 AM", arrive_time="06:00 AM", flight_time=19, price=495)
-f23 = Flight(flight_num=5810, depart_planet="Earth", arrive_planet="Naboo", depart_time="09:00 AM", arrive_time="06:00 AM", flight_time=21, price=565)
-f24 = Flight(flight_num=5811, depart_planet="Naboo", arrive_planet="Earth", depart_time="07:00 AM", arrive_time="04:00 AM", flight_time=21, price=565)
-f25 = Flight(flight_num=5820, depart_planet="Earth", arrive_planet="Tatooine", depart_time="08:00 AM", arrive_time="08:00 AM", flight_time=24, price=670)
-f26 = Flight(flight_num=5821, depart_planet="Tatooine", arrive_planet="Earth", depart_time="09:00 AM", arrive_time="09:00 AM", flight_time=24, price=670)
-f27 = Flight(flight_num=5830, depart_planet="Earth", arrive_planet="Geonosis", depart_time="12:45 PM", arrive_time="12:45 PM", flight_time=24, price=670)
-f28 = Flight(flight_num=5831, depart_planet="Geonosis", arrive_planet="Earth", depart_time="01:45 PM", arrive_time="01:45 PM", flight_time=24, price=670)
-f29 = Flight(flight_num=5840, depart_planet="Earth", arrive_planet="Felucia", depart_time="07:50 AM", arrive_time="07:50 AM", flight_time=24, price=670)
-f30 = Flight(flight_num=5841, depart_planet="Felucia", arrive_planet="Earth", depart_time="08:50 AM", arrive_time="08:50 AM", flight_time=24, price=670)
-f31 = Flight(flight_num=5850, depart_planet="Earth", arrive_planet="Cato Neimoidia", depart_time="10:50 AM", arrive_time="01:50 AM", flight_time=15, price=355)
-f32 = Flight(flight_num=5851, depart_planet="Cato Neimoidia", arrive_planet="Earth", depart_time="02:50 AM", arrive_time="05:50 PM", flight_time=15, price=355)
-f33 = Flight(flight_num=5860, depart_planet="Earth", arrive_planet="Kamino", depart_time="06:00 AM", arrive_time="07:00 AM", flight_time=25, price=705)
-f34 = Flight(flight_num=5861, depart_planet="Kamino", arrive_planet="Earth", depart_time="08:00 AM", arrive_time="09:00 AM", flight_time=25, price=705)
-f35 = Flight(flight_num=5870, depart_planet="Earth", arrive_planet="Scarif", depart_time="05:30 AM", arrive_time="06:30 AM", flight_time=25, price=705)
-f36 = Flight(flight_num=5871, depart_planet="Scarif", arrive_planet="Earth", depart_time="07:30 AM", arrive_time="08:30 AM", flight_time=25, price=705)
-f37 = Flight(flight_num=5702, depart_planet="Earth", arrive_planet="Coruscant", depart_time="09:45 AM", arrive_time="09:45 PM", flight_time=12, price=250)
-f38 = Flight(flight_num=5703, depart_planet="Coruscant", arrive_planet="Earth", depart_time="10:45 PM", arrive_time="10:45 AM", flight_time=12, price=250)
+f1 = Flight(flight_num=5700, depart_planet="Earth", arrive_planet="Coruscant", depart_time="07:00 AM", arrive_time="07:00 PM", flight_time=12, price=250, depart_or_return="depart")
+f2 = Flight(flight_num=5701, depart_planet="Coruscant", arrive_planet="Earth", depart_time="08:00 PM", arrive_time="08:00 AM", flight_time=12, price=250, depart_or_return="return")
+f3 = Flight(flight_num=5710, depart_planet="Earth", arrive_planet="Endor", depart_time="08:00 AM", arrive_time="09:00 PM", flight_time=13, price=285, depart_or_return="depart")
+f4 = Flight(flight_num=5711, depart_planet="Endor", arrive_planet="Earth", depart_time="10:00 PM", arrive_time="11:00 AM", flight_time=13, price=285, depart_or_return="return")
+f5 = Flight(flight_num=5720, depart_planet="Earth", arrive_planet="Mygeeto", depart_time="12:00 PM", arrive_time="02:00 AM", flight_time=14, price=320, depart_or_return="depart")
+f6 = Flight(flight_num=5721, depart_planet="Mygeeto", arrive_planet="Earth", depart_time="03:00 AM", arrive_time="05:00 PM", flight_time=14, price=320, depart_or_return="return")
+f7 = Flight(flight_num=5730, depart_planet="Earth", arrive_planet="Bespin", depart_time="11:00 AM", arrive_time="03:00 AM", flight_time=16, price=390, depart_or_return="depart")
+f8 = Flight(flight_num=5731, depart_planet="Bespin", arrive_planet="Earth", depart_time="04:00 AM", arrive_time="08:00 PM", flight_time=16, price=390, depart_or_return="return")
+f9 = Flight(flight_num=5740, depart_planet="Earth", arrive_planet="Hoth", depart_time="02:45 PM", arrive_time="06:45 AM", flight_time=16, price=390, depart_or_return="depart")
+f10 = Flight(flight_num=5741, depart_planet="Hoth", arrive_planet="Earth", depart_time="07:45 AM", arrive_time="11:45 PM", flight_time=16, price=390, depart_or_return="return")
+f11 = Flight(flight_num=5750, depart_planet="Earth", arrive_planet="Polis Massa", depart_time="04:00 PM", arrive_time="09:00 AM", flight_time=17, price=425, depart_or_return="depart")
+f12 = Flight(flight_num=5751, depart_planet="Polis Massa", arrive_planet="Earth", depart_time="10:00 AM", arrive_time="03:00 AM", flight_time=17, price=425, depart_or_return="return")
+f13 = Flight(flight_num=5760, depart_planet="Earth", arrive_planet="Mustafar", depart_time="05:30 PM", arrive_time="11:30 AM", flight_time=18, price=460, depart_or_return="depart")
+f14 = Flight(flight_num=5761, depart_planet="Mustafar", arrive_planet="Earth", depart_time="12:30 PM", arrive_time="06:30 AM", flight_time=18, price=460, depart_or_return="return")
+f15 = Flight(flight_num=5770, depart_planet="Earth", arrive_planet="Dagobah", depart_time="02:45 PM", arrive_time="09:45 AM", flight_time=19, price=495, depart_or_return="depart")
+f16 = Flight(flight_num=5771, depart_planet="Dagobah", arrive_planet="Earth", depart_time="10:45 AM", arrive_time="05:45 AM", flight_time=19, price=495, depart_or_return="return")
+f17 = Flight(flight_num=5780, depart_planet="Earth", arrive_planet="Utapau", depart_time="06:30 PM", arrive_time="02:30 PM", flight_time=20, price=530, depart_or_return="depart")
+f18 = Flight(flight_num=5781, depart_planet="Utapau", arrive_planet="Earth", depart_time="03:30 PM", arrive_time="11:30 AM", flight_time=20, price=530, depart_or_return="return")
+f19 = Flight(flight_num=5790, depart_planet="Earth", arrive_planet="Kashyyyk", depart_time="01:45 PM", arrive_time="06:45 AM", flight_time=17, price=425, depart_or_return="depart")
+f20 = Flight(flight_num=5791, depart_planet="Kashyyyk", arrive_planet="Earth", depart_time="07:45 AM", arrive_time="12:45 AM", flight_time=17, price=425, depart_or_return="return")
+f21 = Flight(flight_num=5800, depart_planet="Earth", arrive_planet="Yavin IV", depart_time="03:00 PM", arrive_time="10:00 AM", flight_time=19, price=495, depart_or_return="depart")
+f22 = Flight(flight_num=5801, depart_planet="Yavin IV", arrive_planet="Earth", depart_time="11:00 AM", arrive_time="06:00 AM", flight_time=19, price=495, depart_or_return="return")
+f23 = Flight(flight_num=5810, depart_planet="Earth", arrive_planet="Naboo", depart_time="09:00 AM", arrive_time="06:00 AM", flight_time=21, price=565, depart_or_return="depart")
+f24 = Flight(flight_num=5811, depart_planet="Naboo", arrive_planet="Earth", depart_time="07:00 AM", arrive_time="04:00 AM", flight_time=21, price=565, depart_or_return="return")
+f25 = Flight(flight_num=5820, depart_planet="Earth", arrive_planet="Tatooine", depart_time="08:00 AM", arrive_time="08:00 AM", flight_time=24, price=670, depart_or_return="depart")
+f26 = Flight(flight_num=5821, depart_planet="Tatooine", arrive_planet="Earth", depart_time="09:00 AM", arrive_time="09:00 AM", flight_time=24, price=670, depart_or_return="return")
+f27 = Flight(flight_num=5830, depart_planet="Earth", arrive_planet="Geonosis", depart_time="12:45 PM", arrive_time="12:45 PM", flight_time=24, price=670, depart_or_return="depart")
+f28 = Flight(flight_num=5831, depart_planet="Geonosis", arrive_planet="Earth", depart_time="01:45 PM", arrive_time="01:45 PM", flight_time=24, price=670, depart_or_return="return")
+f29 = Flight(flight_num=5840, depart_planet="Earth", arrive_planet="Felucia", depart_time="07:50 AM", arrive_time="07:50 AM", flight_time=24, price=670, depart_or_return="depart")
+f30 = Flight(flight_num=5841, depart_planet="Felucia", arrive_planet="Earth", depart_time="08:50 AM", arrive_time="08:50 AM", flight_time=24, price=670, depart_or_return="return")
+f31 = Flight(flight_num=5850, depart_planet="Earth", arrive_planet="Cato Neimoidia", depart_time="10:50 AM", arrive_time="01:50 AM", flight_time=15, price=355, depart_or_return="depart")
+f32 = Flight(flight_num=5851, depart_planet="Cato Neimoidia", arrive_planet="Earth", depart_time="02:50 AM", arrive_time="05:50 PM", flight_time=15, price=355, depart_or_return="return")
+f33 = Flight(flight_num=5860, depart_planet="Earth", arrive_planet="Kamino", depart_time="06:00 AM", arrive_time="07:00 AM", flight_time=25, price=705, depart_or_return="depart")
+f34 = Flight(flight_num=5861, depart_planet="Kamino", arrive_planet="Earth", depart_time="08:00 AM", arrive_time="09:00 AM", flight_time=25, price=705, depart_or_return="return")
+f35 = Flight(flight_num=5870, depart_planet="Earth", arrive_planet="Scarif", depart_time="05:30 AM", arrive_time="06:30 AM", flight_time=25, price=705, depart_or_return="depart")
+f36 = Flight(flight_num=5871, depart_planet="Scarif", arrive_planet="Earth", depart_time="07:30 AM", arrive_time="08:30 AM", flight_time=25, price=705, depart_or_return="return")
+f37 = Flight(flight_num=5702, depart_planet="Earth", arrive_planet="Coruscant", depart_time="09:45 AM", arrive_time="09:45 PM", flight_time=12, price=250, depart_or_return="depart")
+f38 = Flight(flight_num=5703, depart_planet="Coruscant", arrive_planet="Earth", depart_time="10:45 PM", arrive_time="10:45 AM", flight_time=12, price=250, depart_or_return="return")
 
 db.session.add_all([f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38])
 db.session.commit()
@@ -478,34 +478,32 @@ db.session.commit()
 # Adding an itinerary
 
 itin = Itinerary(user_id=me.id)
+db.session.add(itin)
+db.session.commit()
 
-f1.depart_date = '2020-09-30'
-f1.set_arrive_date()
-f1.depart_or_return = "depart"
+d_flight_dates = FlightDate(depart_date='2020-09-30', arrive_date=set_arrive_end_date('2020-09-30', f1.depart_time, f1.flight_time), flight_num=f1.flight_num, itinerary_id=itin.id)
 
-f2.depart_date = '2020-10-15'
-f2.set_arrive_date()
-f2.depart_or_return = "return"
+r_flight_dates = FlightDate(depart_date='2020-10-15', arrive_date=set_arrive_end_date('2020-10-15', f2.depart_time, f2.flight_time), flight_num=f2.flight_num, itinerary_id=itin.id)
 
 itin.flights.append(f1)
 itin.flights.append(f2)
 
-t17.start_date = '2020-10-05'
-t17.set_end_date()
+t17_dates = TourDate(start_date='2020-10-05', end_date=set_arrive_end_date('2020-10-05', t17.start_time, t17.duration), tour_id=t17.id, itinerary_id=itin.id)
 
-t18.start_date = '2020-10-10'
-t18.set_end_date()
+t18_dates = TourDate(start_date='2020-10-10', end_date=set_arrive_end_date('2020-10-10', t18.start_time, t18.duration), tour_id=t18.id, itinerary_id=itin.id)
 
 itin.tours.append(t17)
 itin.tours.append(t18)
 
+db.session.add_all([d_flight_dates, r_flight_dates, t17_dates, t18_dates])
+db.session.commit()
+
 itin.planets.append(Planet.query.get("Coruscant"))
 
-itin.start_date = f1.depart_date
-itin.end_date = f2.arrive_date
+itin.start_date = d_flight_dates.depart_date
+itin.end_date = r_flight_dates.arrive_date
 itin.start_time = f1.depart_time
 itin.end_time = f2.arrive_time
 itin.total = 630
 
-db.session.add(itin)
 db.session.commit()
