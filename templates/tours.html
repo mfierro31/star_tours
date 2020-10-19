@@ -11,17 +11,45 @@
 -->
 <div id="tour-title-row" class="row justify-content-around">
   {% for tour in planet.tours %}
-  <div class="col-12 col-md-3">
-    <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
-  </div>
+    {% if planet.tours|length == 1 %}
+    <div class="col-12">
+      <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
+    </div>
+    {% elif planet.tours|length == 2 %}
+    <div class="col-md-6">
+      <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
+    </div>
+    {% elif planet.tours|length == 3 %}
+    <div class="col-md-4">
+      <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
+    </div>
+    {% else %}
+    <div class="col-md-3">
+      <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
+    </div>
+    {% endif %}
   {% endfor %}
 </div>
 
 <div id="tour-img-row" class="mb-5 row justify-content-around">
   {% for tour in planet.tours %}
-  <div class="col-12 col-md-3">
-    <img class="tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
-  </div>
+    {% if planet.tours|length == 1 %}
+    <div class="col-12">
+      <img class="tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
+    </div>
+    {% elif planet.tours|length == 2 %}
+    <div class="col-md-6">
+      <img class="tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
+    </div>
+    {% elif planet.tours|length == 3 %}
+    <div class="col-md-4">
+      <img class="tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
+    </div>
+    {% else %}
+    <div class="col-md-3">
+      <img class="tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
+    </div>
+    {% endif %}
   {% endfor %}
 </div>
 <!------------------------------------------------------------------------------------------------------------------->

@@ -1,30 +1,35 @@
 {% extends 'base.html' %}
 {% block title %}Account{% endblock %}
 {% block content %}
-<h1 class="display-1 text-warning text-center">Account</h1>
+<h1 class="display-1 text-warning text-center mb-5">Account</h1>
+
 <h3 class="display-3 text-warning text-center">Personal Info.</h3>
-<h3 class="text-center text-md-left text-warning">Name</h3>
-<p class="text-center text-md-left">{{g.user.first_name}} {{g.user.last_name}}</p>
-<h3 class="text-center text-md-left text-warning">Email</h3>
-<p class="text-center text-md-left">{{g.user.email}}</p>
-<h3 class="text-center text-md-left text-warning">Username</h3>
-<p class="text-center text-md-left">{{g.user.username}}</p>
-<h3 class="text-center text-md-left text-warning">Password</h3>
-<p class="text-center text-md-left">************</p>
-<div class="d-flex justify-content-center justify-content-md-start">
-  <a class="btn btn-success" href="/account/edit/verify">Edit</a>
+
+
+<h3 class="text-center text-warning">Name</h3>
+<p class="text-center">{{g.user.first_name}} {{g.user.last_name}}</p>
+<h3 class="text-center text-warning">Email</h3>
+<p class="text-center">{{g.user.email}}</p>
+<h3 class="text-center text-warning">Username</h3>
+<p class="text-center">{{g.user.username}}</p>
+<h3 class="text-center text-warning">Password</h3>
+<p class="text-center">************</p>
+<div class="d-flex justify-content-center">
+  <a class="btn btn-success mr-4" href="/account/edit/verify">Edit Info.</a>
+  <form action="/user/delete" method="POST"><button class="btn btn-danger">Delete Account</button></form>
 </div>
 
-<h3 class="display-3 text-warning text-center">Trips</h3>
+<h3 class="mt-5 display-3 text-warning text-center">Trips</h3>
 {% if g.user.itineraries|length == 0 or (g.user.itineraries|length == 1 and not g.user.itineraries[0].start_date) %}
 <p class="text-center mb-5 text-md-left">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
 {% else %}
 <div class="row mb-5 justify-content-center">
   {% for itinerary in g.user.itineraries %}
-  {% if itinerary.start_date %}
+  {% if itinerary.start_date and itinerary.end_date %}
   <div class="col-12 col-md-6">
     <div class="jumbotron bg-secondary">
-      <h3 class="text-warning">Trip starting {{g.prettify_date(itinerary.start_date)}}</h3>
+      <h2 class="text-warning text-center">{{itinerary.planets[0].name}}</h2>
+      <h3 class="text-warning text-center">{{g.prettify_date(itinerary.start_date)}} - {{g.prettify_date(itinerary.end_date)}}</h3>
       {% if itinerary.flights|length > 0 %}
       {% for i in range(itinerary.flights|length) %}
       {% if itinerary.flights[i].depart_or_return == "depart" %}

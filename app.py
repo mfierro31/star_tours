@@ -778,6 +778,21 @@ def delete_itin(id):
         return redirect('/')
 
 ##########################################################################
+# Delete user route
+
+@app.route('/user/delete', methods=["POST"])
+def delete_user():
+    if g.user:
+        user = User.query.get(g.user.id)
+        db.session.delete(user)
+        db.session.commit()
+
+        flash('Successfully deleted your account!', 'success')
+        return redirect('/')
+    else:
+        flash('You need to log in first to access this route.', 'danger')
+        return redirect('/')
+##########################################################################
 # Home page route
 
 @app.route('/')
