@@ -14,7 +14,8 @@
 <div class="d-flex justify-content-center justify-content-md-start">
   <a class="btn btn-success" href="/account/edit/verify">Edit</a>
 </div>
-<h3 class="display-3 text-warning text-center">Itineraries</h3>
+
+<h3 class="display-3 text-warning text-center">Trips</h3>
 {% if g.user.itineraries|length == 0 or (g.user.itineraries|length == 1 and not g.user.itineraries[0].start_date) %}
 <p class="text-center mb-5 text-md-left">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
 {% else %}
@@ -23,40 +24,35 @@
   {% if itinerary.start_date %}
   <div class="col-12 col-md-6">
     <div class="jumbotron bg-secondary">
-      <h3 class="text-warning">Trip starting {{itinerary.prettify_start_date()}}</h3>
+      <h3 class="text-warning">Trip starting {{g.prettify_date(itinerary.start_date)}}</h3>
       {% if itinerary.flights|length > 0 %}
-      {% for flight in itinerary.flights %}
-      {% if flight.depart_or_return == "depart" %}
-      <p>Depart Flight: {{flight.flight_num}}</p>
-      <p class="ml-5">Depart Planet: {{flight.depart_planet}}</p>
-      <p class="ml-5">Depart Date: {{flight.prettify_depart_date()}}</p>
-      <p class="ml-5">Depart Time: {{flight.depart_time}}</p>
-      <p class="ml-5">Arrive Planet: {{flight.arrive_planet}}</p>
-      <p class="ml-5">Arrive Date: {{flight.prettify_arrive_date()}}</p>
-      <p class="ml-5">Arrive Time: {{flight.arrive_time}}</p>
-      <p class="ml-5">Price: ${{flight.price}}</p>
-      {% elif flight.depart_or_return == "return" %}
-      <p>Return Flight: {{flight.flight_num}}</p>
-      <p class="ml-5">Depart Planet: {{flight.depart_planet}}</p>
-      <p class="ml-5">Depart Date: {{flight.prettify_depart_date()}}</p>
-      <p class="ml-5">Depart Time: {{flight.depart_time}}</p>
-      <p class="ml-5">Arrive Planet: {{flight.arrive_planet}}</p>
-      <p class="ml-5">Arrive Date: {{flight.prettify_arrive_date()}}</p>
-      <p class="ml-5">Arrive Time: {{flight.arrive_time}}</p>
-      <p class="ml-5">Price: ${{flight.price}}</p>
+      {% for i in range(itinerary.flights|length) %}
+      {% if itinerary.flights[i].depart_or_return == "depart" %}
+      <p>Depart Flight: {{itinerary.flights[i].flight_num}}</p>
+      <p class="ml-5">Depart Planet: {{itinerary.flights[i].depart_planet}}</p>
+      <p class="ml-5">Depart Time/Date: {{itinerary.flights[i].depart_time}} {{g.prettify_date(itinerary.flight_dates[i].depart_date)}}</p>
+      <p class="ml-5">Arrive Planet: {{itinerary.flights[i].arrive_planet}}</p>
+      <p class="ml-5">Arrive Time/Date: {{itinerary.flights[i].arrive_time}} {{g.prettify_date(itinerary.flight_dates[i].arrive_date)}}</p>
+      <p class="ml-5">Price: ${{itinerary.flights[i].price}}</p>
+
+      {% elif itinerary.flights[i].depart_or_return == "return" %}
+      <p>Return Flight: {{itinerary.flights[i].flight_num}}</p>
+      <p class="ml-5">Depart Planet: {{itinerary.flights[i].depart_planet}}</p>
+      <p class="ml-5">Depart Time/Date: {{itinerary.flights[i].depart_time}} {{g.prettify_date(itinerary.flight_dates[i].depart_date)}}</p>
+      <p class="ml-5">Arrive Planet: {{itinerary.flights[i].arrive_planet}}</p>
+      <p class="ml-5">Arrive Time/Date: {{itinerary.flights[i].arrive_time}} {{g.prettify_date(itinerary.flight_dates[i].arrive_date)}}</p>
+      <p class="ml-5">Price: ${{itinerary.flights[i].price}}</p>
       {% endif %}
       {% endfor %}
       {% endif %}
       
       {% if itinerary.tours|length > 0 %}
       <p>Tours:</p>
-      {% for tour in itinerary.tours %}
-      <p class="ml-5">{{tour.name}}</p>
-      <p class="double-tab">Start Date: {{tour.prettify_start_date()}}</p>
-      <p class="double-tab">End Date: {{tour.prettify_end_date()}}</p>
-      <p class="double-tab">Start Time: {{tour.start_time}}</p>
-      <p class="double-tab">End Time: {{tour.end_time}}</p>
-      <p class="double-tab">Price: ${{tour.price}}</p>
+      {% for i in range(itinerary.tours|length) %}
+      <p class="ml-5">{{itinerary.tours[i].name}}</p>
+      <p class="double-tab">Start Time/Date: {{itinerary.tours[i].start_time}} {{g.prettify_date(itinerary.tour_dates[i].start_date)}}</p>
+      <p class="double-tab">End Time/Date: {{itinerary.tours[i].end_time}} {{g.prettify_date(itinerary.tour_dates[i].end_date)}}</p>
+      <p class="double-tab">Price: ${{itinerary.tours[i].price}}</p>
       {% endfor %}
       {% endif %}
       <h4><b>Total: ${{itinerary.add_commas_to_total()}}</b></h4>

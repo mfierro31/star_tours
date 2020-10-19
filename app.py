@@ -290,17 +290,17 @@ def book_trip():
             itin.start_date = ''
             itin.end_date = ''
             itin.total = 0
-##################################################################################################################################################################################################################
-# Still not sure about this part... don't know if deleting the dates deletes them from the itinerary and if so, don't know if I
-# can clear an already empty itin.tour_dates/itin.flight_dates.  It may give an error.  Should test in ipython.
+
+            # Since we're deleting the dates from the entire database, we don't need to clear them out like with tours, flights,
+            # and planets.  The itin.tour_dates and itin.flight_dates will already be cleared out.
             for tour_date in itin.tour_dates:
                 db.session.delete(tour_date)
+                db.session.commit()
 
             for flight_date in itin.flight_dates:
                 db.session.delete(flight_date)
+                db.session.commit()
 
-            itin.tour_dates.clear()
-            itin.flight_dates.clear()
             itin.tours.clear()
             itin.flights.clear()
             itin.planets.clear()
@@ -377,23 +377,31 @@ def submit_book_form():
                         flash("Your selected planet doesn't match the tour's planet.  Please select the correct planet for the tour.", "danger")
                         return redirect('/book')                
 
-                    # Checks to see if the currently selected flights conflict with one another
-                    result1 = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date, itin)
-                    # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
-                    result2 = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, itin)
+                    # If there are already flight dates added to the itinerary and database from the adding tours route, plug
+                    # those into the function below, if not, don't include them and let the default arguments do their thing
+
+                    if len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "depart":
+                        # Checks to see if selected flights' dates and times conflict with one another or with the tour's date and time
+                        result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin, d_flight_dates=itin.flight_dates[0])
+
+                    elif len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "return":
+                        result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin, r_flight_dates=itin.flight_dates[0])
+
+                    elif len(itin.flight_dates) == 2:
+                        result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin, itin.flight_dates[0], itin.flight_dates[1])
+
+                    else:
+                        result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin)
+
                     # Checks to see if the current tour's start and end datetime conflict with any other tours' start and end datetimes
-                    result3 = compare_curr_tour_to_itin_tours(itin, tour)
+                    result2 = compare_curr_tour_to_itin_tours(itin, tour, tour_dates)
 
-                    if type(result1) == str:
-                        flash(result1, "danger")
+                    if type(result) == str:
+                        flash(result, "danger")
                         return redirect('/book')
 
-                    if type(result2) == str:
+                    if result2 != "You're all good!":
                         flash(result2, "danger")
-                        return redirect('/book')
-
-                    if result3 != "You're all good!":
-                        flash(result3, "danger")
                         return redirect('/book')
 
                     itin.tours.append(tour)
@@ -406,11 +414,11 @@ def submit_book_form():
                     start_datetimes = []
                     end_datetimes = []
 
-                    for tour in itin.tours:
-                        tour_dates = TourDate.query.filter(TourDate.tour_id == tour.id, TourDate.itinerary_id == itin.id).first()
+                    for i in range(len(itin.tours)):
+                        tour_dates = itin.tour_dates[i]
 
-                        start_datetimes.append(get_datetime(tour_dates.start_date, tour.start_time))
-                        end_datetimes.append(get_datetime(tour_dates.end_date, tour.end_time))
+                        start_datetimes.append(get_datetime(tour_dates.start_date, itin.tours[i].start_time))
+                        end_datetimes.append(get_datetime(tour_dates.end_date, itin.tours[i].end_time))
 
                     earliest_datetime = min(start_datetimes)
                     latest_datetime = max(end_datetimes)
@@ -418,7 +426,7 @@ def submit_book_form():
                     earliest_datetime_arr = datetime_to_strings(earliest_datetime)
                     latest_datetime_arr = datetime_to_strings(latest_datetime)
 
-                    if len(result2) == 0:
+                    if len(result) == 0:
                         itin.start_time = earliest_datetime_arr[0]
                         itin.start_date = earliest_datetime_arr[1]
                         itin.end_time = latest_datetime_arr[0]
@@ -426,48 +434,48 @@ def submit_book_form():
 
                         db.session.commit()
 
-                    if len(result2) == 1:
-                        itin.flights.append(result2[0])
+                    if len(result) == 2:
+                        itin.flights.append(result[0])
                         db.session.commit()
 
-                        flight_dates = FlightDate.query.filter(FlightDate.flight_num == result2[0].flight_num, FlightDate.itinerary_id == itin.id).first()
+                        flight_dates = result[1]
 
                         # If there's only 1 flight, it matters if it's the depart or the return flight.  If it's the depart flight,
                         # then the start time and date for the itinerary will be that flight's start time and date.  If it's the
                         # return flight, then the itinerary's end time and date will be that flight's end time and date.
-                        if result2[0].depart_or_return == "depart":
-                            itin.start_time = result2[0].depart_time
+                        if result[0].depart_or_return == "depart":
+                            itin.start_time = result[0].depart_time
                             itin.start_date = flight_dates.depart_date
                             itin.end_time = latest_datetime_arr[0]
                             itin.end_date = latest_datetime_arr[1]
-                            itin.total += result2[0].price
+                            itin.total += result[0].price
 
                             db.session.commit()
                         
-                        if result2[0].depart_or_return == "return":
+                        if result[0].depart_or_return == "return":
                             itin.start_time = earliest_datetime_arr[0]
                             itin.start_date = earliest_datetime_arr[1]
-                            itin.end_time = result2[0].arrive_time
+                            itin.end_time = result[0].arrive_time
                             itin.end_date = flight_dates.arrive_date
-                            itin.total += result2[0].price
+                            itin.total += result[0].price
 
                             db.session.commit()
 
-                    if len(result2) == 2:
-                        itin.flights.append(result2[0])
+                    if len(result) == 4:
+                        itin.flights.append(result[0])
 
-                        d_flight_dates = FlightDate.query.filter(FlightDate.flight_num == result2[0].flight_num, FlightDate.itinerary_id == itin.id).first()
+                        d_flight_dates = result[1]
+                        
+                        itin.flights.append(result[2])
 
-                        itin.flights.append(result2[1])
+                        r_flight_dates = result[3]
 
-                        r_flight_dates = FlightDate.query.filter(FlightDate.flight_num == result2[1].flight_num, FlightDate.itinerary_id == itin.id).first()
-
-                        itin.start_time = result2[0].depart_time
+                        itin.start_time = result[0].depart_time
                         itin.start_date = d_flight_dates.depart_date
-                        itin.end_time = result2[1].arrive_time
+                        itin.end_time = result[2].arrive_time
                         itin.end_date = r_flight_dates.arrive_date
 
-                        itin.total += result2[0].price + result2[1].price
+                        itin.total += result[0].price + result[2].price
 
                         db.session.commit()
 
@@ -485,43 +493,62 @@ def submit_book_form():
                         return render_template('book_success.html', itin=itin)
                 else:
                     # If there are no tours
-                    result = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date, itin)
+
+                    # If there are already flight dates added to the itinerary and database from the adding tours route, plug
+                    # those into the function below, if not, don't include them and let the default arguments do their thing
+
+                    if len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "depart":
+                        # Checks to see if selected flights' dates and times conflict with one another
+                        result = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date, itin, d_flight_dates=itin.flight_dates[0])
+
+                    elif len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "return":
+                        result = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date, itin, r_flight_dates=itin.flight_dates[0])
+
+                    elif len(itin.flight_dates) == 2:
+                        result = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date, itin, itin.flight_dates[0], itin.flight_dates[1])
+
+                    else:
+                        result = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date, itin)
                     
                     if type(result) == str:
                         flash(result, 'danger')
                         return redirect('/book')
 
-                    if len(result) == 1:
+                    if len(result) == 2:
                         if planet_name != (result[0].depart_planet and result[0].arrive_planet):
                             flash("Your selected planet doesn't match your flight's planet.  Please select the correct planet for flight.", "danger")
                             return redirect('/book')
 
                         itin.flights.append(result[0])
-###################################################################################################################################################################################################
-# Left off here
+
+                        flight_dates = result[1]
+
                         itin.start_time = result[0].depart_time
-                        itin.start_date = result[0].depart_date
+                        itin.start_date = flight_dates.depart_date
                         itin.end_time = result[0].arrive_time
-                        itin.end_date = result[0].arrive_date
+                        itin.end_date = flight_dates.arrive_date
 
                         itin.total += result[0].price
 
                         db.session.commit()
 
-                    if len(result) == 2:
-                        if planet_name != (result[0].depart_planet and result[0].arrive_planet and result[1].depart_planet and result[1].arrive_planet):
+                    if len(result) == 4:
+                        if planet_name != (result[0].depart_planet and result[0].arrive_planet and result[2].depart_planet and result[2].arrive_planet):
                             flash("Your selected planet doesn't match your depart flight's or arrive flight's planets.  Please select the correct planet for the flights.", "danger")
                             return redirect('/book')
 
                         itin.flights.append(result[0])
-                        itin.flights.append(result[1])
-
+                        d_flight_dates = result[1]
+                        
+                        itin.flights.append(result[2])
+                        r_flight_dates = result[3]
+                        
                         itin.start_time = result[0].depart_time
-                        itin.start_date = result[0].depart_date
-                        itin.end_time = result[1].arrive_time
-                        itin.end_date = result[1].arrive_date
+                        itin.start_date = d_flight_dates.depart_date
+                        itin.end_time = result[2].arrive_time
+                        itin.end_date = r_flight_dates.arrive_date
 
-                        itin.total += result[0].price + result[1].price
+                        itin.total += result[0].price + result[2].price
 
                         db.session.commit()
 
@@ -589,66 +616,87 @@ def add_tour_to_itin():
             if not no_tour:
                 # If tour_id isn't 0 and tour_date isn't blank, then we get the tour, add the dates to it and commit
                 tour = Tour.query.get(tour_id)
-                tour.start_date = tour_date
-                tour.set_end_date()
-
+                tour_dates = TourDate(start_date=tour_date, end_date=set_arrive_end_date(tour_date, tour.start_time, tour.duration), tour_id=tour.id, itinerary_id=itin.id)
+                
+                db.session.add(tour_dates)
                 db.session.commit()
 
                 if planet_name != tour.planet_name:
-                    return (jsonify(msg="Your selected planet doesn't match the tour's planet.  Please select the correct planet for the tour."), 200)                    
-                
-                # Checks to see if the currently selected flights conflict with one another
-                result1 = compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date)
-                # Checks to see if selected flights' dates and times conflict with the tour start and end date and time
-                result2 = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour)
+                    itin.tour_dates.remove(tour_dates)
+                    db.session.delete(tour_dates)
+                    db.session.commit()
+
+                    return (jsonify(msg="Your selected planet doesn't match the tour's planet.  Please select the correct planet for the tour."), 200)
+
+                # If there are already flight dates added to the itinerary and database from the adding tours route, plug
+                # those into the function below, if not, don't include them and let the default arguments do their thing
+
+                if len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "depart":
+                    # Checks to see if selected flights' dates and times conflict with one another or with the tour's date and time
+                    result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin, d_flight_dates=itin.flight_dates[0])
+
+                elif len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "return":
+                    result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin, r_flight_dates=itin.flight_dates[0])
+
+                elif len(itin.flight_dates) == 2:
+                    result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin, itin.flight_dates[0], itin.flight_dates[1])
+
+                else:
+                    result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin)
+
                 # Checks to see if the current tour's start and end datetime conflict with any other tours' start and end datetimes
-                result3 = compare_curr_tour_to_itin_tours(itin, tour)
+                result2 = compare_curr_tour_to_itin_tours(itin, tour, tour_dates)
 
-                if type(result1) == str:
-                    return (jsonify(msg=result1), 200)
+                if type(result) == str:
+                    itin.tour_dates.remove(tour_dates)
+                    db.session.delete(tour_dates)
+                    db.session.commit()
 
-                if type(result2) == str:
+                    return (jsonify(msg=result), 200)
+
+                if result2 != "You're all good!":
+                    itin.tour_dates.remove(tour_dates)
+                    db.session.delete(tour_dates)
+                    db.session.commit()
+
                     return (jsonify(msg=result2), 200)
-
-                if result3 != "You're all good!":
-                    return (jsonify(msg=result3), 200)
 
                 itin.tours.append(tour)
                 itin.total += tour.price
 
                 db.session.commit()
 
-                if len(result2) == 0:
+                if len(result) == 0:
                     resp_obj = {
                         "msg": "Successfully added tour to user's itinerary.",
-                        "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
-                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}",
+                        "tour_start_datetime": f"{tour.start_time} {prettify_date(tour_dates.start_date)}",
+                        "tour_end_datetime": f"{tour.end_time} {prettify_date(tour_dates.end_date)}",
                         "tour_price": f"{tour.price}"
                     }
 
                     return (jsonify(resp_obj), 200)
 
-                elif len(result2) == 1 and result2[0].depart_or_return == "depart":
+                elif len(result) == 2 and result[0].depart_or_return == "depart":
                     resp_obj = {
                         "msg": "Successfully added tour to user's itinerary.",
-                        "departure_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
-                        "arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
-                        "d_flight_price": f"{result2[0].price}",
-                        "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
-                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}",
+                        "departure_datetime": f"{result[0].depart_time} {prettify_date(result[1].depart_date)}",
+                        "arrival_datetime": f"{result[0].arrive_time} {prettify_date(result[1].arrive_date)}",
+                        "d_flight_price": f"{result[0].price}",
+                        "tour_start_datetime": f"{tour.start_time} {prettify_date(tour_dates.start_date)}",
+                        "tour_end_datetime": f"{tour.end_time} {prettify_date(tour_dates.end_date)}",
                         "tour_price": f"{tour.price}"   
                     }
 
                     return (jsonify(resp_obj), 200)
 
-                elif len(result2) == 1 and result2[0].depart_or_return == "return":
+                elif len(result) == 2 and result[0].depart_or_return == "return":
                     resp_obj = {
                         "msg": "Successfully added tour to user's itinerary.",
-                        "return_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
-                        "return_arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
-                        "r_flight_price": f"{result2[0].price}",
-                        "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
-                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}",
+                        "return_datetime": f"{result[0].depart_time} {prettify_date(result[1].depart_date)}",
+                        "return_arrival_datetime": f"{result[0].arrive_time} {prettify_date(result[1].arrive_date)}",
+                        "r_flight_price": f"{result[0].price}",
+                        "tour_start_datetime": f"{tour.start_time} {prettify_date(tour_dates.start_date)}",
+                        "tour_end_datetime": f"{tour.end_time} {prettify_date(tour_dates.end_date)}",
                         "tour_price": f"{tour.price}"
                     }
 
@@ -657,14 +705,14 @@ def add_tour_to_itin():
                 else:
                     resp_obj = {
                         "msg": "Successfully added tour to user's itinerary.",
-                        "departure_datetime": f"{result2[0].depart_time} {result2[0].prettify_depart_date()}",
-                        "arrival_datetime": f"{result2[0].arrive_time} {result2[0].prettify_arrive_date()}",
-                        "d_flight_price": f"{result2[0].price}",
-                        "return_datetime": f"{result2[1].depart_time} {result2[1].prettify_depart_date()}",
-                        "return_arrival_datetime": f"{result2[1].arrive_time} {result2[1].prettify_arrive_date()}",
-                        "r_flight_price": f"{result2[1].price}",
-                        "tour_start_datetime": f"{tour.start_time} {tour.prettify_start_date()}",
-                        "tour_end_datetime": f"{tour.end_time} {tour.prettify_end_date()}",
+                        "departure_datetime": f"{result[0].depart_time} {prettify_date(result[1].depart_date)}",
+                        "arrival_datetime": f"{result[0].arrive_time} {prettify_date(result[1].arrive_date)}",
+                        "d_flight_price": f"{result[0].price}",
+                        "return_datetime": f"{result[2].depart_time} {prettify_date(result[3].depart_date)}",
+                        "return_arrival_datetime": f"{result[2].arrive_time} {prettify_date(result[3].arrive_date)}",
+                        "r_flight_price": f"{result[2].price}",
+                        "tour_start_datetime": f"{tour.start_time} {prettify_date(tour_dates.start_date)}",
+                        "tour_end_datetime": f"{tour.end_time} {prettify_date(tour_dates.end_date)}",
                         "tour_price": f"{tour.price}"                  
                     }
 
@@ -772,11 +820,6 @@ def show_flights():
     flights = Flight.query.all()
     planets = Planet.query.all()
     return render_template('flights.html', flights=flights, planets=planets)
-
-# @app.route('/flights/new', methods=["GET", "POST"])
-# def add_new_flight():
-#     """Adds a new flight to database, if you're an admin"""
-#     form = 
 
 ##########################################################################
 # Our Fleet route

@@ -125,8 +125,8 @@ async function getFlights() {
   for (flight of resp.data.flights) {
     if (flight.arrive_planet === $planet) {
       $('#depart-flight').append(`
-      <option value="${flight.num}">
-        ${flight.num}: ${flight.depart_planet} to ${flight.arrive_planet} 
+      <option value="${flight.flight_num}">
+        ${flight.flight_num}: ${flight.depart_planet} to ${flight.arrive_planet} 
         | 
         Takeoff: ${flight.depart_time} 
         | 
@@ -139,8 +139,8 @@ async function getFlights() {
       `);
     } else if (flight.depart_planet === $planet) {
       $('#return-flight').append(`
-      <option value="${flight.num}">
-        ${flight.num}: ${flight.depart_planet} to ${flight.arrive_planet} 
+      <option value="${flight.flight_num}">
+        ${flight.flight_num}: ${flight.depart_planet} to ${flight.arrive_planet} 
         | 
         Takeoff: ${flight.depart_time} 
         | 
