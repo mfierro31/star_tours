@@ -172,7 +172,15 @@ def login():
 @app.route('/account')
 def view_account():
     if g.user:
-        return render_template('account.html')
+        user = User.query.get(g.user.id)
+
+        itineraries = [itin for itin in user.itineraries if itin.start_date and itin.end_date and len(itin.planets) > 0]
+
+        for itin in itineraries:
+            itin.tour_dates.sort(key=get_tour_start_datetime)
+            itin.flight_dates.sort(key=get_flight_depart_datetime)
+
+        return render_template('account.html', itineraries=itineraries)
     else:
         flash('Please log in first to view your account.', 'danger')
         return redirect('/')
