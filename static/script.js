@@ -422,8 +422,8 @@ function unDisable() {
   $(':disabled').prop('disabled', false);
 }
 
-function bookFormSubmit() {
-  $('#book-form').submit();
+function formSubmit(id) {
+  $(id).submit();
 }
 
 // On page load for our book page, load all the tours and flights for the selected planet

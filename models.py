@@ -62,6 +62,20 @@ def add_percent_to_water(water):
 #################################################################################################################################
 # Helper methods for displaying, setting, and comparing dates
 
+def get_tour_start_datetime(tour_date):
+    """Pass this function in when sorting itin.tour_dates list.  Will allow us to sort that list by start date/time"""
+    datetime_str = f'{tour_date.start_date} {tour_date.tour.start_time}'
+    datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+
+    return datetime_obj
+    
+def get_flight_depart_datetime(flight_date):
+    """Pass this function in when sorting itin.flight_dates list.  Will allow us to sort that list by depart date/time"""
+    datetime_str = f'{flight_date.depart_date} {flight_date.flight.depart_time}'
+    datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+
+    return datetime_obj
+
 def datetime_to_strings(datetime_obj):
     """Takes a Python datetime object and converts it into 2 strings, one the time and the other the date"""
     time = datetime_obj.strftime("%I:%M %p")
@@ -374,8 +388,8 @@ class Itinerary(db.Model):
     flights = db.relationship('Flight', secondary="itineraries_flights", backref='itineraries')
     planets = db.relationship('Planet', secondary="itineraries_planets", backref='itineraries')
     tours = db.relationship('Tour', secondary="itineraries_tours", backref='itineraries')
-    tour_dates = db.relationship('TourDate', backref='itineraries', cascade='all, delete-orphan')
-    flight_dates = db.relationship('FlightDate', backref='itineraries', cascade='all, delete-orphan')
+    tour_dates = db.relationship('TourDate', backref='itinerary', cascade='all, delete-orphan')
+    flight_dates = db.relationship('FlightDate', backref='itinerary', cascade='all, delete-orphan')
 
     def add_commas_to_total(self):
         """Adds commas to large totals making them more clear to read."""

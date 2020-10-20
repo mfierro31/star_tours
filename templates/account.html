@@ -16,59 +16,99 @@
 <p class="text-center">************</p>
 <div class="d-flex justify-content-center">
   <a class="btn btn-success mr-4" href="/account/edit/verify">Edit Info.</a>
-  <form action="/user/delete" method="POST"><button class="btn btn-danger">Delete Account</button></form>
+  <form id="delete-user-form" action="/user/delete" method="POST">
+    <button type="button" data-toggle="modal" data-target="#deleteAccountModal" class="btn btn-danger">Delete Account</button>
+  </form>
 </div>
 
-<h3 class="mt-5 display-3 text-warning text-center">Trips</h3>
-{% if g.user.itineraries|length == 0 or (g.user.itineraries|length == 1 and not g.user.itineraries[0].start_date) %}
-<p class="text-center mb-5 text-md-left">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
-{% else %}
-<div class="row mb-5 justify-content-center">
-  {% for itinerary in g.user.itineraries %}
-  {% if itinerary.start_date and itinerary.end_date %}
-  <div class="col-12 col-md-6">
-    <div class="jumbotron bg-secondary">
-      <h2 class="text-warning text-center">{{itinerary.planets[0].name}}</h2>
-      <h3 class="text-warning text-center">{{g.prettify_date(itinerary.start_date)}} - {{g.prettify_date(itinerary.end_date)}}</h3>
-      {% if itinerary.flights|length > 0 %}
-      {% for i in range(itinerary.flights|length) %}
-      {% if itinerary.flights[i].depart_or_return == "depart" %}
-      <p>Depart Flight: {{itinerary.flights[i].flight_num}}</p>
-      <p class="ml-5">Depart Planet: {{itinerary.flights[i].depart_planet}}</p>
-      <p class="ml-5">Depart Time/Date: {{itinerary.flights[i].depart_time}} {{g.prettify_date(itinerary.flight_dates[i].depart_date)}}</p>
-      <p class="ml-5">Arrive Planet: {{itinerary.flights[i].arrive_planet}}</p>
-      <p class="ml-5">Arrive Time/Date: {{itinerary.flights[i].arrive_time}} {{g.prettify_date(itinerary.flight_dates[i].arrive_date)}}</p>
-      <p class="ml-5">Price: ${{itinerary.flights[i].price}}</p>
-
-      {% elif itinerary.flights[i].depart_or_return == "return" %}
-      <p>Return Flight: {{itinerary.flights[i].flight_num}}</p>
-      <p class="ml-5">Depart Planet: {{itinerary.flights[i].depart_planet}}</p>
-      <p class="ml-5">Depart Time/Date: {{itinerary.flights[i].depart_time}} {{g.prettify_date(itinerary.flight_dates[i].depart_date)}}</p>
-      <p class="ml-5">Arrive Planet: {{itinerary.flights[i].arrive_planet}}</p>
-      <p class="ml-5">Arrive Time/Date: {{itinerary.flights[i].arrive_time}} {{g.prettify_date(itinerary.flight_dates[i].arrive_date)}}</p>
-      <p class="ml-5">Price: ${{itinerary.flights[i].price}}</p>
-      {% endif %}
-      {% endfor %}
-      {% endif %}
-      
-      {% if itinerary.tours|length > 0 %}
-      <p>Tours:</p>
-      {% for i in range(itinerary.tours|length) %}
-      <p class="ml-5">{{itinerary.tours[i].name}}</p>
-      <p class="double-tab">Start Time/Date: {{itinerary.tours[i].start_time}} {{g.prettify_date(itinerary.tour_dates[i].start_date)}}</p>
-      <p class="double-tab">End Time/Date: {{itinerary.tours[i].end_time}} {{g.prettify_date(itinerary.tour_dates[i].end_date)}}</p>
-      <p class="double-tab">Price: ${{itinerary.tours[i].price}}</p>
-      {% endfor %}
-      {% endif %}
-      <h4><b>Total: ${{itinerary.add_commas_to_total()}}</b></h4>
-      <div class="d-flex justify-content-center">
-        <form action="/itineraries/delete/{{itinerary.id}}" method="post">
-          <button class="btn btn-danger">Cancel / Delete Trip</button>
-        </form>
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-secondary">
+      <div class="modal-header">
+        <h1 class="modal-title text-danger w-100 text-center" id="deleteAccountModalLabel"><b>WARNING</b></h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-center">Are you sure you want to delete your account?  This can't be undone.</p>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" onclick="formSubmit('#delete-user-form');" class="btn btn-danger">Delete</button>  
+        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
-  {% endif %}
+</div>
+<!---------->
+
+<h3 class="mt-5 display-3 text-warning text-center">Trips</h3>
+{% if g.user.itineraries|length == 0 or (g.user.itineraries|length == 1 and not g.user.itineraries[0].start_date) %}
+<p class="text-center mb-5">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
+{% else %}
+<div class="row mb-5 justify-content-center">
+  {% for itinerary in g.user.itineraries %}
+    {% if itinerary.planets|length > 0 and itinerary.start_date and itinerary.end_date %}
+    <div class="col-12 col-md-6">
+      <div class="jumbotron bg-secondary">
+        <h2 class="text-warning text-center">{{itinerary.planets[0].name}}</h2>
+        <h3 class="text-warning text-center">{{g.prettify_date(itinerary.start_date)}} - {{g.prettify_date(itinerary.end_date)}}</h3>
+        {% if itinerary.flight_dates|length > 0 %}
+          {% for date in itinerary.flight_dates %}
+            {% if date.flight.depart_or_return == "depart" %}
+              <p>Depart Flight: {{date.flight.flight_num}}</p>
+            {% elif date.flight.depart_or_return == "return" %}
+              <p>Return Flight: {{date.flight.flight_num}}</p>
+            {% endif %}
+            <p class="ml-5">Depart Planet: {{date.flight.depart_planet}}</p>
+            <p class="ml-5">Depart Time/Date: {{date.flight.depart_time}} {{g.prettify_date(date.depart_date)}}</p>
+            <p class="ml-5">Arrive Planet: {{date.flight.arrive_planet}}</p>
+            <p class="ml-5">Arrive Time/Date: {{date.flight.arrive_time}} {{g.prettify_date(date.arrive_date)}}</p>
+            <p class="ml-5">Price: ${{date.flight.price}}</p>
+          {% endfor %}
+        {% endif %}
+        
+        {% if itinerary.tour_dates|length > 0 %}
+          <p>Tours:</p>
+          {% for date in itinerary.tour_dates %}
+            <p class="ml-5">{{date.tour.name}}</p>
+            <p class="double-tab">Start Time/Date: {{date.tour.start_time}} {{g.prettify_date(date.start_date)}}</p>    
+            <p class="double-tab">End Time/Date: {{date.tour.end_time}} {{g.prettify_date(date.end_date)}}</p>
+            <p class="double-tab">Price: ${{date.tour.price}}</p>
+          {% endfor %}
+        {% endif %}
+        <h4><b>Total: ${{itinerary.add_commas_to_total()}}</b></h4>
+        <div class="d-flex justify-content-center">
+          <form id="delete-itin-{{itinerary.id}}" action="/itineraries/delete/{{itinerary.id}}" method="post">
+            <button type="button" data-toggle="modal" data-target="#deleteItinModal" class="btn btn-danger">Cancel / Delete Trip</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Itinerary Modal -->
+    <div class="modal fade" id="deleteItinModal" tabindex="-1" aria-labelledby="deleteItinModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content bg-secondary">
+          <div class="modal-header">
+            <h1 class="modal-title text-danger w-100 text-center" id="deleteItinModalLabel"><b>WARNING</b></h1>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p class="text-center">Are you sure you want to delete this trip?  This can't be undone.</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" onclick="formSubmit('#delete-itin-{{itinerary.id}}');" class="btn btn-danger">Delete</button>  
+            <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!---------->
+    {% endif %}
   {% endfor %}
 </div>
 {% endif %}

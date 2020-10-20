@@ -3,11 +3,11 @@
 {% block content %}
 <h1 class="display-1 text-warning text-center">{{planet.name}}</h1>
 
-<div class="row justify-content-center">
+<div class="row justify-content-center mb-5">
   <img class="img-fluid rounded-circle" id="planet-img" src="{{g.img_path}}{{planet.images[0].image_name}}" alt="{{planet.name}}">
 </div>
 
-<h3 class="display-3 text-warning text-center">Planet Info.</h3>
+<h3 class="mt-5 display-3 text-warning text-center">Planet Info.</h3>
 
 <p class="text-center text-md-left">Diameter: {{planet.diameter}}</p>
 <p class="text-center text-md-left">Length of Day: {{planet.rotation_period}}</p>
@@ -25,7 +25,7 @@
   <div class="mb-3 col-12">
     <img class="img-fluid planet-imgs" src="{{g.img_path}}{{planet.images[i].image_name}}" alt="{{planet.images[i].image_name}}">
   </div>
-  {% elif planet.images|length -1 == 2 %}
+  {% elif planet.images|length - 1 == 2 %}
   <div class="mb-3 col-12 col-md-6">
     <img class="img-fluid planet-imgs" src="{{g.img_path}}{{planet.images[i].image_name}}" alt="{{planet.images[i].image_name}}">
   </div>
@@ -114,7 +114,7 @@
             <p class="text-center text-md-left">Flight {{flight.flight_num}} - {{flight.depart_planet}} to {{flight.arrive_planet}}</p>
             <p class="text-center text-md-left">Depart Time: {{flight.depart_time}}</p>
             <p class="text-center text-md-left">Arrive Time: {{flight.arrive_time}}</p>
-            <p class="text-center text-md-left">Flight Time: {{flight.prettify_flight_time()}}</p>
+            <p class="text-center text-md-left">Flight Time: {{g.prettify_duration(flight.flight_time)}}</p>
             <p class="text-center text-md-left">Price: ${{flight.price}}</p>
           </div>
           <div class="col-12 d-flex justify-content-center col-md-6">
@@ -135,7 +135,7 @@
             <p class="text-center text-md-left">Flight {{flight.flight_num}} - {{flight.depart_planet}} to {{flight.arrive_planet}}</p>
             <p class="text-center text-md-left">Depart Time: {{flight.depart_time}}</p>
             <p class="text-center text-md-left">Arrive Time: {{flight.arrive_time}}</p>
-            <p class="text-center text-md-left">Flight Time: {{flight.prettify_flight_time()}}</p>
+            <p class="text-center text-md-left">Flight Time: {{g.prettify_duration(flight.flight_time)}}</p>
             <p class="text-center text-md-left">Price: ${{flight.price}}</p>
           </div>
           <div class="col-12 d-flex justify-content-center col-md-6">

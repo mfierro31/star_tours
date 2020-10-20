@@ -380,6 +380,12 @@ def submit_book_form():
                     # If there are already flight dates added to the itinerary and database from the adding tours route, plug
                     # those into the function below, if not, don't include them and let the default arguments do their thing
 
+                    # Make sure to sort the flight dates first, so we know for sure which one's the depart date (the closest date to
+                    # today) and which one's the return date (the furthest date from today)
+
+                    if len(itin.flight_dates) > 1:
+                        itin.flight_dates.sort(key=get_flight_depart_datetime)
+
                     if len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "depart":
                         # Checks to see if selected flights' dates and times conflict with one another or with the tour's date and time
                         result = compare_curr_flights_to_curr_tour(no_depart, no_return, depart_id, return_id, depart_date, return_date, tour, tour_dates, itin, d_flight_dates=itin.flight_dates[0])
@@ -406,6 +412,10 @@ def submit_book_form():
 
                     itin.tours.append(tour)
                     itin.total += tour.price
+
+                    # Order the tour dates from closest to today to furthest from today, so we can order them in our Trips section
+                    # in the user's account page.  This will help us order them from earliest to latest in the trip.
+                    itin.tour_dates.sort(key=get_tour_start_datetime)
                     db.session.commit()
 
                     # In cases where we have no flights and only tours or one flight and tours, we need to determine which tour
@@ -477,6 +487,10 @@ def submit_book_form():
 
                         itin.total += result[0].price + result[2].price
 
+                        # Order the flight dates by closest to today to furthest away from today, so we will always know which 
+                        # one's the depart flight (the closest) and which one is the return flight (the furthest)
+                        itin.flight_dates.sort(key=get_flight_depart_datetime)
+
                         db.session.commit()
 
                     # Compare user's past itineraries to this current one.  If any dates conflict with each other, we flash an 
@@ -496,6 +510,12 @@ def submit_book_form():
 
                     # If there are already flight dates added to the itinerary and database from the adding tours route, plug
                     # those into the function below, if not, don't include them and let the default arguments do their thing
+
+                    # Make sure to sort the flight dates first, so we know for sure which one's the depart date (the closest date to
+                    # today) and which one's the return date (the furthest date from today)
+
+                    if len(itin.flight_dates) > 1:
+                        itin.flight_dates.sort(key=get_flight_depart_datetime)
 
                     if len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "depart":
                         # Checks to see if selected flights' dates and times conflict with one another
@@ -549,6 +569,10 @@ def submit_book_form():
                         itin.end_date = r_flight_dates.arrive_date
 
                         itin.total += result[0].price + result[2].price
+
+                        # Order the flight dates by closest to today to furthest away from today, so we will always know which 
+                        # one's the depart flight (the closest) and which one is the return flight (the furthest)
+                        itin.flight_dates.sort(key=get_flight_depart_datetime)
 
                         db.session.commit()
 
@@ -630,6 +654,12 @@ def add_tour_to_itin():
 
                 # If there are already flight dates added to the itinerary and database from the adding tours route, plug
                 # those into the function below, if not, don't include them and let the default arguments do their thing
+
+                # Make sure to sort the flight dates first, so we know for sure which one's the depart date (the closest date to
+                # today) and which one's the return date (the furthest date from today)
+
+                if len(itin.flight_dates) > 1:
+                    itin.flight_dates.sort(key=get_flight_depart_datetime)
 
                 if len(itin.flight_dates) == 1 and itin.flight_dates[0].flight.depart_or_return == "depart":
                     # Checks to see if selected flights' dates and times conflict with one another or with the tour's date and time
@@ -787,11 +817,14 @@ def delete_user():
         db.session.delete(user)
         db.session.commit()
 
+        do_logout()
+
         flash('Successfully deleted your account!', 'success')
         return redirect('/')
     else:
         flash('You need to log in first to access this route.', 'danger')
         return redirect('/')
+
 ##########################################################################
 # Home page route
 
