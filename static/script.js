@@ -429,4 +429,10 @@ function formSubmit(id) {
 // On page load for our book page, load all the tours and flights for the selected planet
 $(document).ready(function() {
   $('#planet').change();
+  $('#depart-date').change();
+  $('#return-date').change();
+  $('#tour-date').change();
+  $('#no_depart').change();
+  $('#no_return').change();
+  $('#no_tour').change();
 });

@@ -122,9 +122,6 @@ def signup():
                 form.email.errors = [new_user[0]]
                 return render_template('signup.html', form=form)
         else:
-            if new_user.email == email and new_user.username == username and new_user.first_name == first and new_user.last_name == last:
-                new_user.is_admin = True
-            
             db.session.add(new_user)
             db.session.commit()
 
@@ -179,6 +176,8 @@ def view_account():
         for itin in itineraries:
             itin.tour_dates.sort(key=get_tour_start_datetime)
             itin.flight_dates.sort(key=get_flight_depart_datetime)
+
+        itineraries.sort(key=get_itin_start_datetime)
 
         return render_template('account.html', itineraries=itineraries)
     else:
@@ -301,13 +300,15 @@ def book_trip():
 
             # Since we're deleting the dates from the entire database, we don't need to clear them out like with tours, flights,
             # and planets.  The itin.tour_dates and itin.flight_dates will already be cleared out.
-            for tour_date in itin.tour_dates:
-                db.session.delete(tour_date)
-                db.session.commit()
+            if len(itin.tour_dates) > 0:
+                for tour_date in itin.tour_dates:
+                    db.session.delete(tour_date)
+                    db.session.commit()
 
-            for flight_date in itin.flight_dates:
-                db.session.delete(flight_date)
-                db.session.commit()
+            if len(itin.flight_dates) > 0:
+                for flight_date in itin.flight_dates:
+                    db.session.delete(flight_date)
+                    db.session.commit()
 
             itin.tours.clear()
             itin.flights.clear()
@@ -329,7 +330,7 @@ def book_trip():
         return render_template('book.html', form=form)
     else:
         flash('Please log in or create an account first!', 'danger')
-        return redirect('/')
+        return redirect('/signup')
 
 @app.route('/book/submit', methods=["POST"])
 def submit_book_form():
@@ -362,16 +363,51 @@ def submit_book_form():
             no_return = form.no_return.data
             planet_name = form.planet.data
 
-            if no_tour and no_depart and no_return:
-                flash("You have to select either a flight and flight date or a tour and tour date to submit this form.", "danger")
-                return redirect('/book')
-
             if g.itin and session['itin'] and g.user.id == g.itin.user_id and g.itin.id == session['itin']:                
                 itin = Itinerary.query.get(g.itin.id)
                 planet = Planet.query.get(planet_name)
                 
                 itin.planets.append(planet)
                 db.session.commit()
+
+                if no_tour and no_depart and no_return and len(itin.tours) == 0:
+                    flash("You have to select either a flight and flight date or a tour and tour date to submit this form.", "danger")
+                    return redirect('/book')
+                
+                if no_tour and no_depart and no_return and len(itin.tours) > 0:
+                    # There could be a situation where a user adds only tours and no flights, but on the last tour, they choose 
+                    # to select 'no tour', because they made a mistake.  To account for that, we calculate which previously added 
+                    # tour had the earliest start datetime, which one had the latest end datetime, set the itinerary start/end 
+                    # date/times to those dates and times, check to see if the itinerary conflicts with any others, and redirect
+                    # them to the book success page.
+                    tour_start_datetimes = [get_datetime(tour_date.start_date, tour_date.tour.start_time) for tour_date in itin.tour_dates]
+                    tour_end_datetimes = [get_datetime(tour_date.end_date, tour_date.tour.end_time) for tour_date in itin.tour_dates]
+
+                    earliest_datetime = min(tour_start_datetimes)
+                    latest_datetime = max(tour_end_datetimes)
+
+                    earliest_datetime_arr = datetime_to_strings(earliest_datetime)
+                    latest_datetime_arr = datetime_to_strings(latest_datetime)
+                    
+                    itin.start_time = earliest_datetime_arr[0]
+                    itin.start_date = earliest_datetime_arr[1]
+                    itin.end_time = latest_datetime_arr[0]
+                    itin.end_date = latest_datetime_arr[1]
+
+                    db.session.commit()
+
+                    # Compare user's past itineraries to this current one.  If any dates conflict with each other, we flash an 
+                    # error
+                    resp = compare_curr_itin_to_itins(User.query.get(g.user.id), itin)
+
+                    if resp != "You're all good!":
+                        flash(resp, 'danger')
+                        return redirect('/book')
+                    else:
+                        remove_itin()
+                        
+                        flash("Successfully booked your trip!  Thank you for choosing Star Tours!  Enjoy your trip!", 'success')
+                        return render_template('book_success.html', itin=itin)
 
                 if not no_tour:
                     # If tour_id isn't 0 and tour_date isn't blank, then we get the tour, add the dates to it and commit
@@ -429,17 +465,11 @@ def submit_book_form():
                     # In cases where we have no flights and only tours or one flight and tours, we need to determine which tour
                     # has the earliest start_date, so it can be the itinerary's start_date, and which tour has the latest
                     # end_date, so it can be the itinerary's end_date
-                    start_datetimes = []
-                    end_datetimes = []
+                    tour_start_datetimes = [get_datetime(tour_date.start_date, tour_date.tour.start_time) for tour_date in itin.tour_dates]
+                    tour_end_datetimes = [get_datetime(tour_date.end_date, tour_date.tour.end_time) for tour_date in itin.tour_dates]
 
-                    for i in range(len(itin.tours)):
-                        tour_dates = itin.tour_dates[i]
-
-                        start_datetimes.append(get_datetime(tour_dates.start_date, itin.tours[i].start_time))
-                        end_datetimes.append(get_datetime(tour_dates.end_date, itin.tours[i].end_time))
-
-                    earliest_datetime = min(start_datetimes)
-                    latest_datetime = max(end_datetimes)
+                    earliest_datetime = min(tour_start_datetimes)
+                    latest_datetime = max(tour_end_datetimes)
 
                     earliest_datetime_arr = datetime_to_strings(earliest_datetime)
                     latest_datetime_arr = datetime_to_strings(latest_datetime)
@@ -543,7 +573,7 @@ def submit_book_form():
                         return redirect('/book')
 
                     if len(result) == 2:
-                        if planet_name != (result[0].depart_planet and result[0].arrive_planet):
+                        if planet_name != result[0].depart_planet and planet_name != result[0].arrive_planet:
                             flash("Your selected planet doesn't match your flight's planet.  Please select the correct planet for flight.", "danger")
                             return redirect('/book')
 
@@ -561,7 +591,7 @@ def submit_book_form():
                         db.session.commit()
 
                     if len(result) == 4:
-                        if planet_name != (result[0].depart_planet and result[0].arrive_planet and result[2].depart_planet and result[2].arrive_planet):
+                        if planet_name != result[0].depart_planet and planet_name != result[0].arrive_planet and planet_name != result[2].depart_planet and planet_name != result[2].arrive_planet:
                             flash("Your selected planet doesn't match your depart flight's or arrive flight's planets.  Please select the correct planet for the flights.", "danger")
                             return redirect('/book')
 
@@ -701,6 +731,7 @@ def add_tour_to_itin():
 
                 itin.tours.append(tour)
                 itin.total += tour.price
+                itin.tour_dates.sort(key=get_tour_start_datetime)
 
                 db.session.commit()
 
@@ -758,7 +789,7 @@ def add_tour_to_itin():
             else:
                 return (jsonify(msg="You must pick a tour and a tour date in order to add another tour."), 200)  
         else:
-            return (jsonify(msg="You have to log in first, then go to the 'Book A Trip' page and click on 'Add another planet' to access this route."), 200)
+            return (jsonify(msg="You have to log in first, then go to the 'Book A Trip' page and click on 'Add another tour' to access this route."), 200)
     else:
         return (jsonify(msg="You need to log in first to do that!"), 200)
 

@@ -81,18 +81,18 @@
         <h4><b>Total: ${{itinerary.add_commas_to_total()}}</b></h4>
         <div class="d-flex justify-content-center">
           <form id="delete-itin-{{itinerary.id}}" action="/itineraries/delete/{{itinerary.id}}" method="post">
-            <button type="button" data-toggle="modal" data-target="#deleteItinModal" class="btn btn-danger">Cancel / Delete Trip</button>
+            <button type="button" data-toggle="modal" data-target="#deleteItin{{itinerary.id}}Modal" class="btn btn-danger">Cancel / Delete Trip</button>
           </form>
         </div>
       </div>
     </div>
 
     <!-- Delete Itinerary Modal -->
-    <div class="modal fade" id="deleteItinModal" tabindex="-1" aria-labelledby="deleteItinModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteItin{{itinerary.id}}Modal" tabindex="-1" aria-labelledby="deleteItin{{itinerary.id}}ModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content bg-secondary">
           <div class="modal-header">
-            <h1 class="modal-title text-danger w-100 text-center" id="deleteItinModalLabel"><b>WARNING</b></h1>
+            <h1 class="modal-title text-danger w-100 text-center" id="deleteItin{{itinerary.id}}ModalLabel"><b>WARNING</b></h1>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>

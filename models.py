@@ -76,6 +76,13 @@ def get_flight_depart_datetime(flight_date):
 
     return datetime_obj
 
+def get_itin_start_datetime(itin):
+    """Pass this function in when sorting itineraries.  Will allow us to sort that list by start date/time"""
+    datetime_str = f'{itin.start_date} {itin.start_time}'
+    datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
+
+    return datetime_obj
+
 def datetime_to_strings(datetime_obj):
     """Takes a Python datetime object and converts it into 2 strings, one the time and the other the date"""
     time = datetime_obj.strftime("%I:%M %p")
@@ -237,15 +244,16 @@ def compare_curr_tour_to_itin_tours(itin, curr_tour, curr_tour_dates):
     curr_tour_start = get_datetime(curr_tour_dates.start_date, curr_tour.start_time)
     curr_tour_end = get_datetime(curr_tour_dates.end_date, curr_tour.end_time)
 
-    if len(itin.tours) > 0:
-        for i in range(len(itin.tours)):
-            tour_dates = itin.tour_dates[i]
-
-            start = get_datetime(tour_dates.start_date, itin.tours[i].start_time)
-            end = get_datetime(tour_dates.end_date, itin.tours[i].end_time)
+    if len(itin.tour_dates) > 0:
+        for tour_date in itin.tour_dates:
+            if curr_tour_dates.id == tour_date.id:
+                continue
+            
+            start = get_datetime(tour_date.start_date, tour_date.tour.start_time)
+            end = get_datetime(tour_date.end_date, tour_date.tour.end_time)
 
             if (curr_tour_start >= start and curr_tour_end <= end) or (curr_tour_end >= start and curr_tour_end <= end) or (curr_tour_start <= end and curr_tour_end >= start):
-                return f"This tour's date and time conflicts with a previous tour's date and time - {itin.tours[i].name} at {itin.tours[i].start_time} on {prettify_date(itin.tour_dates[i].start_date)}.  Please choose a different tour or different date."
+                return f"This tour's date and time conflicts with a previous tour's date and time - {tour_date.tour.name} at {tour_date.tour.start_time} on {prettify_date(tour_date.start_date)}.  Please choose a different tour or different date."
 
     return "You're all good!"
 
@@ -282,7 +290,6 @@ class User(db.Model):
     password = db.Column(db.Text, nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
-    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     itineraries = db.relationship('Itinerary', backref='user', cascade='all, delete-orphan')
 
