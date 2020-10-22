@@ -124,7 +124,7 @@ def prettify_duration(duration):
         return f'{duration} hours'
 
 def compare_curr_flights(no_depart, no_return, depart_id, depart_date, return_id, return_date, itin, d_flight_dates=None, r_flight_dates=None):
-    """Compares current flights to see if they conflict with one another.  Can be especially useful in the /book route when there are only flights booked"""
+    """Compares current flights to see if they conflict with one another.  Can be especially useful in the /book/submit route when there are only flights booked"""
     if no_depart and no_return:
         return []
     elif no_depart:
@@ -252,7 +252,7 @@ def compare_curr_tour_to_itin_tours(itin, curr_tour, curr_tour_dates):
             start = get_datetime(tour_date.start_date, tour_date.tour.start_time)
             end = get_datetime(tour_date.end_date, tour_date.tour.end_time)
 
-            if (curr_tour_start >= start and curr_tour_end <= end) or (curr_tour_end >= start and curr_tour_end <= end) or (curr_tour_start <= end and curr_tour_end >= start):
+            if (curr_tour_start >= start and curr_tour_start <= end) or (curr_tour_end >= start and curr_tour_end <= end) or (start >= curr_tour_start and start <= curr_tour_end) or (end >= curr_tour_start and end <= curr_tour_end):
                 return f"This tour's date and time conflicts with a previous tour's date and time - {tour_date.tour.name} at {tour_date.tour.start_time} on {prettify_date(tour_date.start_date)}.  Please choose a different tour or different date."
 
     return "You're all good!"
@@ -274,7 +274,7 @@ def compare_curr_itin_to_itins(user, curr_itin):
             itinerary_start = get_datetime(itinerary.start_date, itinerary.start_time)
             itinerary_end = get_datetime(itinerary.end_date, itinerary.end_time)
 
-            if (itin_start >= itinerary_start and itin_start <= itinerary_end) or (itin_end >= itinerary_start and itin_end <= itinerary_end):
+            if (itin_start >= itinerary_start and itin_start <= itinerary_end) or (itin_end >= itinerary_start and itin_end <= itinerary_end) or (itinerary_start >= itin_start and itinerary_start <= itin_end) or (itinerary_end >= itin_start and itinerary_end <= itin_end):
                 return f"Your current trip's start and end time conflicts with your previous trip starting on {prettify_date(itinerary.start_date)} at {itinerary.start_time} and ending on {prettify_date(itinerary.end_date)} at {itinerary.end_time}."
 
         return "You're all good!"

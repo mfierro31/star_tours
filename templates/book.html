@@ -17,14 +17,13 @@
   flights, or two flights and many tours.  But you have to select at least one tour or one flight to submit the form.
   <br>  
   <br>
-  If you want 
-  to go to multiple planets on your trip, simply book a 2nd trip. And remember, all flights and tours run <b><i>DAILY</i></b>!
+  Remember, all flights and tours run <b><i>DAILY</i></b>!
 </p>
 <form class="mt-5" id="book-form" action="/book/submit" method="POST" onsubmit="unDisable();">
   {{form.hidden_tag()}}
 
   <h2 class="text-center text-warning">Where Do You Want To Go?</h2>
-  <div class="form-row justify-content-center my-4">
+  <div class="mb-5 form-row justify-content-center my-4">
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
         {{form.planet.label(id="planet-label")}}
@@ -53,24 +52,7 @@
         </small>
         {% endfor %}
       </div>
-    </div>
-
-    <div class="col-11 col-sm-5 col-md-3">
-      <div class="form-group text-center">
-        {{form.return_date.label(id="return-date-label")}}
-        {{form.return_date(class_="form-control datepicker mb-3", id="return-date")}}
-        <a class="clear-link" href="javascript:void();">Clear</a>
-        {% for err in form.return_date.errors %}
-        <small class="form-text text-light bg-danger">
-          {{err}}
-        </small>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-
-  <div class="form-row justify-content-around my-4">
-    <div class="col-11 col-sm-5 col-md-3">
+      <br>
       <div class="form-group text-center">
         {{form.depart_flight.label(id="depart-flight-label")}}
         {{form.depart_flight(class_="form-control flight mb-3", id="depart-flight")}}
@@ -86,7 +68,18 @@
       </div>
     </div>
 
-    <div class="col-11 col-sm-5 col-md-3">
+    <div class="mt-5 mt-sm-0 col-11 col-sm-5 col-md-3">
+      <div class="form-group text-center">
+        {{form.return_date.label(id="return-date-label")}}
+        {{form.return_date(class_="form-control datepicker mb-3", id="return-date")}}
+        <a class="clear-link" href="javascript:void();">Clear</a>
+        {% for err in form.return_date.errors %}
+        <small class="form-text text-light bg-danger">
+          {{err}}
+        </small>
+        {% endfor %}
+      </div>
+      <br>
       <div class="form-group text-center">
         {{form.return_flight.label(id="return-flight-label")}}
         {{form.return_flight(class_="form-control flight mb-3", id="return-flight")}}
@@ -101,8 +94,8 @@
         {{form.no_return.label(class_="form-check-label")}}
       </div>
     </div>
-  </div> 
-  
+  </div>
+
   <h2 class="text-center text-warning">Tours</h2>
   <hr>
   <div class="form-row justify-content-center my-4">

@@ -72,6 +72,10 @@ def do_logout():
         del session['verified']
 
     if 'itin' in session:
+        itin = Itinerary.query.get(session['itin'])
+        db.session.delete(itin)
+        db.session.commit()
+        
         del session['itin']
 
 def unverify():

@@ -8,7 +8,7 @@
     <div class="row justify-content-center mb-5">
       <img class="img-fluid rounded-circle" id="planet-img" src="{{g.img_path}}Earth.jpg" alt="Earth">
     </div>
-    <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the flight on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  Enjoy your flight!</h5>
+    <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the flight, or any last pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  Enjoy your flight!</h5>
 
   {% elif itin.flights|length == 1 and itin.flights[0].arrive_planet == "Earth" and itin.tours|length > 0 %}
     <h1 class="text-center text-warning display-1 mb-5">Hey, {{itin.user.first_name}}!  Looks like you're headed home.</h1>
@@ -45,9 +45,9 @@
       </div>
     {% endfor %}
     {% if itin.tours|length == 1 %}
-      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tour or flight on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your last tour and flight!</h5>
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tour or flight, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your last tour and flight!</h5>
     {% else %}
-      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tours or flight on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your last tours and flight!</h5>
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tours or flight, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your last tours and flight!</h5>
     {% endif %}
 
   {% elif itin.flights|length == 0 and itin.tours|length > 0 %}
@@ -85,9 +85,9 @@
       </div>
     {% endfor %}
     {% if itin.tours|length == 1 %}
-      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tour on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your tour!</h5>
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tour, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your tour!</h5>
     {% else %}
-      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tours on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your tours!</h5>
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tours, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your tours!</h5>
     {% endif %}
 
   {% else %}
@@ -152,13 +152,15 @@
       {% endfor %}
     {% endif %}
     {% if itin.tours|length == 1 and itin.flights|length == 1 %}
-      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tour and flight, or any you take on-planet on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tour and flight, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
+    {% elif itin.tours|length == 1 and itin.flights|length > 1 %}
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tour and flights, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
     {% elif itin.tours|length == 0 and itin.flights|length == 1 %}
-      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the flight, or any you take on-planet on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the flight, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
     {% elif itin.tours|length > 1 and itin.flights|length > 1 %}
-      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tours and flights, or any you take on-planet on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the tours and flights, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
     {% elif itin.tours|length == 0 and itin.flights|length > 1 %}
-      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the flights, or any you take on-planet on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
+      <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the flights, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
     {% endif %}
   {% endif %}
 <div class="row justify-content-center mb-5">
