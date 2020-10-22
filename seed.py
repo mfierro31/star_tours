@@ -825,42 +825,45 @@ f167,
 f168])
 db.session.commit()
 
+#################################################################################################################################
+# This stuff just for development purposes
+
 # Adding a user
 
-me = User.signup(email, username, password, first, last)
+# me = User.signup(email, username, password, first, last)
 
-db.session.add(me)
-db.session.commit()
+# db.session.add(me)
+# db.session.commit()
 
 # Adding an itinerary
 
-itin = Itinerary(user_id=me.id)
-db.session.add(itin)
-db.session.commit()
+# itin = Itinerary(user_id=me.id)
+# db.session.add(itin)
+# db.session.commit()
 
-d_flight_dates = FlightDate(depart_date='2020-09-30', arrive_date=set_arrive_end_date('2020-09-30', f1.depart_time, f1.flight_time), flight_num=f1.flight_num, itinerary_id=itin.id)
+# d_flight_dates = FlightDate(depart_date='2020-09-30', arrive_date=set_arrive_end_date('2020-09-30', f1.depart_time, f1.flight_time), flight_num=f1.flight_num, itinerary_id=itin.id)
 
-r_flight_dates = FlightDate(depart_date='2020-10-15', arrive_date=set_arrive_end_date('2020-10-15', f2.depart_time, f2.flight_time), flight_num=f2.flight_num, itinerary_id=itin.id)
+# r_flight_dates = FlightDate(depart_date='2020-10-15', arrive_date=set_arrive_end_date('2020-10-15', f2.depart_time, f2.flight_time), flight_num=f2.flight_num, itinerary_id=itin.id)
 
-itin.flights.append(f1)
-itin.flights.append(f2)
+# itin.flights.append(f1)
+# itin.flights.append(f2)
 
-t17_dates = TourDate(start_date='2020-10-05', end_date=set_arrive_end_date('2020-10-05', t17.start_time, t17.duration), tour_id=t17.id, itinerary_id=itin.id)
+# t17_dates = TourDate(start_date='2020-10-05', end_date=set_arrive_end_date('2020-10-05', t17.start_time, t17.duration), tour_id=t17.id, itinerary_id=itin.id)
 
-t18_dates = TourDate(start_date='2020-10-10', end_date=set_arrive_end_date('2020-10-10', t18.start_time, t18.duration), tour_id=t18.id, itinerary_id=itin.id)
+# t18_dates = TourDate(start_date='2020-10-10', end_date=set_arrive_end_date('2020-10-10', t18.start_time, t18.duration), tour_id=t18.id, itinerary_id=itin.id)
 
-itin.tours.append(t17)
-itin.tours.append(t18)
+# itin.tours.append(t17)
+# itin.tours.append(t18)
 
-db.session.add_all([d_flight_dates, r_flight_dates, t17_dates, t18_dates])
-db.session.commit()
+# db.session.add_all([d_flight_dates, r_flight_dates, t17_dates, t18_dates])
+# db.session.commit()
 
-itin.planets.append(Planet.query.get("Coruscant"))
+# itin.planets.append(Planet.query.get("Coruscant"))
 
-itin.start_date = d_flight_dates.depart_date
-itin.end_date = r_flight_dates.arrive_date
-itin.start_time = f1.depart_time
-itin.end_time = f2.arrive_time
-itin.total = 630
+# itin.start_date = d_flight_dates.depart_date
+# itin.end_date = r_flight_dates.arrive_date
+# itin.start_time = f1.depart_time
+# itin.end_time = f2.arrive_time
+# itin.total = 630
 
-db.session.commit()
+# db.session.commit()
