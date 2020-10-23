@@ -826,7 +826,7 @@ f168])
 db.session.commit()
 
 #################################################################################################################################
-# This stuff just for development purposes
+# For development purposes only
 
 # Adding a user
 
