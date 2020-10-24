@@ -163,9 +163,19 @@
       <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the flights, or any pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  And enjoy your trip!</h5>
     {% endif %}
   {% endif %}
-<div class="row justify-content-center mb-5">
-  <a href="/book" class="btn btn-primary mr-5">Book Another Trip</a>
-  <a href="/account" class="btn btn-info mr-5">View Your Trips</a>
-  <a href="/" class="btn btn-secondary">Home</a>
+<div class="row justify-content-center text-center mb-5">
+  <a href="/book" class="btn btn-primary btn-row-book-success mr-3">Book Another Trip</a>
+  <a href="/account" id="view-trips-btn" class="btn btn-info btn-row-book-success">View Your Trips</a>
+  <a href="/" id="home-book-success-btn" class="btn btn-secondary btn-row-book-success ml-3">Home</a>
+
+  <div class="btn-row-col-book-success col-12 text-center mb-3">
+    <a href="/book" class="btn btn-primary">Book Another Trip</a>
+  </div>
+  <div class="btn-row-col-book-success col-12 text-center mb-3">
+    <a href="/account" class="btn btn-info">View Your Trips</a>
+  </div>
+  <div class="btn-row-col-book-success col-12 text-center mb-5">
+    <a href="/" class="btn btn-secondary">Home</a>
+  </div>
 </div>
 {% endblock %}

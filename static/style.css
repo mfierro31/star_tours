@@ -89,8 +89,51 @@ body {
   }
 }
 
-@media screen and (max-width: 349px) {
+@media screen and (max-width: 340px) and (min-width: 200px) {
+  /* Start Over button on Book A Trip page */
   #start-over-btn {
     margin-top: 20px;
+  }
+}
+
+@media screen and (max-width: 389px) {
+  /* Home button on Book Success page */
+  #home-book-success-btn {
+    margin-top: 20px;
+  }
+}
+
+@media screen and (max-width: 305px) {
+  /* View Trips button on Book Success page */
+  #view-trips-btn {
+    margin-top: 20px;
+  }
+}
+
+@media screen and (max-width: 199px) {
+  /* whole row of buttons on the bottom of the Book A Trip page */
+  .btn-row-book {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 200px) {
+  /* Each hidden column containing a button on the Book A Trip page */
+  .btn-row-col-book {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 220px) {
+  /* the whole row of buttons on the bottom of the Book Success page */
+  .btn-row-book-success {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 221px) {
+  /* Each hidden column containing a button on the Book Success page */
+  .btn-row-col-book-success {
+    display: none;
   }
 }

@@ -144,9 +144,19 @@
   </div>
 
   <div class="row justify-content-center mb-5">
-    <button type="button" onclick="changeFormInputs(); addUpTotal();" data-toggle="modal" data-target="#totalModal" id="submit-trip-btn" class="btn btn-success btn-lg mr-3">Submit</button>
-    <a href="/" class="btn btn-info btn-lg">Home</a>
-    <a href="/book" class="ml-3 btn btn-danger btn-lg" id="start-over-btn">Start Over</a>
+    <button type="button" onclick="changeFormInputs(); addUpTotal();" data-toggle="modal" data-target="#totalModal" id="submit-trip-btn" class="btn btn-success btn-lg mr-3 btn-row-book">Submit</button>
+    <a href="/" class="btn btn-info btn-lg btn-row-book">Home</a>
+    <a href="/book" class="ml-3 btn btn-danger btn-lg btn-row-book" id="start-over-btn">Start Over</a>
+
+    <div class="btn-row-col-book col-12 text-center mb-3">
+      <button type="button" onclick="changeFormInputs(); addUpTotal();" data-toggle="modal" data-target="#totalModal" id="submit-trip-btn" class="btn btn-success btn-lg">Submit</button>
+    </div>
+    <div class="btn-row-col-book col-12 text-center mb-3">
+      <a href="/" class="btn btn-info btn-lg">Home</a>
+    </div>
+    <div class="btn-row-col-book col-12 text-center mb-5">
+      <a href="/book" class="btn btn-danger btn-lg" id="start-over-btn">Start Over</a>
+    </div>
   </div>
 </form>
 
