@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Account{% endblock %}
 {% block content %}
-<h1 class="display-1 text-warning text-center mb-5">Account</h1>
+<h1 class="display-1 text-warning text-center mb-5 long-text">Account</h1>
 
-<h3 class="display-3 text-warning text-center">Personal Info.</h3>
+<h3 class="display-3 text-warning text-center long-text-sub mb-3">Personal Info.</h3>
 
 
 <h3 class="text-center text-warning">Name</h3>
@@ -43,7 +43,7 @@
 </div>
 <!---------->
 
-<h3 class="mt-5 display-3 text-warning text-center">Trips</h3>
+<h3 class="mt-5 display-3 text-warning text-center long-text-sub">Trips</h3>
 {% if itineraries|length == 0 or (itineraries|length == 1 and not itineraries[0].start_date) %}
 <p class="text-center mb-5">None yet.  Why don't we change that?  Book a trip <a href="/book">here!</a></p>
 {% else %}

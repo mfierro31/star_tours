@@ -11,7 +11,6 @@
 <div class="mt-5 row justify-content-center">
   {% for planet in planets %}
   <div class="mb-3 col-12 col-md-4 text-center">
-    <!-- On mobile devices, the heights of some images shrink and I have no idea why -->
     <h3 class="text-center"><a class="text-warning" href="/planets/{{planet.name}}">{{planet.name}}</a></h3>
     <img src="static/images/{{planet.images[0].image_name}}" class="img-fluid home-planets rounded-circle" alt="{{planet.name}}">
   </div>

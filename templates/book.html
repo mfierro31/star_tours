@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Book{% endblock %}
 {% block content %}
-<h1 class="display-1 text-center text-warning mb-4">Book A Trip</h1>
+<h1 class="display-1 text-center text-warning mb-4 long-text">Book A Trip</h1>
 <p class="text-center">Use this form below to book tours and flights.
   <br>  
   <br>
@@ -22,7 +22,7 @@
 <form class="mt-5" id="book-form" action="/book/submit" method="POST" onsubmit="unDisable();">
   {{form.hidden_tag()}}
 
-  <h2 class="text-center text-warning">Where Do You Want To Go?</h2>
+  <h2 class="text-center text-warning long-text-sub">Where Do You Want To Go?</h2>
   <div class="mb-5 form-row justify-content-center my-4">
     <div class="col-11 col-sm-5 col-md-3">
       <div class="form-group text-center">
@@ -144,10 +144,11 @@
   </div>
 
   <div class="row justify-content-center mb-5">
+    <!-- These show at 341px or more -->
     <button type="button" onclick="changeFormInputs(); addUpTotal();" data-toggle="modal" data-target="#totalModal" id="submit-trip-btn" class="btn btn-success btn-lg mr-3 btn-row-book">Submit</button>
     <a href="/" class="btn btn-info btn-lg btn-row-book">Home</a>
     <a href="/book" class="ml-3 btn btn-danger btn-lg btn-row-book" id="start-over-btn">Start Over</a>
-
+    <!-- These show at 340px or less -->
     <div class="btn-row-col-book col-12 text-center mb-3">
       <button type="button" onclick="changeFormInputs(); addUpTotal();" data-toggle="modal" data-target="#totalModal" id="submit-trip-btn" class="btn btn-success btn-lg">Submit</button>
     </div>

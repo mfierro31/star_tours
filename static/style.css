@@ -89,6 +89,16 @@ body {
   }
 }
 
+@media screen and (max-width: 555px) {
+  .long-text {
+    font-size: 18vw;
+  }
+
+  .long-text-sub {
+    font-size: 15vw;
+  }
+}
+
 @media screen and (max-width: 340px) {
   .btn-row-book {
     display: none;

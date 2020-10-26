@@ -3,19 +3,19 @@
 {% block content %}
 
   {% if itin.flights|length == 1 and itin.flights[0].arrive_planet == "Earth" and itin.tours|length == 0 %}
-    <h1 class="text-center text-warning display-1 mb-5">Hey, {{itin.user.first_name}}!  Looks like you're headed home.</h1>
-    <h3 class="text-center text-warning display-3 mb-5">Hope you enjoyed your time on {{itin.planets[0].name}}!  Welcome back to Earth!</h3>
+    <h1 class="text-center text-warning display-1 mb-5 long-text">Hey, {{itin.user.first_name}}!  Looks like you're headed home.</h1>
+    <h3 class="text-center text-warning display-3 mb-5 long-text-sub">Hope you enjoyed your time on {{itin.planets[0].name}}!  Welcome back to Earth!</h3>
     <div class="row justify-content-center mb-5">
       <img class="img-fluid rounded-circle" id="planet-img" src="{{g.img_path}}Earth.jpg" alt="Earth">
     </div>
     <h5 class="text-center mb-5">Spread the word about us!  Share this screenshot and/or your pics from the flight, or any last pics you take on-planet, on social media with the hashtag <span class="text-primary">#StarTours</span>.  It would help us out a lot.  Thanks, {{itin.user.first_name}}!  Enjoy your flight!</h5>
 
   {% elif itin.flights|length == 1 and itin.flights[0].arrive_planet == "Earth" and itin.tours|length > 0 %}
-    <h1 class="text-center text-warning display-1 mb-5">Hey, {{itin.user.first_name}}!  Looks like you're headed home.</h1>
+    <h1 class="text-center text-warning display-1 mb-5 long-text">Hey, {{itin.user.first_name}}!  Looks like you're headed home.</h1>
     {% if itin.tours|length == 1 %}
-      <h3 class="text-center text-warning display-3 mb-5">But not before getting one last tour in!  Enjoy!  And welcome back to Earth!</h3>
+      <h3 class="text-center text-warning display-3 mb-5 long-text-sub">But not before getting one last tour in!  Enjoy!  And welcome back to Earth!</h3>
     {% else %}
-      <h3 class="text-center text-warning display-3 mb-5">But not before getting some last-minute tours in!  Enjoy!  And welcome back to Earth!</h3>
+      <h3 class="text-center text-warning display-3 mb-5 long-text-sub">But not before getting some last-minute tours in!  Enjoy!  And welcome back to Earth!</h3>
     {% endif %}
     <div class="row justify-content-center mb-5">
       <img class="img-fluid rounded-circle" id="planet-img" src="{{g.img_path}}Earth.jpg" alt="Earth">
@@ -51,14 +51,14 @@
     {% endif %}
 
   {% elif itin.flights|length == 0 and itin.tours|length > 0 %}
-    <h1 class="text-center text-warning display-1 mb-5">Hey, {{itin.user.first_name}}!  Hope you're enjoying your time on {{itin.planets[0].name}}!</h1>
+    <h1 class="text-center text-warning display-1 mb-5 long-text">Hey, {{itin.user.first_name}}!  Hope you're enjoying your time on {{itin.planets[0].name}}!</h1>
     <div class="row justify-content-center mb-5">
       <img class="img-fluid rounded-circle" id="planet-img" src="{{g.img_path}}{{itin.planets[0].images[0].image_name}}" alt="{{itin.planets[0].name}}">
     </div>
     {% if itin.tours|length == 1 %}
-      <h3 class="text-center text-warning display-3 mb-5">Looks like you booked a new tour on-planet.  Enjoy!</h3>
+      <h3 class="text-center text-warning display-3 mb-5 long-text-sub">Looks like you booked a new tour on-planet.  Enjoy!</h3>
     {% else %}
-      <h3 class="text-center text-warning display-3 mb-5">Looks like you booked some new tours on-planet.  Enjoy!</h3>
+      <h3 class="text-center text-warning display-3 mb-5 long-text-sub">Looks like you booked some new tours on-planet.  Enjoy!</h3>
     {% endif %}
     {% for tour in itin.tours %}
       <h4 class="text-center mb-3">{{tour.name}}</h4>
@@ -91,11 +91,11 @@
     {% endif %}
 
   {% else %}
-    <h1 class="text-center text-warning display-1 mb-5">Get ready, {{itin.user.first_name}}, you're going to...</h1>
+    <h1 class="text-center text-warning display-1 mb-5 long-text">Get ready, {{itin.user.first_name}}, you're going to...</h1>
     <div class="row justify-content-center mb-5">
       <img class="img-fluid" src="{{g.img_path}}lightspeed_gif.gif" alt="Light speed!">
     </div>
-    <h1 class="text-center text-warning display-1 mb-5"><b><i>{{itin.planets[0].name}}!!!</i></b></h1>
+    <h1 class="text-center text-warning display-1 mb-5 long-text"><b><i>{{itin.planets[0].name}}!!!</i></b></h1>
     <div class="row justify-content-center mb-5">
       <img class="img-fluid rounded-circle" id="planet-img" src="{{g.img_path}}{{itin.planets[0].images[0].image_name}}" alt="{{itin.planets[0].name}}">
     </div>
@@ -122,9 +122,9 @@
     </div>
     {% if itin.tours|length > 0 %}
       {% if itin.tours|length == 1 %}
-        <h3 class="text-center text-warning display-3 mb-5">Looks like you booked an awesome tour too!</h3>
+        <h3 class="text-center text-warning display-3 mb-5 long-text-sub">Looks like you booked an awesome tour too!</h3>
       {% else %}
-        <h3 class="text-center text-warning display-3 mb-5">Looks like you booked some awesome tours too!</h3>
+        <h3 class="text-center text-warning display-3 mb-5 long-text-sub">Looks like you booked some awesome tours too!</h3>
       {% endif %}
       {% for tour in itin.tours %}
         <h4 class="text-center mb-3">{{tour.name}}</h4>
@@ -164,11 +164,11 @@
     {% endif %}
   {% endif %}
 <div class="row justify-content-center text-center mb-5">
-  <!-- still don't like the way these look stacked together -->
+  <!-- These show at 390px or more -->
   <a href="/book" class="btn btn-primary btn-row-book-success mr-3">Book Another Trip</a>
   <a href="/account" id="view-trips-btn" class="btn btn-info btn-row-book-success">View Your Trips</a>
   <a href="/" id="home-book-success-btn" class="btn btn-secondary btn-row-book-success ml-3">Home</a>
-
+  <!-- These show at 389px or less -->
   <div class="btn-row-col-book-success col-12 text-center mb-3">
     <a href="/book" class="btn btn-primary">Book Another Trip</a>
   </div>

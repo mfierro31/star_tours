@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}{{planet.name}}{% endblock %}
 {% block content %}
-<h1 class="display-1 text-warning text-center">{{planet.name}}</h1>
+<h1 class="display-1 text-warning text-center long-text">{{planet.name}}</h1>
 
 <div class="row justify-content-center mb-5">
   <img class="img-fluid rounded-circle" id="planet-img" src="{{g.img_path}}{{planet.images[0].image_name}}" alt="{{planet.name}}">
 </div>
 
-<h3 class="mt-5 display-3 text-warning text-center">Planet Info.</h3>
+<h3 class="mt-5 display-3 text-warning text-center long-text-sub">Planet Info.</h3>
 
 <p class="text-center text-md-left">Diameter: {{planet.diameter}}</p>
 <p class="text-center text-md-left">Length of Day: {{planet.rotation_period}}</p>
@@ -41,7 +41,7 @@
   {% endfor %}
 </div>
 
-<h3 class="display-3 text-warning text-center">Tours</h3>
+<h3 class="display-3 text-warning text-center long-text-sub">Tours</h3>
 
 <!-- These two separate rows will be displayed on medium and wider screens because they make the titles and images
      line up perfectly with each other.  On small and xsmall screens, their display is set to none in CSS.
@@ -94,14 +94,20 @@
 <!-- This row will be displayed on xtra small and small screens.  On medium and up, its display is set to none. -->
 <div id="two-in-one-row" class="row justify-content-center">
   {% for tour in planet.tours %}
-  <div class="mb-5 col-12">
-    <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
-    <img class="mb-5 tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
+  <div class="row mb-5 justify-content-center">
+    <div class="col-12">
+      <div class="row justify-content-center">
+        <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
+      </div>
+      <div class="row justify-content-center">
+        <img class="tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">
+      </div>
+    </div>
   </div>
   {% endfor %}
 </div>
 
-<h3 class="display-3 text-warning text-center">Flights</h3>
+<h3 class="display-3 text-warning text-center long-text-sub">Flights</h3>
 
 <div class="row justify-content-around">
   <div class="col-12 col-md-6">
