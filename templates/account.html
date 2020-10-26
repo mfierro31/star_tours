@@ -6,13 +6,13 @@
 <h3 class="display-3 text-warning text-center long-text-sub mb-3">Personal Info.</h3>
 
 
-<h3 class="text-center text-warning">Name</h3>
+<h4 class="text-center text-warning">Name</h4>
 <p class="text-center">{{g.user.first_name}} {{g.user.last_name}}</p>
-<h3 class="text-center text-warning">Email</h3>
+<h4 class="text-center text-warning">Email</h4>
 <p class="text-center">{{g.user.email}}</p>
-<h3 class="text-center text-warning">Username</h3>
+<h4 class="text-center text-warning">Username</h4>
 <p class="text-center">{{g.user.username}}</p>
-<h3 class="text-center text-warning">Password</h3>
+<h4 class="text-center text-warning">Password</h4>
 <p class="text-center">************</p>
 <div class="d-flex justify-content-center">
   <a class="btn btn-success mr-4" href="/account/edit/verify">Edit Info.</a>
@@ -52,8 +52,8 @@
     {% if itinerary.planets|length > 0 and itinerary.start_date and itinerary.end_date %}
     <div class="col-12 col-md-6">
       <div class="jumbotron bg-secondary">
-        <h2 class="text-warning text-center">{{itinerary.planets[0].name}}</h2>
-        <h3 class="text-warning text-center">{{g.prettify_date(itinerary.start_date)}} - {{g.prettify_date(itinerary.end_date)}}</h3>
+        <h2 class="text-warning text-center long-text-sub-1">{{itinerary.planets[0].name}}</h2>
+        <h3 class="text-warning text-center long-text-sub-1">{{g.prettify_date(itinerary.start_date)}} - {{g.prettify_date(itinerary.end_date)}}</h3>
         {% if itinerary.flight_dates|length > 0 %}
           {% for date in itinerary.flight_dates %}
             {% if date.flight.depart_or_return == "depart" %}

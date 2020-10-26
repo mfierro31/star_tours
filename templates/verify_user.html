@@ -2,7 +2,7 @@
 {% block title %}Verify{% endblock %}
 {% block content %}
 <h1 class="display-1 text-center text-warning long-text">Verify Your Identity</h1>
-<p>As an added layer of protection, please verify your credentials first before editing your personal information.</p>
+<p class="text-center text-md-left">As an added layer of protection, please verify your credentials first before editing your personal information.</p>
 <form method="POST">
   {{form.hidden_tag()}}
   {% for field in form 

@@ -2,7 +2,7 @@
 {% block title %}Sign Up{% endblock %}
 {% block content %}
 <h1 class="display-1 text-center text-warning long-text">Create An Account</h1>
-<p>Already have an account?  <a href="/login">Log in here.</a></p>
+<p class="text-center text-sm-left">Already have an account?  <a href="/login">Log in here.</a></p>
 <form method="POST">
   {{form.hidden_tag()}}
   {% for field in form 

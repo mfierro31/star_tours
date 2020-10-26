@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Tours{% endblock %}
 {% block content %}
-<h1 class="mb-5 display-1 text-warning text-center">Tours</h1>
+<h1 class="mb-5 display-1 text-warning text-center long-text">Tours</h1>
 {% for planet in planets %}
 <div class="row justify-content-center">
-  <h3 class="display-3 text-center"><a class="text-warning" href="/planets/{{planet.name}}">{{planet.name}}</a></h3>
+  <h3 class="display-3 text-center long-text-sub"><a class="text-warning" href="/planets/{{planet.name}}">{{planet.name}}</a></h3>
 </div>
 <!-- These two separate rows will be displayed on medium and wider screens because they make the titles and images
      line up perfectly with each other.  On small and xsmall screens, their display is set to none in CSS.
@@ -60,7 +60,7 @@
   <div class="row mb-5 justify-content-center">
     <div class="col-12">
       <div class="row justify-content-center">
-        <h4 class="tour-title text-center"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
+        <h4 class="tour-title text-center long-text-sub-2"><a class="text-light" href="/tours/{{tour.id}}">{{tour.name}}</a></h4>
       </div>
       <div class="row justify-content-center">
         <img class="tour-title-img img-fluid" src="{{g.img_path}}{{tour.images[0].image_name}}" alt="{{tour.images[0].image_name}}">

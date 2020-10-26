@@ -91,11 +91,19 @@ body {
 
 @media screen and (max-width: 555px) {
   .long-text {
-    font-size: 18vw;
+    font-size: 15vw;
   }
 
   .long-text-sub {
-    font-size: 15vw;
+    font-size: 12vw;
+  }
+
+  .long-text-sub-1 {
+    font-size: 9vw;
+  }
+
+  .long-text-sub-2 {
+    font-size: 5vw;
   }
 }
 
