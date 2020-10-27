@@ -14,9 +14,17 @@ def connect_db(app):
 
 # Helper methods to transform SWAPI data into clearer/cleaner/more logical data
 
-def get_gravity(diameter):
-    """Converts SWAPI gravity data into more logical and precise data"""
-    gravity = int(diameter) / 12742
+def get_gravity(diameter_as_str):
+    """Converts SWAPI gravity data into more logical and precise data
+
+    >>> get_gravity(15000)
+    '1.18 Standard Earth Gs'
+
+    >>> get_gravity(12742)
+    '1.0 Standard Earth G'
+
+    """
+    gravity = int(diameter_as_str) / 12742
 
     if gravity == 1:
         # This line rounds to exactly 2 decimal places.
@@ -25,7 +33,18 @@ def get_gravity(diameter):
         return f"{round(gravity, 2)} Standard Earth Gs"
 
 def num_with_commas(num_as_str):
-    """Adds commas to large numbers making them more clear to read.  If it doesn't convert to a number, it returns num_as_str"""
+    """Adds commas to large numbers making them more clear to read.  If it doesn't convert to a number, it returns num_as_str
+    
+    >>> num_with_commas('10000000000')
+    '10,000,000,000'
+
+    >>> num_with_commas('100000000.65')
+    '100,000,000.65'
+
+    >>> num_with_commas('unknown')
+    'unknown'
+    
+    """
     if num_as_str.isnumeric():
         num_as_int = int(num_as_str)
         # This line magically puts commas in the right places for any large number (thousand, million, billion, trillion, etc.)
@@ -37,27 +56,53 @@ def num_with_commas(num_as_str):
     else:
         return num_as_str
 
-def add_km_mi_to_diameter(diameter):
-    """Displays the SWAPI diameter data in km and mi"""
-    miles = int(diameter) * 0.62137
+def add_km_mi_to_diameter(diameter_as_str):
+    """Displays the SWAPI diameter data in km and mi
+    
+    >>> add_km_mi_to_diameter('100000')
+    '100,000 km / 62,137.00 mi'
+    
+    """
+    miles = int(diameter_as_str) * 0.62137
     miles_rounded = round(miles, 2)
 
-    return f"{num_with_commas(diameter)} km / {num_with_commas(str(miles_rounded))} mi"
+    return f"{num_with_commas(diameter_as_str)} km / {num_with_commas(str(miles_rounded))} mi"
 
-def add_hours_to_rotation(rotation):
-    """Adds 'Earth hours' to rotation period data from SWAPI"""
-    return f"{num_with_commas(rotation)} Earth hours"
+def add_hours_to_rotation(rotation_as_str):
+    """Adds 'Earth hours' to rotation period data from SWAPI
+    
+    >>> add_hours_to_rotation('32')
+    '32 Earth hours'
+    
+    """
+    return f"{num_with_commas(rotation_as_str)} Earth hours"
 
-def add_days_to_orbit(orbit):
-    """Adds 'Earth days' to orbital period data from SWAPI"""
-    return f"{num_with_commas(orbit)} Earth days"
+def add_days_to_orbit(orbit_as_str):
+    """Adds 'Earth days' to orbital period data from SWAPI
+    
+    >>> add_days_to_orbit('380')
+    '380 Earth days'
+    
+    """
+    return f"{num_with_commas(orbit_as_str)} Earth days"
 
-def add_percent_to_water(water):
-    """Adds a percent sign to the surface water SWAPI data if it's a number"""
-    if water.isnumeric() or water.replace('.', '').isnumeric():
-        return f"{water}%"
+def add_percent_to_water(water_as_str):
+    """Adds a percent sign to the surface water SWAPI data if it's a number
+    
+    >>> add_percent_to_water('72')
+    '72%'
+
+    >>> add_percent_to_water('72.5')
+    '72.5%'
+
+    >>> add_percent_to_water('unknown')
+    'unknown'
+    
+    """
+    if water_as_str.isnumeric() or water_as_str.replace('.', '').isnumeric():
+        return f"{water_as_str}%"
     else:
-        return water
+        return water_as_str
 
 #################################################################################################################################
 # Helper methods for displaying, setting, and comparing dates
@@ -84,15 +129,25 @@ def get_itin_start_datetime(itin):
     return datetime_obj
 
 def datetime_to_strings(datetime_obj):
-    """Takes a Python datetime object and converts it into 2 strings, one the time and the other the date"""
+    """Takes a Python datetime object and converts it into 2 strings, one the time and the other the date
+    
+    >>> datetime_to_strings(datetime(2020, 11, 1, 11, 0, 0, 0))
+    ['11:00 AM', '2020-11-01']
+    
+    """
     time = datetime_obj.strftime("%I:%M %p")
     date = datetime_obj.strftime("%Y-%m-%d")
 
     return [time, date]
 
-def get_datetime(date, time):
-    """Get datetime from flight or tour's time and itinerary's flight or tour date"""
-    datetime_str = f'{date} {time}'
+def get_datetime(date_as_str, time_as_str):
+    """Get datetime from flight or tour's time and itinerary's flight or tour date
+    
+    >>> get_datetime('2020-11-01', '12:00 PM')
+    datetime.datetime(2020, 11, 1, 12, 0)
+    
+    """
+    datetime_str = f'{date_as_str} {time_as_str}'
     datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
 
     return datetime_obj
@@ -100,7 +155,12 @@ def get_datetime(date, time):
 def set_arrive_end_date(depart_start_date, depart_start_time, duration):
     """Takes the flight or tour depart date from the itinerary and flight or tour time and turns them into a datetime object.  
     Then, using the timedelta function, takes the flight or tour time and adds that to the datetime and gives us back a new 
-    datetime, whose date we give back as a string."""
+    datetime, whose date we give back as a string.
+    
+    >>> set_arrive_end_date('2020-12-01', '09:00 PM', 12)
+    '2020-12-02'
+    
+    """
     datetime_str = f'{depart_start_date} {depart_start_time}'
     datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %I:%M %p')
     arrive_end_datetime = datetime_obj + timedelta(hours=duration)
@@ -108,16 +168,29 @@ def set_arrive_end_date(depart_start_date, depart_start_time, duration):
 
     return arrive_end_date.strftime('%Y-%m-%d')
 
-def prettify_date(date):
-    """Displays date as full month name, numbered day, and year"""
-    date_as_datetime = datetime.strptime(date, '%Y-%m-%d')
+def prettify_date(date_as_str):
+    """Displays date as full month name, numbered day, and year
+    
+    >>> prettify_date('2020-11-22')
+    'November 22, 2020'
+    
+    """
+    date_as_datetime = datetime.strptime(date_as_str, '%Y-%m-%d')
     date_as_date = date_as_datetime.date()
     pretty_date = date_as_date.strftime('%B %-d, %Y')
 
     return pretty_date
 
 def prettify_duration(duration):
-    """Adds 'hour' or 'hours' to the flight/tour time"""
+    """Adds 'hour' or 'hours' to the flight/tour time
+    
+    >>> prettify_duration(12)
+    '12 hours'
+
+    >>> prettify_duration(1)
+    '1 hour'
+    
+    """
     if duration == 1:
         return f'{duration} hour'
     else:
