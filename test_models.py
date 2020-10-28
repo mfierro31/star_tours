@@ -13,7 +13,9 @@ class UserModelTestCase(TestCase):
     
     def setUp(self):
         """Add sample user"""
-
+        # We have to delete itineraries from any previous tests first, otherwise we'll get an error saying that the user's table 
+        # is still referencing the itinerary's id
+        Itinerary.query.delete()
         User.query.delete()
 
         self.u = User.signup('test@test.com', 'testy1', 'testing!', 'Testy', 'McTestface')
@@ -52,3 +54,58 @@ class UserModelTestCase(TestCase):
         test = User.authenticate('JabbaNoBotha', 'daeWannaWanga')
 
         self.assertEqual(test, False)
+
+    def test_verify_success(self):
+        """Do we get the user when verify is successful?"""
+        test = User.verify('test@test.com', 'testy1', 'testing!')
+
+        self.assertEqual(test, self.u)
+
+    def test_verify_fail(self):
+        """Do we get False when verify fails?"""
+        test = User.verify('jabba2@jabba.com', 'JabbaNoBotha', 'daeWannaWanga')
+
+        self.assertEqual(test, False)
+
+    def test_update_password(self):
+        """Does this update user's password?"""
+        self.u.update_password('daeWannaWanga')
+        db.session.commit()
+
+        test = User.authenticate('testy1', 'daeWannaWanga')
+
+        self.assertEqual(test, self.u)
+
+class ItineraryModelTestCase(TestCase):
+    """Test Itinerary model"""
+    
+    def setUp(self):
+        """Add sample user and itinerary"""
+        # We have to delete itineraries first, otherwise we'll get an error saying that the user's table is still referencing
+        # the itinerary's id
+        Itinerary.query.delete()
+        User.query.delete()
+
+        self.u = User.signup('test@test.com', 'testy1', 'testing!', 'Testy', 'McTestface')
+        db.session.add(self.u)
+        db.session.commit()
+
+        self.itin = Itinerary(user_id=self.u.id)
+        db.session.add(self.itin)
+        db.session.commit()
+
+    def tearDown(self):
+        """Remove any fouled transactions"""
+        db.session.rollback()
+
+    def test_user_itin_relationship(self):
+        """Make sure that the itinerary is connected to the user"""
+        self.assertEqual(len(self.u.itineraries), 1)
+        self.assertEqual(self.u.itineraries[0].id, self.itin.id)
+
+    def test_add_commas_to_total(self):
+        """Make sure the add_commas_to_total method works as intended"""
+        self.itin.total = 1560
+        db.session.commit()
+
+        self.assertEqual(self.itin.add_commas_to_total(), '1,560')
