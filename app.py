@@ -248,8 +248,23 @@ def edit_account():
         flash('Please log in first to edit your account.', 'danger')
         return redirect('/')
 
+@app.route('/user/delete', methods=["POST"])
+def delete_user():
+    if g.user:
+        user = User.query.get(g.user.id)
+        db.session.delete(user)
+        db.session.commit()
+
+        do_logout()
+
+        flash('Successfully deleted your account!', 'success')
+        return redirect('/')
+    else:
+        flash('You need to log in first to access this route.', 'danger')
+        return redirect('/')
+
 ##########################################################################
-# Book route
+# Booking routes
 
 @app.route('/book', methods=["GET"])
 def book_trip():
@@ -287,11 +302,15 @@ def book_trip():
 
         elif query_d_flight:
             flight = Flight.query.get_or_404(query_d_flight)
-            form.planet.data = flight.arrive_planet
+
+            if flight.arrive_planet != "Earth":
+                form.planet.data = flight.arrive_planet
 
         elif query_r_flight:
             flight = Flight.query.get_or_404(query_r_flight)
-            form.planet.data = flight.depart_planet
+
+            if flight.depart_planet != "Earth":
+                form.planet.data = flight.depart_planet
             
         # First thing we do is delete the tours, flights, and planets of any unfinished itineraries that we made in previous 
         # visits to our book page (if any)
@@ -640,24 +659,7 @@ def submit_book_form():
         return redirect('/')
 
 ##########################################################################
-# API routes for booking form
-
-@app.route('/tours/<planet_name>')
-def get_tours(planet_name):
-    planet = Planet.query.get_or_404(planet_name)
-    tours = planet.tours
-    serialized_tours = [tour.serialize() for tour in tours]
-
-    return (jsonify(tours=serialized_tours), 200)
-
-@app.route('/flights/<planet_name>')
-def get_flights(planet_name):
-    planet = Planet.query.get_or_404(planet_name)
-
-    flights = Flight.query.filter((Flight.depart_planet == planet.name) | (Flight.arrive_planet == planet.name)).all()
-    flights_serialized = [flight.serialize() for flight in flights]
-
-    return (jsonify(flights=flights_serialized), 200)
+# Itinerary routes
 
 @app.route('/itineraries/add/tour', methods=["POST"])
 def add_tour_to_itin():
@@ -828,10 +830,7 @@ def calculate_total():
         return (jsonify(total=num_with_commas(str(total))), 200)
     else:
         flash("You have to log in first, go to the 'Book A Trip' page, and click 'Submit' to access this route.", "danger")
-        return redirect('/')
-
-##########################################################################
-# Delete itinerary route    
+        return redirect('/')   
 
 @app.route('/itineraries/delete/<int:id>', methods=["POST"])
 def delete_itin(id):
@@ -849,24 +848,6 @@ def delete_itin(id):
             return redirect('/')
     else:
         flash("Please log in first.", "danger")
-        return redirect('/')
-
-##########################################################################
-# Delete user route
-
-@app.route('/user/delete', methods=["POST"])
-def delete_user():
-    if g.user:
-        user = User.query.get(g.user.id)
-        db.session.delete(user)
-        db.session.commit()
-
-        do_logout()
-
-        flash('Successfully deleted your account!', 'success')
-        return redirect('/')
-    else:
-        flash('You need to log in first to access this route.', 'danger')
         return redirect('/')
 
 ##########################################################################
@@ -904,6 +885,14 @@ def show_tour(tour_id):
     tour = Tour.query.get_or_404(tour_id)
     return render_template('tour.html', tour=tour)
 
+@app.route('/tours/<planet_name>')
+def get_tours(planet_name):
+    planet = Planet.query.get_or_404(planet_name)
+    tours = planet.tours
+    serialized_tours = [tour.serialize() for tour in tours]
+
+    return (jsonify(tours=serialized_tours), 200)
+
 ##########################################################################
 # Flight routes
 
@@ -912,6 +901,15 @@ def show_flights():
     flights = Flight.query.all()
     planets = Planet.query.all()
     return render_template('flights.html', flights=flights, planets=planets)
+
+@app.route('/flights/<planet_name>')
+def get_flights(planet_name):
+    planet = Planet.query.get_or_404(planet_name)
+
+    flights = Flight.query.filter((Flight.depart_planet == planet.name) | (Flight.arrive_planet == planet.name)).all()
+    flights_serialized = [flight.serialize() for flight in flights]
+
+    return (jsonify(flights=flights_serialized), 200)
 
 ##########################################################################
 # Our Fleet route
