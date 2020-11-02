@@ -42,13 +42,3 @@ class BookForm(FlaskForm):
     no_depart = BooleanField('No Depart Flight', validators=[Optional()])
     no_return = BooleanField('No Return Flight', validators=[Optional()])
     no_tour = BooleanField('No Tour', validators=[Optional()])
-
-class AddFlightForm(FlaskForm):
-    """Form for adding a flight"""
-    flight_num = IntegerField('Flight Number', validators=[InputRequired()])
-    depart_planet = StringField('Depart Planet', validators=[InputRequired()])
-    depart_time = StringField('Depart Time', validators=[InputRequired()])
-    arrive_planet = StringField('Arrive Planet', validators=[InputRequired()])
-    arrive_time = StringField('Arrive Time', validators=[InputRequired()])
-    price = IntegerField('Price', validators=[InputRequired()])
-    flight_time = IntegerField('Flight Time', validators=[InputRequired()])
