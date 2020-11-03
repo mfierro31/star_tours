@@ -52,8 +52,7 @@
     {% if itinerary.planets|length > 0 and itinerary.start_date and itinerary.end_date %}
     <div class="col-12 col-md-6">
       <div class="jumbotron bg-secondary">
-        <h2 class="text-warning text-center long-text-sub-1">{{itinerary.planets[0].name}}</h2>
-        <h3 class="text-warning text-center long-text-sub-1">{{g.prettify_date(itinerary.start_date)}} - {{g.prettify_date(itinerary.end_date)}}</h3>
+        <h3 class="text-center long-text-sub-1"><a href="/itineraries/{{itinerary.id}}" class="text-warning"><span class="d-block mb-3">{{itinerary.planets[0].name}}</span>{{g.prettify_date(itinerary.start_date)}} - {{g.prettify_date(itinerary.end_date)}}</a></h3>
         {% if itinerary.flight_dates|length > 0 %}
           {% for date in itinerary.flight_dates %}
             {% if date.flight.depart_or_return == "depart" %}

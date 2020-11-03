@@ -832,6 +832,20 @@ def calculate_total():
         flash("You have to log in first, go to the 'Book A Trip' page, and click 'Submit' to access this route.", "danger")
         return redirect('/')   
 
+@app.route('/itineraries/<int:id>')
+def show_trip(id):
+    if g.user:
+        itin = Itinerary.query.get_or_404(id)
+
+        if g.user.id == itin.user_id:
+            return render_template('book_success.html', itin=itin)
+        else:
+            flash("You can't view that itinerary.", "danger")
+            return redirect('/account')
+    else:
+        flash('You have to log in first to access this route.', 'danger')
+        return redirect('/login')
+
 @app.route('/itineraries/delete/<int:id>', methods=["POST"])
 def delete_itin(id):
     if g.user:
