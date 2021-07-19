@@ -2,7 +2,7 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 <div id="logo">  
-  <img class="img-fluid startours" src="/static/images/Star_Tours_logo.png" alt="Star Tours logo">
+  <img class="img-fluid startours" src="https://ik.imagekit.io/mfierro31/star_tours/Star_Tours_logo.png" alt="Star Tours logo">
 </div>
 <h1 class="text-center">Light speed to your favorite destinations across the galaxy!</h1>
 <p class="mt-5 text-center">Star Tours offers <b><i>DAILY</i></b> tours and <b><i>DAILY</i></b> nonstop flights from Earth to the most famous planets around!</p>
@@ -12,7 +12,7 @@
   {% for planet in planets %}
   <div class="mb-3 col-12 col-md-4 text-center">
     <h3 class="text-center"><a class="text-warning" href="/planets/{{planet.name}}">{{planet.name}}</a></h3>
-    <img src="static/images/{{planet.images[0].image_name}}" class="img-fluid home-planets rounded-circle" alt="{{planet.name}}">
+    <img src="https://ik.imagekit.io/mfierro31/star_tours/{{planet.images[0].image_name}}" class="img-fluid home-planets rounded-circle" alt="{{planet.name}}">
   </div>
   {% endfor %}
 </div>

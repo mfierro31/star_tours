@@ -50,7 +50,7 @@ body {
   https://www.webfx.com/blog/web-design/responsive-background-image/ 
   
   */
-  background-image: url('/static/images/light_speed_background.jpg');
+  background-image: url('https://ik.imagekit.io/mfierro31/star_tours/light_speed_background.jpg');
   background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;

@@ -32,7 +32,7 @@ db.create_all()
 @app.before_request
 def add_to_g():
     """Set path to images, add itinerary (if any), and if we're logged in, add curr user to Flask global."""
-    g.img_path = "/static/images/"
+    g.img_path = "https://ik.imagekit.io/mfierro31/star_tours/"
     g.prettify_date = prettify_date
     g.prettify_duration = prettify_duration
 

@@ -8,7 +8,7 @@
   {% for planet in planets %}
   <div class="mb-5 col-12 col-md-4 text-center">
     <h3 class="text-center"><a class="text-warning" href="/planets/{{planet.name}}">{{planet.name}}</a></h3>
-    <img src="static/images/{{planet.images[0].image_name}}" class="img-fluid home-planets rounded-circle" alt="{{planet.name}}">
+    <img src="https://ik.imagekit.io/mfierro31/star_tours/{{planet.images[0].image_name}}" class="img-fluid home-planets rounded-circle" alt="{{planet.name}}">
     <a class="btn btn-secondary mt-2" href="/book?planet={{planet.name}}">Book a flight</a>
   </div>
   {% endfor %}
